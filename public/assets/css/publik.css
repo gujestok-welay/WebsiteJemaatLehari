@@ -1,58 +1,149 @@
+/* TASK-006E: local Latin WOFF2; provenance and OFL licences in ../fonts/. */
+@font-face {
+    font-family: 'Cormorant Garamond';
+    font-style: normal;
+    font-weight: 600;
+    font-display: swap;
+    src: url('../fonts/cormorant-garamond/latin-600-normal.woff2') format('woff2');
+}
+@font-face {
+    font-family: 'DM Sans';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('../fonts/dm-sans/latin-400-normal.woff2') format('woff2');
+}
+@font-face {
+    font-family: 'DM Sans';
+    font-style: normal;
+    font-weight: 600;
+    font-display: swap;
+    src: url('../fonts/dm-sans/latin-600-normal.woff2') format('woff2');
+}
+@font-face {
+    font-family: 'DM Sans';
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url('../fonts/dm-sans/latin-700-normal.woff2') format('woff2');
+}
 :root {
     --purple: #663f72;
     --purple-dark: #482950;
     --gold: #d8bd72;
-    --paper: #ffffff;
-    --surface: #f3f0f4;
+    --paper: #fffefa;
+    --surface: #f5f1f6;
+    --gold-soft: #eee2bd;
     --ink: #29232c;
     --muted: #5d5361;
     --frame: clamp(1.25rem, 4vw, 4rem);
-    --body-font: Arial, Helvetica, sans-serif;
-    --display-font: Georgia, 'Times New Roman', serif;
+    --body-font: 'DM Sans', Arial, Helvetica, sans-serif;
+    --display-font: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+    --font-weight-body: 400;
+    --font-weight-heading: 600;
+    --font-weight-ui: 600;
+    --font-weight-strong: 700;
+    --font-size-body: 1.125rem;
+    --font-size-meta: 1rem;
+    --font-size-page: clamp(3rem, 6.5vw, 6.5rem);
+    --font-size-hero: clamp(3.25rem, 6.5vw, 6rem);
+    --font-size-section: clamp(2rem, 3vw, 2.5rem);
+    --font-size-item: clamp(1.5rem, 2.2vw, 2rem);
+    --font-size-footer: clamp(2.5rem, 8vw, 8rem);
+    --font-leading-body: 1.65;
+    --font-leading-display: 1.1;
+    --font-leading-heading: 1.2;
+    --font-leading-ui: 1.35;
+    --font-tracking-display: -.02em;
+    --font-tracking-heading: -.015em;
+    --font-tracking-ui: 0;
+    --font-measure-body: 65ch;
 }
-body { color: var(--ink); background: var(--paper); font: 1.125rem/1.65 var(--body-font); }
+body { color: var(--ink); background: var(--paper); font: var(--font-weight-body) var(--font-size-body)/var(--font-leading-body) var(--body-font); }
+button, input, select, textarea, .btn { font-family: var(--body-font); }
+strong, b { font-weight: var(--font-weight-strong); }
+::selection { color: var(--paper); background: var(--purple); }
 .site-frame { padding-inline: var(--frame); }
-h1, h2, h3, .footer-name { font-family: var(--display-font); font-weight: 400; text-wrap: balance; }
-h1 { font-size: clamp(3rem, 6.5vw, 6.5rem); line-height: 1.08; letter-spacing: -.04em; }
-h2 { font-size: 2.5rem; line-height: 1.15; letter-spacing: -.025em; }
-h3 { font-size: 2.5rem; line-height: 1.2; }
-p { max-width: 65ch; margin-bottom: 1rem; text-wrap: pretty; }
+h1, h2, h3, h4, h5, h6 { font-family: var(--display-font); font-weight: var(--font-weight-heading); text-wrap: balance; overflow-wrap: break-word; }
+h1 { font-size: var(--font-size-page); line-height: var(--font-leading-display); letter-spacing: var(--font-tracking-display); }
+h2, h3 { font-size: var(--font-size-section); line-height: var(--font-leading-heading); letter-spacing: var(--font-tracking-heading); }
+/* Content items are interface text; section and editorial headings remain serif. */
+.news-row h3, .schedule-row h3, .schedule-highlight h3 { font-family: var(--body-font); font-size: var(--font-size-item); font-weight: var(--font-weight-ui); line-height: var(--font-leading-ui); letter-spacing: var(--font-tracking-ui); text-wrap: pretty; }
+p { max-width: var(--font-measure-body); margin-bottom: 1rem; text-wrap: pretty; }
 a { color: var(--purple); text-underline-offset: .25em; text-decoration-thickness: .08em; }
 a:hover { color: var(--purple-dark); text-decoration-thickness: .14em; }
-:focus-visible { outline: 3px solid var(--purple); outline-offset: 5px; box-shadow: none !important; } /* taste-skill-ignore: removes Bootstrap focus shadow, supplies visible outline */
+/* Match Bootstrap component specificity so its focus resets cannot hide the outline. */
+:focus-visible, .navbar .nav-link:focus-visible, .navbar .navbar-toggler:focus-visible,
+.btn:focus-visible, .form-select:focus-visible { outline: 3px solid var(--purple); outline-offset: 5px; box-shadow: none !important; } /* taste-skill-ignore: removes Bootstrap focus shadow, supplies visible outline */
 .skip-link { position: absolute; z-index: 10; background: var(--paper); padding: 1rem; left: 1rem; top: -8rem; }
 .skip-link:focus { top: 1rem; }
 .navbar { padding-block: 1.1rem; }
 .navbar-brand { color: var(--purple); font-size: 1.5rem; font-weight: 700; line-height: 1.4; white-space: normal; }
 .navbar-brand span { display: block; font-size: 1rem; font-weight: 400; color: var(--muted); }
-.navbar-nav { gap: 1.2rem; }
+.navbar-nav { gap: 1.2rem; flex-wrap: wrap; }
 .navbar .nav-link { padding: .65rem .25rem; font-size: 1.125rem; color: var(--ink); }
 .navbar .nav-link.active { color: var(--purple); text-decoration: underline; text-decoration-thickness: 3px; text-underline-offset: .5em; }
 .navbar-toggler { border: 2px solid var(--purple); border-radius: 0; font-size: 1rem; padding: .65rem .8rem; color: var(--purple); }
+/* Shared navigation and footer keep the same touch targets on every public page. */
+.navbar-brand { min-width: 44px; min-height: 44px; overflow-wrap: anywhere; }
+.navbar-toggler { flex-shrink: 0; min-width: 44px; min-height: 44px; }
+.navbar .nav-link { min-width: 44px; min-height: 44px; }
+.site-footer { overflow-wrap: anywhere; }
+.site-footer a { display: inline-flex; align-items: center; min-width: 44px; min-height: 44px; }
+.footer-top > *, .footer-bottom > * { min-width: 0; max-width: 100%; }
 .demo-notice { background: var(--surface); font-size: 1rem; padding-block: .75rem; }
-.home-hero { background: var(--purple); color: var(--paper); padding-block: clamp(3rem, 6vw, 6rem); }
-.home-hero h1 { font-size: clamp(3.4rem, 10.8vw, 10rem); margin: 0 0 clamp(2.5rem, 5vw, 4.5rem); }
-.hero-bottom { display: flex; justify-content: space-between; align-items: end; gap: 2rem; }
-.hero-bottom p { max-width: 46ch; font-size: 1.5rem; margin: 0; }
+/* Beranda: one editorial introduction, followed by a shared news/schedule region. */
+.home-hero { --home-space: clamp(1.5rem, 3vw, 3rem); display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.3fr); align-items: center; gap: var(--home-space); padding-block: var(--home-space); }
+.home-hero-copy { min-width: 0; }
+.home-hero h1 { color: var(--purple-dark); font-size: var(--font-size-hero); line-height: var(--font-leading-display); letter-spacing: var(--font-tracking-display); margin: 0 0 1.5rem; }
+.home-hero-intro { max-width: 34ch; font-size: clamp(1.125rem, 1.4vw, 1.25rem); margin: 0 0 1.5rem; }
+.home-hero-actions { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem 1.5rem; }
+.home-hero-actions > a:not(.btn) { display: inline-flex; align-items: center; gap: .5rem; min-height: 44px; }
+.home-hero .btn { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; max-width: 100%; min-height: 44px; white-space: normal; }
+.home-hero .btn span { flex-shrink: 0; }
+.home-hero-photo { min-width: 0; margin: 0; }
+/* Preserve the complete supplied photograph and its intrinsic 4:3 ratio. */
+.home-hero-photo img { display: block; width: 100%; height: auto; }
+.home-hero-photo figcaption { padding-top: .75rem; font-size: 1rem; color: var(--muted); text-align: right; }
+.home-updates { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, .9fr); align-items: start; gap: clamp(2rem, 4vw, 4rem); padding-block: clamp(2rem, 4vw, 4rem); }
+.home-updates > section { min-width: 0; }
+.home-news .section-heading { flex-wrap: wrap; margin-bottom: 1rem; }
+.home-news h2, .home-schedule h2 { font-size: var(--font-size-section); }
+.home-news .news-row { grid-template-columns: 1fr; gap: .5rem; padding: 1.5rem 0; background: transparent; }
+.home-news .news-row h3, .home-schedule h3 { font-size: var(--font-size-item); }
+.home-news .news-row p:last-child { margin-bottom: 0; }
+.home-news .section-heading > a, .home-schedule a, .about-preview a { display: inline-block; padding-block: .5rem; min-height: 44px; }
+.home-empty { margin: 0; padding-block: 1.5rem; color: var(--muted); }
+.home-news, .home-schedule, .about-preview { overflow-wrap: anywhere; }
+#warta { scroll-margin-top: 1.5rem; }
 .btn { border-radius: 0; padding: .85rem 1.35rem; font-size: 1.125rem; font-weight: 700; transition: transform .15s ease; }
 .btn-gold { background: var(--gold); color: var(--ink); border: 0; white-space: nowrap; }
 .btn-gold:hover, .btn-gold:focus { background: var(--gold); color: var(--ink); transform: translateY(-2px); }
 .btn:active { transform: translateY(1px); }
-.home-hero :focus-visible, .site-footer :focus-visible { outline-color: var(--gold); }
+.home-hero :focus-visible { outline-color: var(--purple-dark); }
+.site-footer :focus-visible { outline-color: var(--gold); }
 .section-space { padding-block: clamp(3.5rem, 7vw, 7rem); }
-.section-heading { display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; margin-bottom: 2rem; }
+.section-heading { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1.5rem; margin-bottom: 2rem; }
 .section-heading h2 { margin: 0; }
 .news-row { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; padding-block: 2rem; scroll-margin-top: 1rem; }
 .news-row:nth-of-type(even) { background: var(--surface); }
 .news-list .news-row, .news-archive .news-row { padding-inline: 1.5rem; }
+/* Match the news heading's edge; override the shared archive row treatment. */
+.home-news .news-list .news-row { padding-inline: 0; background: transparent; }
+.home-news .news-row h3 a { display: inline-block; min-height: 44px; padding-block: .25rem; }
 .news-row h3 a { color: var(--ink); }
-.meta { font-size: 1rem; color: var(--muted); }
-.home-schedule { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; background: var(--surface); padding-block: 3.5rem; }
+.meta { font-size: var(--font-size-meta); color: var(--muted); }
+.home-schedule { display: grid; gap: 1.5rem; background: var(--surface); padding: clamp(1.25rem, 2.5vw, 2.5rem); }
+.schedule-intro h2 { margin-bottom: 1rem; }
 .home-schedule > div > p { max-width: 42ch; }
-.schedule-highlight { padding-left: 2rem; }
+.schedule-highlight { padding-top: .5rem; }
+.schedule-highlight > :last-child { margin-bottom: 0; }
 .service-time { font-size: 2.5rem; line-height: 1.2; font-variant-numeric: tabular-nums; margin-block: 1rem; }
 .service-time span { font-size: 1rem; }
-.about-preview, .profile-section { display: grid; grid-template-columns: 1fr 1.5fr; gap: 3rem; }
+.about-preview, .profile-section { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr); gap: 3rem; }
+.profile-section > *, .schedule-row > *, .news-row > * { min-width: 0; overflow-wrap: break-word; }
+.about-preview { background: var(--surface); padding-block: clamp(2.5rem, 4vw, 4rem); }
+.page-home .about-preview { grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr); gap: clamp(1.25rem, 4vw, 3rem); }
 .intro-text { font-size: 1.5rem; line-height: 1.55; }
 .page-intro { padding-block: 3.5rem; background: var(--purple); color: var(--paper); }
 .page-intro h1 { margin-bottom: 1.75rem; }
@@ -67,7 +158,9 @@ details summary { color: var(--purple); cursor: pointer; padding-block: .5rem; m
 details[open] summary { margin-bottom: .75rem; }
 .schedule-filter label { display: block; margin-bottom: .4rem; font-size: 1rem; }
 .form-select { border: 2px solid var(--purple); border-radius: 0; font-size: 1.125rem; min-width: 15rem; min-height: 48px; color: var(--ink); }
-.schedule-row { display: grid; grid-template-columns: 1.5fr .7fr 1fr; gap: 2rem; align-items: center; padding: 2rem 1.5rem; }
+/* Reserve the intrinsic time + WIT width; text can still wrap under enlargement. */
+.schedule-list { container-type: inline-size; }
+.schedule-row { display: grid; grid-template-columns: minmax(0, 1.5fr) auto minmax(0, 1fr); gap: 2rem; align-items: center; padding: 2rem 1.5rem; }
 .schedule-row:nth-child(odd) { background: var(--surface); }
 .schedule-row p:last-child { margin-bottom: 0; }
 .schedule-note { margin-top: 2rem; }
@@ -76,28 +169,51 @@ details[open] summary { margin-bottom: .75rem; }
 .site-footer a { color: var(--paper); padding-block: .5rem; }
 .footer-top, .footer-bottom { display: flex; justify-content: space-between; gap: 1.5rem; flex-wrap: wrap; align-items: center; }
 .footer-top p { margin: 0; font-size: 1.5rem; }
-.footer-name { font-size: clamp(3.4rem, 10.8vw, 10rem); letter-spacing: -.04em; line-height: 1.2; margin-block: 2rem; max-width: none; }
+.footer-name { font-family: var(--body-font); font-weight: var(--font-weight-ui); font-size: var(--font-size-footer); letter-spacing: var(--font-tracking-display); line-height: var(--font-leading-heading); text-wrap: balance; overflow-wrap: break-word; margin-block: 2rem; max-width: none; }
 .footer-bottom { font-size: 1rem; }
 .footer-bottom p { margin: 0; }
+/* rem follows the container's text size, including a visitor's enlarged text. */
+@container (max-width: 38rem) {
+    .schedule-row { grid-template-columns: minmax(0, 1fr); gap: 1.25rem; }
+    .schedule-row .service-time { margin: 0; }
+}
 @media (max-width: 767.98px) {
-    h2, h3 { font-size: 2rem; }
+    .navbar-brand { flex: 1; }
     .navbar-nav { gap: .25rem; padding-top: 1rem; }
     .navbar .nav-link { padding-block: .75rem; }
-    .hero-bottom, .section-heading { flex-direction: column; align-items: start; }
-    .hero-bottom p, .page-intro p { font-size: 1.125rem; }
-    .home-hero h1 { max-width: 9ch; }
-    .news-row, .home-schedule, .about-preview, .profile-section, .schedule-row { grid-template-columns: 1fr; gap: 1.25rem; }
+    .section-heading { flex-direction: column; align-items: start; }
+    .page-intro p { font-size: 1.125rem; }
+    .home-hero { grid-template-columns: 1fr; gap: 1.5rem; padding-block: 1.5rem; }
+    .home-hero h1 { font-size: clamp(3rem, 9vw, 3.5rem); margin-bottom: 1rem; }
+    .home-hero h1 br { display: none; }
+    .home-hero-intro { max-width: 44ch; margin-bottom: 1rem; }
+    .home-hero-actions { gap: .5rem 1.25rem; }
+    .home-hero-photo figcaption { padding-top: .5rem; }
+    .home-updates { grid-template-columns: 1fr; gap: 2rem; padding-block: 1.5rem 2.5rem; }
+    .news-row, .about-preview, .profile-section, .schedule-row { grid-template-columns: 1fr; gap: 1.25rem; }
     .news-list .news-row, .news-archive .news-row, .schedule-row { padding-inline: 1rem; }
-    .schedule-highlight { padding-left: 0; }
-    .home-schedule { gap: 2.5rem; }
+    .home-news .news-row { padding-inline: 0; gap: .5rem; }
+    .home-schedule { gap: 1.25rem; }
+    .page-home .about-preview { grid-template-columns: minmax(0, 1fr); }
     .page-intro { padding-block: 2.5rem; }
     .profile-section { padding-block: 2.5rem; }
     .intro-text { font-size: 1.25rem; }
     .schedule-row .service-time { margin: 0; }
     .schedule-filter, .form-select { width: 100%; min-width: 0; }
 }
+@media (max-width: 575.98px) {
+    .home-hero-actions { align-items: stretch; flex-direction: column; }
+    .home-hero-actions > a { width: 100%; }
+    .footer-top, .footer-bottom { align-items: flex-start; flex-direction: column; gap: 1rem; }
+}
+@media (min-width: 768px) and (max-width: 1023.98px) {
+    .home-hero { grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: 2rem; }
+    .home-hero h1 { font-size: clamp(3rem, 6.5vw, 4.25rem); }
+    .home-updates { grid-template-columns: 1fr 1fr; gap: 2rem; }
+}
 @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; animation: none !important; }
+    .home-hero .btn { transform: none; }
 }
 @media print {
     .site-header, .demo-notice, .site-footer, .schedule-filter { display: none; }

@@ -1,19 +1,21 @@
 # PRODUCT REQUIREMENTS DOCUMENT (PRD)
-## Website Informasi dan Publikasi Digital Jemaat Leihari
+
+## Website Informasi dan Publikasi Digital Jemaat Leahari
+
 ### Program KKN Tematik Kelompok 13 — Fakultas Ilmu Komputer, Universitas Kristen Indonesia Maluku (UKIM)
 
-| Atribut | Keterangan |
-|---|---|
-| Versi | **3.0 — Draft penyelarasan dengan konteks KKN Tematik Kelompok 13** |
-| Disusun | 24 Oktober 2026 |
-| Status | **DRAFT UNTUK VALIDASI** — bukan persetujuan final mitra, bukan instruksi perubahan kode/database |
-| Mitra/pemilik kebutuhan | Jemaat Leihari (konfirmasi penanggung jawab resmi diperlukan) |
-| Tim pelaksana | KKN Tematik Kelompok 13, FILKOM UKIM |
-| Mitra operasional | Media Center Jemaat Leihari; hubungan koordinasi dengan sekretariat/Majelis perlu disepakati |
-| Sasaran produk | Website publik + dashboard pengelolaan konten oleh Media Center |
-| Stack usulan | **CodeIgniter 4, PHP, MySQL, Bootstrap**, HTML/CSS/JavaScript (menunggu keputusan tim dan audit aset yang telah ada) |
-| Metode kerja | Analisis kebutuhan → desain → implementasi bertahap → pengujian bersama mitra → pelatihan → serah terima |
-| Sumber penyusunan | PRD Leihari v2.1 (22 Oktober 2026); penuturan hasil wawancara Ketua Majelis dalam percakapan proyek; arahan umum Template Proposal KKNT FILKOM 2026 |
+| Atribut                 | Keterangan                                                                                                                                          |
+| ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Versi                   | **3.0 — Draft penyelarasan dengan konteks KKN Tematik Kelompok 13**                                                                                 |
+| Disusun                 | 24 Oktober 2026                                                                                                                                     |
+| Status                  | **DRAFT UNTUK VALIDASI** — bukan persetujuan final mitra, bukan instruksi perubahan kode/database                                                   |
+| Mitra/pemilik kebutuhan | Jemaat Leahari (konfirmasi penanggung jawab resmi diperlukan)                                                                                       |
+| Tim pelaksana           | KKN Tematik Kelompok 13, FILKOM UKIM                                                                                                                |
+| Mitra operasional       | Media Center Jemaat Leahari; hubungan koordinasi dengan sekretariat/Majelis perlu disepakati                                                        |
+| Sasaran produk          | Website publik + dashboard pengelolaan konten oleh Media Center                                                                                     |
+| Stack usulan            | **CodeIgniter 4, PHP, MySQL, Bootstrap**, HTML/CSS/JavaScript (menunggu keputusan tim dan audit aset yang telah ada)                                |
+| Metode kerja            | Analisis kebutuhan → desain → implementasi bertahap → pengujian bersama mitra → pelatihan → serah terima                                            |
+| Sumber penyusunan       | PRD Leahari v2.1 (22 Oktober 2026); penuturan hasil wawancara Ketua Majelis dalam percakapan proyek; arahan umum Template Proposal KKNT FILKOM 2026 |
 
 > **Aturan interpretasi:** (T) = temuan yang dilaporkan dari wawancara/pembicaraan dengan pengguna; (D) = keputusan/usulan perancangan Kelompok 13 yang belum disahkan mitra; (K) = kebutuhan atau fakta yang masih harus dikonfirmasi. PRD v2.1 adalah rancangan awal, sehingga rincian teknis di dalamnya **tidak otomatis** menjadi keputusan akhir proyek ini.
 
@@ -21,25 +23,25 @@
 
 ## 1. Ringkasan Eksekutif
 
-Jemaat Leihari saat ini menggunakan WhatsApp dan Facebook untuk menyampaikan informasi seperti berita kegiatan dan jadwal ibadah **(T)**. Berdasarkan penuturan hasil wawancara awal dengan Ketua Majelis, pembaruan Facebook tidak selalu konsisten dan sebagian warga jemaat yang tinggal di luar wilayah mengalami kesulitan memperoleh informasi terbaru **(T)**. Media Center jemaat telah ada dan direncanakan sebagai pihak yang mengelola website setelah KKN **(T, kebutuhan tata kelolanya perlu dikonfirmasi)**.
+Jemaat Leahari saat ini menggunakan WhatsApp dan Facebook untuk menyampaikan informasi seperti berita kegiatan dan jadwal ibadah **(T)**. Berdasarkan penuturan hasil wawancara awal dengan Ketua Majelis, pembaruan Facebook tidak selalu konsisten dan sebagian warga jemaat yang tinggal di luar wilayah mengalami kesulitan memperoleh informasi terbaru **(T)**. Media Center jemaat telah ada dan direncanakan sebagai pihak yang mengelola website setelah KKN **(T, kebutuhan tata kelolanya perlu dikonfirmasi)**.
 
-Kelompok 13 mengusulkan pengembangan **Website Informasi dan Publikasi Digital Jemaat Leihari** sebagai kanal informasi resmi tambahan, bukan pengganti WhatsApp/Facebook. Website memungkinkan pengunjung melihat profil, berita dan dokumentasi kegiatan, serta jadwal ibadah tanpa login; Media Center memperbaruinya lewat dashboard yang mudah digunakan tanpa mengedit kode atau database secara manual **(D)**.
+Kelompok 13 mengusulkan pengembangan **Website Informasi dan Publikasi Digital Jemaat Leahari** sebagai kanal informasi resmi tambahan, bukan pengganti WhatsApp/Facebook. Website memungkinkan pengunjung melihat profil, berita dan dokumentasi kegiatan, serta jadwal ibadah tanpa login; Media Center memperbaruinya lewat dashboard yang mudah digunakan tanpa mengedit kode atau database secara manual **(D)**.
 
-**Visi produk (usulan Kelompok 13):** *Mewujudkan pusat informasi digital Jemaat Leihari yang mudah diakses, terpercaya, konsisten diperbarui, serta dapat dikelola secara mandiri dan berkelanjutan oleh Media Center jemaat.*
+**Visi produk (usulan Kelompok 13):** _Mewujudkan pusat informasi digital Jemaat Leahari yang mudah diakses, terpercaya, konsisten diperbarui, serta dapat dikelola secara mandiri dan berkelanjutan oleh Media Center jemaat._
 
-**Visi pengabdian/KKN (rumusan kerja yang perlu disahkan kelompok dan mitra):** *Tidak berhenti pada penyerahan website, melainkan melakukan alih pengetahuan, pelatihan admin, dan penyiapan tata kelola agar layanan informasi tetap berjalan setelah KKN berakhir.*
+**Visi pengabdian/KKN (rumusan kerja yang perlu disahkan kelompok dan mitra):** _Tidak berhenti pada penyerahan website, melainkan melakukan alih pengetahuan, pelatihan admin, dan penyiapan tata kelola agar layanan informasi tetap berjalan setelah KKN berakhir._
 
 ## 2. Dasar Masalah dan Bukti Kebutuhan
 
 ### 2.1 Temuan awal
 
-| ID | Temuan/indikasi | Dasar | Status |
-|---|---|---|---|
-| EV-01 | Informasi jemaat dibagikan melalui WhatsApp dan Facebook | Penuturan hasil wawancara dari tim KKN | T — perlu dicatat dalam berita acara/notulen |
-| EV-02 | Facebook tidak selalu diperbarui karena pengelolaan kurang aktif | Penuturan hasil wawancara dari tim KKN | T — perlu konfirmasi frekuensi dan penyebab |
-| EV-03 | Sebagian warga jemaat di luar wilayah kesulitan memperoleh informasi terkini | Penuturan hasil wawancara Ketua Majelis melalui tim | T — perlu contoh kasus atau verifikasi pengguna |
-| EV-04 | Jemaat memiliki Media Center yang dituju sebagai pengelola website | Penuturan tim KKN | T — perlu konfirmasi personel, akses, perangkat, dan kewenangan |
-| EV-05 | Pengunjung kemungkinan lebih sering menggunakan HP; sebagian membutuhkan antarmuka ramah lansia | Asumsi desain dari PRD v2.1 | D/K — validasi melalui observasi/tes pengguna |
+| ID    | Temuan/indikasi                                                                                 | Dasar                                               | Status                                                          |
+| ----- | ----------------------------------------------------------------------------------------------- | --------------------------------------------------- | --------------------------------------------------------------- |
+| EV-01 | Informasi jemaat dibagikan melalui WhatsApp dan Facebook                                        | Penuturan hasil wawancara dari tim KKN              | T — perlu dicatat dalam berita acara/notulen                    |
+| EV-02 | Facebook tidak selalu diperbarui karena pengelolaan kurang aktif                                | Penuturan hasil wawancara dari tim KKN              | T — perlu konfirmasi frekuensi dan penyebab                     |
+| EV-03 | Sebagian warga jemaat di luar wilayah kesulitan memperoleh informasi terkini                    | Penuturan hasil wawancara Ketua Majelis melalui tim | T — perlu contoh kasus atau verifikasi pengguna                 |
+| EV-04 | Jemaat memiliki Media Center yang dituju sebagai pengelola website                              | Penuturan tim KKN                                   | T — perlu konfirmasi personel, akses, perangkat, dan kewenangan |
+| EV-05 | Pengunjung kemungkinan lebih sering menggunakan HP; sebagian membutuhkan antarmuka ramah lansia | Asumsi desain dari PRD v2.1                         | D/K — validasi melalui observasi/tes pengguna                   |
 
 ### 2.2 Rumusan masalah
 
@@ -59,15 +61,15 @@ Kelompok 13 mengusulkan pengembangan **Website Informasi dan Publikasi Digital J
 
 ## 3. Pemangku Kepentingan dan Pengguna
 
-| Aktor | Kebutuhan | Keterlibatan/otoritas sementara |
-|---|---|---|
-| Ketua Majelis Jemaat / perwakilan yang ditunjuk | Kesesuaian informasi dengan kebijakan jemaat | Validasi kebutuhan dan keputusan publikasi; kewenangan final perlu ditetapkan |
-| Sekretaris Jemaat | Sumber profil, struktur, jadwal, berita, dan informasi resmi | Narasumber/penyedia data, belum otomatis administrator |
-| Media Center Jemaat | Pembaruan konten tanpa memprogram | **Calon operator/admin**; peran dan jumlah orang perlu konfirmasi |
-| Warga jemaat di wilayah maupun luar wilayah | Menemukan berita dan jadwal tanpa bergabung ke grup tertentu | Pengunjung tanpa login |
-| Masyarakat umum | Memperoleh informasi publik tentang Jemaat Leihari | Pengunjung tanpa login |
-| Kelompok 13 FILKOM UKIM | Perancangan, pengembangan, validasi, pengujian, pelatihan | Tim pelaksana selama masa KKN |
-| DPL/pihak kampus | Kesesuaian kegiatan dengan ketentuan KKN dan luaran | Supervisi akademik sesuai aturan UKIM |
+| Aktor                                           | Kebutuhan                                                    | Keterlibatan/otoritas sementara                                               |
+| ----------------------------------------------- | ------------------------------------------------------------ | ----------------------------------------------------------------------------- |
+| Ketua Majelis Jemaat / perwakilan yang ditunjuk | Kesesuaian informasi dengan kebijakan jemaat                 | Validasi kebutuhan dan keputusan publikasi; kewenangan final perlu ditetapkan |
+| Sekretaris Jemaat                               | Sumber profil, struktur, jadwal, berita, dan informasi resmi | Narasumber/penyedia data, belum otomatis administrator                        |
+| Media Center Jemaat                             | Pembaruan konten tanpa memprogram                            | **Calon operator/admin**; peran dan jumlah orang perlu konfirmasi             |
+| Warga jemaat di wilayah maupun luar wilayah     | Menemukan berita dan jadwal tanpa bergabung ke grup tertentu | Pengunjung tanpa login                                                        |
+| Masyarakat umum                                 | Memperoleh informasi publik tentang Jemaat Leahari           | Pengunjung tanpa login                                                        |
+| Kelompok 13 FILKOM UKIM                         | Perancangan, pengembangan, validasi, pengujian, pelatihan    | Tim pelaksana selama masa KKN                                                 |
+| DPL/pihak kampus                                | Kesesuaian kegiatan dengan ketentuan KKN dan luaran          | Supervisi akademik sesuai aturan UKIM                                         |
 
 **Catatan:** Persona yang lebih spesifik (misalnya lansia, warga di luar daerah, admin pemula) adalah hipotesis desain sampai diwawancarai atau diuji.
 
@@ -93,29 +95,29 @@ Kelompok 13 mengusulkan pengembangan **Website Informasi dan Publikasi Digital J
 
 ### 5.2 Fitur P0 — inti MVP
 
-| ID | Modul | Minimum yang diharapkan |
-|---|---|---|
-| FR-01 | Beranda | Nama/identitas jemaat, pengantar singkat, tautan Profil/Berita/Jadwal, berita terbaru, jadwal ibadah terdekat jika ada data terbit |
-| FR-02 | Profil Jemaat | Sejarah/deskripsi, alamat/kontak resmi, susunan Majelis yang sedang menjabat; foto pengurus opsional dan hanya jika berizin |
-| FR-03 | Berita & Kegiatan | Daftar dan detail berita/kegiatan, tanggal terbit, isi, foto utama opsional, beberapa foto kegiatan dalam artikel bila diperlukan, URL mudah dibagikan |
-| FR-04 | Jadwal Ibadah | Daftar jadwal, nama/jenis ibadah, tanggal, jam mulai, lokasi, keterangan opsional; jam selesai opsional |
-| FR-05 | Autentikasi Admin | Login/logout admin, tidak ada registrasi publik, otorisasi server-side |
-| FR-06 | Kelola Konten | Dashboard menambah, mengubah, melihat/pratinjau, menerbitkan, dan menarik/arsip berita; mengelola profil dan jadwal dengan formulir |
-| FR-07 | Kontrol Publikasi | Data yang belum diterbitkan tidak tampak publik; aksi terbit/arsip memakai konfirmasi dan pesan hasil yang jelas |
-| FR-08 | Unggah Media | Unggah foto resmi yang diperbolehkan, validasi tipe/ukuran, optimasi gambar, placeholder bila tidak ada foto |
-| FR-09 | Aksesibilitas dasar | Desain responsif HP/desktop, label form, fokus keyboard, keterbacaan dan navigasi konsisten |
-| FR-10 | Operasional dan Serah Terima | Backup/restore teruji, panduan admin, akun/pemilik operasional yang disepakati, pelatihan Media Center dan uji tugas |
+| ID    | Modul                        | Minimum yang diharapkan                                                                                                                                |
+| ----- | ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| FR-01 | Beranda                      | Nama/identitas jemaat, pengantar singkat, tautan Profil/Berita/Jadwal, berita terbaru, jadwal ibadah terdekat jika ada data terbit                     |
+| FR-02 | Profil Jemaat                | Sejarah/deskripsi, alamat/kontak resmi, susunan Majelis yang sedang menjabat; foto pengurus opsional dan hanya jika berizin                            |
+| FR-03 | Berita & Kegiatan            | Daftar dan detail berita/kegiatan, tanggal terbit, isi, foto utama opsional, beberapa foto kegiatan dalam artikel bila diperlukan, URL mudah dibagikan |
+| FR-04 | Jadwal Ibadah                | Daftar jadwal, nama/jenis ibadah, tanggal, jam mulai, lokasi, keterangan opsional; jam selesai opsional                                                |
+| FR-05 | Autentikasi Admin            | Login/logout admin, tidak ada registrasi publik, otorisasi server-side                                                                                 |
+| FR-06 | Kelola Konten                | Dashboard menambah, mengubah, melihat/pratinjau, menerbitkan, dan menarik/arsip berita; mengelola profil dan jadwal dengan formulir                    |
+| FR-07 | Kontrol Publikasi            | Data yang belum diterbitkan tidak tampak publik; aksi terbit/arsip memakai konfirmasi dan pesan hasil yang jelas                                       |
+| FR-08 | Unggah Media                 | Unggah foto resmi yang diperbolehkan, validasi tipe/ukuran, optimasi gambar, placeholder bila tidak ada foto                                           |
+| FR-09 | Aksesibilitas dasar          | Desain responsif HP/desktop, label form, fokus keyboard, keterbacaan dan navigasi konsisten                                                            |
+| FR-10 | Operasional dan Serah Terima | Backup/restore teruji, panduan admin, akun/pemilik operasional yang disepakati, pelatihan Media Center dan uji tugas                                   |
 
 ### 5.3 Fitur P1 — tergantung validasi dan kapasitas
 
-| ID | Fitur | Alasan status P1 |
-|---|---|---|
-| EN-01 | Riwayat/demisioner Majelis beserta periode dan bagan hierarki | Memerlukan struktur dan data historis resmi serta desain UI tambahan; menjadi P0 bila mitra menegaskan kebutuhan mendesak |
+| ID    | Fitur                                                          | Alasan status P1                                                                                                                        |
+| ----- | -------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| EN-01 | Riwayat/demisioner Majelis beserta periode dan bagan hierarki  | Memerlukan struktur dan data historis resmi serta desain UI tambahan; menjadi P0 bila mitra menegaskan kebutuhan mendesak               |
 | EN-02 | Statistik agregat jemaat (L/P/KK/sektor), snapshot dan riwayat | Tercantum di PRD v2.1 tetapi belum dikonfirmasi ulang sebagai prioritas wawancara KKN; memerlukan validasi dan kebijakan publikasi data |
-| EN-03 | Draft revisi terpisah dari versi publik untuk semua modul | Penting untuk integritas, tetapi kompleks; wajib dirancang dan diuji bila dipilih, tanpa mengubah publik secara diam-diam |
-| EN-04 | Master pelayan ibadah dan penugasan banyak pelayan | Memerlukan data/aturan penugasan resmi; untuk P0 nama pelayan dapat bersifat opsional bila diizinkan mitra |
-| EN-05 | Filter atau pencarian berita | Bermanfaat ketika volume konten bertambah |
-| EN-06 | Multi-admin dengan hak akses granular dan audit UI lengkap | Bergantung pada struktur dan jumlah operator; audit aksi kritis tetap direkomendasikan pada P0 |
+| EN-03 | Draft revisi terpisah dari versi publik untuk semua modul      | Penting untuk integritas, tetapi kompleks; wajib dirancang dan diuji bila dipilih, tanpa mengubah publik secara diam-diam               |
+| EN-04 | Master pelayan ibadah dan penugasan banyak pelayan             | Memerlukan data/aturan penugasan resmi; untuk P0 nama pelayan dapat bersifat opsional bila diizinkan mitra                              |
+| EN-05 | Filter atau pencarian berita                                   | Bermanfaat ketika volume konten bertambah                                                                                               |
+| EN-06 | Multi-admin dengan hak akses granular dan audit UI lengkap     | Bergantung pada struktur dan jumlah operator; audit aksi kritis tetap direkomendasikan pada P0                                          |
 
 ### 5.4 Di luar lingkup KKN awal (P2)
 
@@ -167,7 +169,7 @@ Setiap permintaan tambahan harus dicatat dengan: pemohon, kebutuhan, alasan, pri
 
 - Ukuran dasar teks sekitar 16–18 px dan kontras diuji; tombol utama mudah disentuh dan mempunyai label tekstual.
 - Seluruh halaman penting diuji setidaknya di lebar 320, 360, 390, 430, 768, dan 1440 px; tanpa horizontal overflow tak disengaja.
-- Desain mempertahankan arah identitas awal **ungu #663F72, emas #D8BD72, putih #FFFFFF** sebagai *usulan visual PRD v2.1*, yang harus disetujui pihak jemaat; kombinasi tetap wajib memenuhi kontras.
+- Desain mempertahankan arah identitas awal **ungu #663F72, emas #D8BD72, putih #FFFFFF** sebagai _usulan visual PRD v2.1_, yang harus disetujui pihak jemaat; kombinasi tetap wajib memenuhi kontras.
 - **Terima jika:** tugas mencari jadwal, membaca berita, dan menerbitkan berita dapat dilakukan di perangkat yang ditentukan tanpa elemen rusak.
 
 ### FR-10 — Pelatihan dan serah terima
@@ -203,18 +205,18 @@ Model ini adalah **usulan**, bukan penetapan jabatan personel.
 
 ## 8. Kebutuhan Non-Fungsional
 
-| ID | Aspek | Kebutuhan / cara verifikasi |
-|---|---|---|
-| NFR-01 | Keamanan | HTTPS produksi; hashing password; proteksi CSRF; validasi input; otorisasi server-side; pembatasan percobaan login |
-| NFR-02 | Privasi | Hanya informasi resmi berizin; kontak personal dan data individu bukan konten publik otomatis |
-| NFR-03 | Kinerja | Optimasi gambar dan pagination untuk daftar; target waktu akses ditetapkan setelah pengukuran pada hosting/jaringan mitra |
-| NFR-04 | Responsivitas | Uji viewport dan perangkat nyata bila tersedia, tanpa konten terpotong |
-| NFR-05 | Aksesibilitas | Target WCAG 2.2 AA untuk komponen inti, perlu diuji; bukan klaim lulus otomatis |
-| NFR-06 | Keandalan | Validasi transaksi publikasi, penanganan error, log kesalahan tanpa data sensitif |
-| NFR-07 | Pemulihan | Backup database dan unggahan; latihan restore dan dokumentasi sebelum produksi |
-| NFR-08 | Pemeliharaan | Kode terstruktur, Git, migrations, petunjuk setup, dan kepemilikan akun/hosting jelas |
-| NFR-09 | Kesesuaian | Website publik tersedia tanpa login; halaman/admin privat tidak terindeks atau terbaca secara tidak sah |
-| NFR-10 | Usability | Operator mitra menyelesaikan tugas UAT yang disepakati tanpa bergantung pada pengembang |
+| ID     | Aspek         | Kebutuhan / cara verifikasi                                                                                               |
+| ------ | ------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| NFR-01 | Keamanan      | HTTPS produksi; hashing password; proteksi CSRF; validasi input; otorisasi server-side; pembatasan percobaan login        |
+| NFR-02 | Privasi       | Hanya informasi resmi berizin; kontak personal dan data individu bukan konten publik otomatis                             |
+| NFR-03 | Kinerja       | Optimasi gambar dan pagination untuk daftar; target waktu akses ditetapkan setelah pengukuran pada hosting/jaringan mitra |
+| NFR-04 | Responsivitas | Uji viewport dan perangkat nyata bila tersedia, tanpa konten terpotong                                                    |
+| NFR-05 | Aksesibilitas | Target WCAG 2.2 AA untuk komponen inti, perlu diuji; bukan klaim lulus otomatis                                           |
+| NFR-06 | Keandalan     | Validasi transaksi publikasi, penanganan error, log kesalahan tanpa data sensitif                                         |
+| NFR-07 | Pemulihan     | Backup database dan unggahan; latihan restore dan dokumentasi sebelum produksi                                            |
+| NFR-08 | Pemeliharaan  | Kode terstruktur, Git, migrations, petunjuk setup, dan kepemilikan akun/hosting jelas                                     |
+| NFR-09 | Kesesuaian    | Website publik tersedia tanpa login; halaman/admin privat tidak terindeks atau terbaca secara tidak sah                   |
+| NFR-10 | Usability     | Operator mitra menyelesaikan tugas UAT yang disepakati tanpa bergantung pada pengembang                                   |
 
 ## 9. Rancangan Informasi, Halaman, dan UI
 
@@ -238,20 +240,20 @@ Route final mengikuti rancangan CodeIgniter 4 setelah keputusan teknis, bukan me
 
 ### 9.3 Daftar template layar minimum untuk wireframe dan prototype
 
-| ID | Layar | Desktop | Mobile | Kondisi yang wajib diperlihatkan |
-|---|---|---|---|---|
-| UI-01 | Beranda | Ya | Ya | Konten ada dan kosong |
-| UI-02 | Profil Jemaat | Ya | Ya | Foto tersedia/tidak tersedia |
-| UI-03 | Daftar berita | Ya | Ya | Banyak berita, kosong |
-| UI-04 | Detail berita | Ya | Ya | Artikel panjang, beberapa foto |
-| UI-05 | Jadwal ibadah | Ya | Ya | Jadwal mendatang, tanggal/jam panjang |
-| UI-06 | Login admin | Ya | Ya | Login salah/berhasil |
-| UI-07 | Dashboard admin | Ya | Ya | Ringkasan dan navigasi |
-| UI-08 | Daftar kelola berita | Ya | Ya | Draft/terbit/arsip |
-| UI-09 | Form berita | Ya | Ya | Error validasi, upload, pratinjau |
-| UI-10 | Kelola jadwal | Ya | Ya | Tambah/edit, validasi waktu |
-| UI-11 | Kelola profil | Ya | Ya | Edit informasi dan pengurus |
-| UI-12 | Konfirmasi & status | Ya | Ya | Sukses/gagal/arsip/publikasi |
+| ID    | Layar                | Desktop | Mobile | Kondisi yang wajib diperlihatkan      |
+| ----- | -------------------- | ------- | ------ | ------------------------------------- |
+| UI-01 | Beranda              | Ya      | Ya     | Konten ada dan kosong                 |
+| UI-02 | Profil Jemaat        | Ya      | Ya     | Foto tersedia/tidak tersedia          |
+| UI-03 | Daftar berita        | Ya      | Ya     | Banyak berita, kosong                 |
+| UI-04 | Detail berita        | Ya      | Ya     | Artikel panjang, beberapa foto        |
+| UI-05 | Jadwal ibadah        | Ya      | Ya     | Jadwal mendatang, tanggal/jam panjang |
+| UI-06 | Login admin          | Ya      | Ya     | Login salah/berhasil                  |
+| UI-07 | Dashboard admin      | Ya      | Ya     | Ringkasan dan navigasi                |
+| UI-08 | Daftar kelola berita | Ya      | Ya     | Draft/terbit/arsip                    |
+| UI-09 | Form berita          | Ya      | Ya     | Error validasi, upload, pratinjau     |
+| UI-10 | Kelola jadwal        | Ya      | Ya     | Tambah/edit, validasi waktu           |
+| UI-11 | Kelola profil        | Ya      | Ya     | Edit informasi dan pengurus           |
+| UI-12 | Konfirmasi & status  | Ya      | Ya     | Sukses/gagal/arsip/publikasi          |
 
 **Artefak UI:** information architecture, sitemap, low-fidelity wireframe, mini design system (warna, font, tombol, form, card, status), mockup high-fidelity, prototype alur utama, evaluasi bersama Media Center.
 
@@ -261,7 +263,7 @@ Route final mengikuti rancangan CodeIgniter 4 setelah keputusan teknis, bukan me
 
 Browser pengunjung/admin → server web HTTPS → **CodeIgniter 4 (MVC)** → **MySQL** untuk data terstruktur dan storage untuk file media. Bootstrap membantu antarmuka responsif. Gunakan version control Git, environments terpisah, dan migrations untuk perubahan skema.
 
-**Keputusan bersyarat:** PRD v2.1 menyebut *repository Laravel + Livewire/Flux UI + SQLite lokal*. Jika proyek Laravel tersebut nyata dan telah berisi fungsionalitas yang signifikan, lakukan inventarisasi/audit sebelum keputusan pindah stack; **jangan melakukan migrasi otomatis atau menghapus kode/database**.
+**Keputusan bersyarat:** PRD v2.1 menyebut _repository Laravel + Livewire/Flux UI + SQLite lokal_. Jika proyek Laravel tersebut nyata dan telah berisi fungsionalitas yang signifikan, lakukan inventarisasi/audit sebelum keputusan pindah stack; **jangan melakukan migrasi otomatis atau menghapus kode/database**.
 
 ### 10.2 Entitas kandidat P0
 
@@ -291,32 +293,32 @@ Browser pengunjung/admin → server web HTTPS → **CodeIgniter 4 (MVC)** → **
 
 ## 11. Rencana Artefak Perancangan
 
-| Urut | Dokumen/artefak | Tujuan |
-|---|---|---|
-| 1 | Catatan wawancara dan keputusan kebutuhan | Menjaga bukti masalah nyata |
-| 2 | PRD tervalidasi | Menetapkan apa dan mengapa |
-| 3 | SRS ringan + daftar kebutuhan ID FR/NFR | Merinci fungsi dan kondisi penerimaan |
-| 4 | Use Case Diagram dan deskripsi use case kritis | Memetakan aktor dan tugas |
-| 5 | User Flow / Activity Diagram | Memetakan langkah dan cabang kegagalan |
-| 6 | Sitemap & information architecture | Menentukan hierarki halaman |
-| 7 | Arsitektur sistem + matriks role/permission | Menetapkan batas subsistem dan akses |
-| 8 | ERD + skema + data dictionary | Menentukan struktur penyimpanan |
-| 9 | Wireframe → mockup → prototype | Menguji rancangan UI sebelum coding |
-| 10 | Test case / UAT / hasil pengujian | Membuktikan kebutuhan terpenuhi |
-| 11 | Panduan admin, deployment, backup dan handover | Menjamin keberlanjutan |
+| Urut | Dokumen/artefak                                | Tujuan                                 |
+| ---- | ---------------------------------------------- | -------------------------------------- |
+| 1    | Catatan wawancara dan keputusan kebutuhan      | Menjaga bukti masalah nyata            |
+| 2    | PRD tervalidasi                                | Menetapkan apa dan mengapa             |
+| 3    | SRS ringan + daftar kebutuhan ID FR/NFR        | Merinci fungsi dan kondisi penerimaan  |
+| 4    | Use Case Diagram dan deskripsi use case kritis | Memetakan aktor dan tugas              |
+| 5    | User Flow / Activity Diagram                   | Memetakan langkah dan cabang kegagalan |
+| 6    | Sitemap & information architecture             | Menentukan hierarki halaman            |
+| 7    | Arsitektur sistem + matriks role/permission    | Menetapkan batas subsistem dan akses   |
+| 8    | ERD + skema + data dictionary                  | Menentukan struktur penyimpanan        |
+| 9    | Wireframe → mockup → prototype                 | Menguji rancangan UI sebelum coding    |
+| 10   | Test case / UAT / hasil pengujian              | Membuktikan kebutuhan terpenuhi        |
+| 11   | Panduan admin, deployment, backup dan handover | Menjamin keberlanjutan                 |
 
 **Prinsip traceability:** setiap kebutuhan FR mempunyai minimal satu layar/alur dan satu test case yang dapat memverifikasi implementasinya.
 
 ## 12. Rencana Pelaksanaan dan Urutan Pengembangan
 
-| Fase | Fokus | Kriteria keluar |
-|---|---|---|
-| 0 — Validasi kebutuhan | Kumpulkan data resmi; konfirmasi lingkup dan operator | PRD disetujui pihak yang berwenang |
-| 1 — Desain | Use case, flow, ERD, sitemap, wireframe, prototype | Desain inti ditinjau tim dan Media Center |
-| 2 — Fondasi | CodeIgniter 4, database, auth/admin, UI Bootstrap | Login aman, CRUD dasar dan migration diuji |
-| 3 — Konten P0 | Profil, berita/kegiatan, jadwal, beranda | Semua alur P0 berjalan dengan data dummy |
-| 4 — Integrasi & QA | Uji keamanan, responsivitas, fungsional, backup/restore | Tidak ada bug kritis; UAT siap |
-| 5 — Pelatihan & serah terima | Masukkan data resmi terverifikasi, pelatihan, panduan | Media Center dapat mengelola konten; dokumen dan akses diserahkan sesuai tata kelola |
+| Fase                         | Fokus                                                   | Kriteria keluar                                                                      |
+| ---------------------------- | ------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| 0 — Validasi kebutuhan       | Kumpulkan data resmi; konfirmasi lingkup dan operator   | PRD disetujui pihak yang berwenang                                                   |
+| 1 — Desain                   | Use case, flow, ERD, sitemap, wireframe, prototype      | Desain inti ditinjau tim dan Media Center                                            |
+| 2 — Fondasi                  | CodeIgniter 4, database, auth/admin, UI Bootstrap       | Login aman, CRUD dasar dan migration diuji                                           |
+| 3 — Konten P0                | Profil, berita/kegiatan, jadwal, beranda                | Semua alur P0 berjalan dengan data dummy                                             |
+| 4 — Integrasi & QA           | Uji keamanan, responsivitas, fungsional, backup/restore | Tidak ada bug kritis; UAT siap                                                       |
+| 5 — Pelatihan & serah terima | Masukkan data resmi terverifikasi, pelatihan, panduan   | Media Center dapat mengelola konten; dokumen dan akses diserahkan sesuai tata kelola |
 
 **Rujukan jadwal akademik:** Template Proposal KKNT FILKOM 2026 menyebut tahap kerja kampus **29 Oktober–8 November 2026** dan tahap lapangan II **9–12 November 2026**. Tanggal tersebut dipakai sebagai referensi awal penyusunan jadwal, **bukan jaminan semua kegiatan Kelompok 13 sudah disahkan untuk tanggal itu**. Penjadwalan terperinci harus dikonfirmasi dengan DPL/mitra.
 
@@ -324,18 +326,18 @@ Browser pengunjung/admin → server web HTTPS → **CodeIgniter 4 (MVC)** → **
 
 ### 13.1 Test case minimum
 
-| ID | Skenario | Hasil yang diterima |
-|---|---|---|
-| TC-01 | Pengunjung membuka website di HP | Menu, beranda, berita, jadwal dapat dibaca tanpa login |
-| TC-02 | Pengunjung mencoba URL admin tanpa login | Ditolak/diarahkan ke login tanpa membocorkan konten |
-| TC-03 | Admin menambah berita dengan foto | Draft tersimpan; publik hanya melihat ketika telah diterbitkan |
-| TC-04 | Admin mengunggah file tidak diizinkan | Ditolak dengan pesan aman dan jelas |
-| TC-05 | Admin mengarsipkan berita | Konten tidak terbaca dari URL publik lama; internal tetap sesuai kebijakan |
-| TC-06 | Admin menambah jadwal tanpa jam selesai | Jadwal dapat diterbitkan dan hanya jam mulai ditampilkan |
-| TC-07 | Admin memasukkan input tidak valid | Validasi jelas; tidak ada perubahan publik yang keliru |
-| TC-08 | HP 320–430 px membuka artikel panjang | Tidak ada overflow horizontal tak disengaja |
-| TC-09 | Database/file dipulihkan dari backup uji | Data dan gambar kunci dapat diakses lagi di lingkungan uji |
-| TC-10 | Operator Media Center menjalankan tugas UAT | Dapat mengubah berita/jadwal tanpa mengedit kode atau database |
+| ID    | Skenario                                    | Hasil yang diterima                                                        |
+| ----- | ------------------------------------------- | -------------------------------------------------------------------------- |
+| TC-01 | Pengunjung membuka website di HP            | Menu, beranda, berita, jadwal dapat dibaca tanpa login                     |
+| TC-02 | Pengunjung mencoba URL admin tanpa login    | Ditolak/diarahkan ke login tanpa membocorkan konten                        |
+| TC-03 | Admin menambah berita dengan foto           | Draft tersimpan; publik hanya melihat ketika telah diterbitkan             |
+| TC-04 | Admin mengunggah file tidak diizinkan       | Ditolak dengan pesan aman dan jelas                                        |
+| TC-05 | Admin mengarsipkan berita                   | Konten tidak terbaca dari URL publik lama; internal tetap sesuai kebijakan |
+| TC-06 | Admin menambah jadwal tanpa jam selesai     | Jadwal dapat diterbitkan dan hanya jam mulai ditampilkan                   |
+| TC-07 | Admin memasukkan input tidak valid          | Validasi jelas; tidak ada perubahan publik yang keliru                     |
+| TC-08 | HP 320–430 px membuka artikel panjang       | Tidak ada overflow horizontal tak disengaja                                |
+| TC-09 | Database/file dipulihkan dari backup uji    | Data dan gambar kunci dapat diakses lagi di lingkungan uji                 |
+| TC-10 | Operator Media Center menjalankan tugas UAT | Dapat mengubah berita/jadwal tanpa mengedit kode atau database             |
 
 ### 13.2 Definition of Done untuk fitur
 
@@ -361,24 +363,24 @@ Selesai hanya jika: memenuhi FR terkait; diuji untuk jalur normal dan gagal; ama
 
 ## 15. Risiko dan Mitigasi
 
-| Risiko | Dampak | Mitigasi |
-|---|---|---|
-| Lingkup meluas karena modul historis/statistik kompleks | Target KKN tidak selesai | Tetapkan P0/P1/P2, perubahan tertulis |
-| Salah memilih stack tanpa audit aset | Pekerjaan ulang dan kehilangan fitur | Inventaris repo Laravel lama, putuskan CI4/MySQL/Bootstrap secara sadar |
-| Data/foto resmi terlambat diserahkan | Website kosong saat UAT | Minta sejak awal, pakai dummy berlabel sampai validasi |
-| Media Center tetap bergantung pada mahasiswa | Website tidak diperbarui | Latihan berbasis tugas, panduan, admin cadangan, handover |
-| Koneksi HP lambat | Informasi sulit diakses | Optimasi gambar dan ukuran halaman |
-| Berita/jadwal tidak diverifikasi | Informasi publik keliru | Tetapkan alur penyetujuan konten di luar/di dalam sistem |
-| Akun/admin disalahgunakan | Konten tidak sah/kebocoran | Hak akses minimum, autentikasi, audit, prosedur reset |
-| Website berjalan tetapi hosting kedaluwarsa | Layanan berhenti | Konfirmasi domain, hosting, biaya, penanggung jawab |
-| Data hilang saat deployment/perubahan | Kehilangan informasi | Backup, uji restore, migration non-destruktif dan staging |
-| Tidak tersedia data statistik/riwayat lengkap | Fitur P1 tidak akurat | Jadikan P1 sampai tersedia data dan persetujuan |
+| Risiko                                                  | Dampak                               | Mitigasi                                                                |
+| ------------------------------------------------------- | ------------------------------------ | ----------------------------------------------------------------------- |
+| Lingkup meluas karena modul historis/statistik kompleks | Target KKN tidak selesai             | Tetapkan P0/P1/P2, perubahan tertulis                                   |
+| Salah memilih stack tanpa audit aset                    | Pekerjaan ulang dan kehilangan fitur | Inventaris repo Laravel lama, putuskan CI4/MySQL/Bootstrap secara sadar |
+| Data/foto resmi terlambat diserahkan                    | Website kosong saat UAT              | Minta sejak awal, pakai dummy berlabel sampai validasi                  |
+| Media Center tetap bergantung pada mahasiswa            | Website tidak diperbarui             | Latihan berbasis tugas, panduan, admin cadangan, handover               |
+| Koneksi HP lambat                                       | Informasi sulit diakses              | Optimasi gambar dan ukuran halaman                                      |
+| Berita/jadwal tidak diverifikasi                        | Informasi publik keliru              | Tetapkan alur penyetujuan konten di luar/di dalam sistem                |
+| Akun/admin disalahgunakan                               | Konten tidak sah/kebocoran           | Hak akses minimum, autentikasi, audit, prosedur reset                   |
+| Website berjalan tetapi hosting kedaluwarsa             | Layanan berhenti                     | Konfirmasi domain, hosting, biaya, penanggung jawab                     |
+| Data hilang saat deployment/perubahan                   | Kehilangan informasi                 | Backup, uji restore, migration non-destruktif dan staging               |
+| Tidak tersedia data statistik/riwayat lengkap           | Fitur P1 tidak akurat                | Jadikan P1 sampai tersedia data dan persetujuan                         |
 
 ## 16. Luaran KKN dan Keberlanjutan
 
 ### 16.1 Luaran teknis
 
-1. Website publik Jemaat Leihari sesuai fitur P0 yang disetujui.
+1. Website publik Jemaat Leahari sesuai fitur P0 yang disetujui.
 2. Dashboard admin untuk Media Center.
 3. Kode sumber dan skema database/migration yang terdokumentasi.
 4. Desain perancangan (use case, flow, ERD, sitemap, wireframe/prototype), hasil pengujian, serta panduan deployment/backup.
@@ -409,31 +411,31 @@ Dokumentasikan permasalahan dan hasil wawancara, perencanaan kegiatan, pelaksana
 
 ### 17.2 Keputusan terbuka (dengan pemilik keputusan)
 
-| ID | Keputusan | Usulan pemilik keputusan |
-|---|---|---|
-| DEC-01 | Konfirmasi kebutuhan P0/P1 dan cakupan riwayat Majelis/statistik | Majelis + Kelompok 13 |
-| DEC-02 | Pilih stack final: CI4/MySQL/Bootstrap atau kelanjutan Laravel setelah audit | Kelompok 13 + DPL |
-| DEC-03 | Nama personel Media Center, admin utama/cadangan, kebutuhan perangkat | Media Center + Majelis |
-| DEC-04 | Sumber informasi resmi dan siapa yang menyetujui konten | Sekretariat + Majelis |
-| DEC-05 | Apakah edit konten terbit harus memakai draft revisi terisolasi pada rilis awal | Media Center + Kelompok 13 |
-| DEC-06 | Apakah nama pelayan/pemimpin pada jadwal wajib dan siapa sumbernya | Sekretariat + Media Center |
-| DEC-07 | Domain, hosting, biaya tahunan, teknis pemeliharaan | Majelis + Kelompok 13 |
-| DEC-08 | Aturan izin foto, kontak, retensi dan koreksi data | Majelis + Media Center |
-| DEC-09 | Desain identitas visual, logo, palet, dan label menu | Media Center + Majelis |
-| DEC-10 | Tanggal pelatihan, peserta UAT, kriteria lulus dan serah terima | Kelompok 13 + Media Center + DPL |
+| ID     | Keputusan                                                                       | Usulan pemilik keputusan         |
+| ------ | ------------------------------------------------------------------------------- | -------------------------------- |
+| DEC-01 | Konfirmasi kebutuhan P0/P1 dan cakupan riwayat Majelis/statistik                | Majelis + Kelompok 13            |
+| DEC-02 | Pilih stack final: CI4/MySQL/Bootstrap atau kelanjutan Laravel setelah audit    | Kelompok 13 + DPL                |
+| DEC-03 | Nama personel Media Center, admin utama/cadangan, kebutuhan perangkat           | Media Center + Majelis           |
+| DEC-04 | Sumber informasi resmi dan siapa yang menyetujui konten                         | Sekretariat + Majelis            |
+| DEC-05 | Apakah edit konten terbit harus memakai draft revisi terisolasi pada rilis awal | Media Center + Kelompok 13       |
+| DEC-06 | Apakah nama pelayan/pemimpin pada jadwal wajib dan siapa sumbernya              | Sekretariat + Media Center       |
+| DEC-07 | Domain, hosting, biaya tahunan, teknis pemeliharaan                             | Majelis + Kelompok 13            |
+| DEC-08 | Aturan izin foto, kontak, retensi dan koreksi data                              | Majelis + Media Center           |
+| DEC-09 | Desain identitas visual, logo, palet, dan label menu                            | Media Center + Majelis           |
+| DEC-10 | Tanggal pelatihan, peserta UAT, kriteria lulus dan serah terima                 | Kelompok 13 + Media Center + DPL |
 
 ## 18. Matriks Keterlacakan Awal
 
-| Requirement | Alur / layar utama | Data kandidat | Test |
-|---|---|---|---|
-| FR-01 | UI-01 | posts, service_schedules, site_profiles | TC-01 |
-| FR-02 | UI-02, UI-11 | site_profiles, majelis_members | TC-01, TC-07 |
-| FR-03 | UI-03, UI-04, UI-08, UI-09 | posts, media_files | TC-03, TC-04, TC-05, TC-08 |
-| FR-04 | UI-05, UI-10 | service_schedules | TC-06, TC-07 |
-| FR-05–FR-07 | UI-06 s.d. UI-12 | users, roles, audit_logs | TC-02, TC-03, TC-05 |
-| FR-08 | UI-09 | media_files | TC-04 |
-| FR-09 | UI-01 s.d. UI-12 | — | TC-01, TC-08 |
-| FR-10 | Alur pelatihan/handover | backup dan dokumentasi | TC-09, TC-10 |
+| Requirement | Alur / layar utama         | Data kandidat                           | Test                       |
+| ----------- | -------------------------- | --------------------------------------- | -------------------------- |
+| FR-01       | UI-01                      | posts, service_schedules, site_profiles | TC-01                      |
+| FR-02       | UI-02, UI-11               | site_profiles, majelis_members          | TC-01, TC-07               |
+| FR-03       | UI-03, UI-04, UI-08, UI-09 | posts, media_files                      | TC-03, TC-04, TC-05, TC-08 |
+| FR-04       | UI-05, UI-10               | service_schedules                       | TC-06, TC-07               |
+| FR-05–FR-07 | UI-06 s.d. UI-12           | users, roles, audit_logs                | TC-02, TC-03, TC-05        |
+| FR-08       | UI-09                      | media_files                             | TC-04                      |
+| FR-09       | UI-01 s.d. UI-12           | —                                       | TC-01, TC-08               |
+| FR-10       | Alur pelatihan/handover    | backup dan dokumentasi                  | TC-09, TC-10               |
 
 ## 19. Kriteria Persetujuan PRD
 
@@ -450,16 +452,16 @@ Dokumen dapat dinaikkan dari **Draft** menjadi **Baseline Disetujui** setelah:
 
 ## Lampiran A — Perubahan Utama dari PRD v2.1
 
-| Area | PRD v2.1 | Draft v3.0 |
-|---|---|---|
-| Sasaran proyek | Aplikasi Leihari dengan developer tunggal | Program kerja **KKN Tematik Kelompok 13** bersama mitra |
-| Teknologi | Laravel + Livewire/Flux + Blade/Tailwind + SQLite lokal | **CI4 + MySQL + Bootstrap sebagai usulan**, dengan audit aset Laravel lama lebih dulu |
-| Dasar masalah | Terutama kanal Facebook dan kebutuhan pusat informasi | Memasukkan wawancara awal: **WhatsApp, Facebook, kendala pembaruan, warga di luar wilayah** |
-| Keberhasilan | Kualitas teknis dan kelengkapan modul | Kualitas teknis **serta pelatihan, kemampuan admin, serah terima, keberlanjutan** |
-| Keluasan MVP | Periode/riwayat Majelis, statistik historis, versioning kompleks semuanya di MVP | **P0/P1/P2 diusulkan**, fitur historis/kompleks menunggu validasi mitra |
-| Operasional | Admin umum | **Media Center** sebagai calon pengelola dengan tata kelola jelas |
-| Galeri | Foto di artikel; bukan modul mandiri | **Dipertahankan** |
-| Validitas data | Tidak mengarang data resmi | Dipertahankan dan diperjelas dengan register bukti serta keputusan |
+| Area           | PRD v2.1                                                                         | Draft v3.0                                                                                  |
+| -------------- | -------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| Sasaran proyek | Aplikasi Leahari dengan developer tunggal                                        | Program kerja **KKN Tematik Kelompok 13** bersama mitra                                     |
+| Teknologi      | Laravel + Livewire/Flux + Blade/Tailwind + SQLite lokal                          | **CI4 + MySQL + Bootstrap sebagai usulan**, dengan audit aset Laravel lama lebih dulu       |
+| Dasar masalah  | Terutama kanal Facebook dan kebutuhan pusat informasi                            | Memasukkan wawancara awal: **WhatsApp, Facebook, kendala pembaruan, warga di luar wilayah** |
+| Keberhasilan   | Kualitas teknis dan kelengkapan modul                                            | Kualitas teknis **serta pelatihan, kemampuan admin, serah terima, keberlanjutan**           |
+| Keluasan MVP   | Periode/riwayat Majelis, statistik historis, versioning kompleks semuanya di MVP | **P0/P1/P2 diusulkan**, fitur historis/kompleks menunggu validasi mitra                     |
+| Operasional    | Admin umum                                                                       | **Media Center** sebagai calon pengelola dengan tata kelola jelas                           |
+| Galeri         | Foto di artikel; bukan modul mandiri                                             | **Dipertahankan**                                                                           |
+| Validitas data | Tidak mengarang data resmi                                                       | Dipertahankan dan diperjelas dengan register bukti serta keputusan                          |
 
 ## Lampiran B — Prinsip Membaca Draft Ini
 

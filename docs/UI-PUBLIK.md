@@ -1,4 +1,4 @@
-# Fondasi UI publik Jemaat Leihari
+# Fondasi UI publik Jemaat Leahari
 
 Implementasi berdasarkan `docs/PRD.md` (draft), dengan lingkup mengikuti permintaan empat halaman publik. Framework bawaan terverifikasi CodeIgniter **4.7.5**. Menggunakan PHP Views dan Bootstrap **5.3.8** lokal; tanpa database, admin, login, atau build frontend.
 
@@ -36,17 +36,17 @@ Skill: `.agents/skills/design-taste-frontend/SKILL.md`.
 Direction: **Type and nothing else**, seed **250235948**; tidak ada redraw.
 Palet dipertahankan dari brief: ungu `#663F72`, emas `#D8BD72`, putih. Georgia untuk judul dan Arial untuk teks, tanpa permintaan font eksternal. Teks utama 18px, permukaan datar, tanpa gradient/glass/kartu dekoratif.
 
-Inventaris yang dapat digunakan dengan jujur: nama Jemaat Leihari, konteks Maluku, Bahasa Indonesia, empat tujuan navigasi, kebutuhan berita dan jadwal, zona WIT, pembaca semua usia, palet usulan, serta status data belum disahkan. Tidak ada foto, logo, nama pengurus, sejarah, atau kontak resmi di aset proyek. Tidak mengarang makna nama, tahun berdiri, statistik, atau identitas personel untuk melengkapi konsep.
+Inventaris yang dapat digunakan dengan jujur: nama Jemaat Leahari, konteks Maluku, Bahasa Indonesia, empat tujuan navigasi, kebutuhan berita dan jadwal, zona WIT, pembaca semua usia, palet usulan, serta status data belum disahkan. Tidak ada foto, logo, nama pengurus, sejarah, atau kontak resmi di aset proyek. Tidak mengarang makna nama, tahun berdiri, statistik, atau identitas personel untuk melengkapi konsep.
 
-Ide: **Nama Jemaat Leihari menjadi masthead warta digital yang mempertemukan berita dan jadwal dalam satu ritme baca.** Kekhasan konsep masih terbatas karena identitas visual dan materi resmi belum tersedia.
+Ide: **Nama Jemaat Leahari menjadi masthead warta digital yang mempertemukan berita dan jadwal dalam satu ritme baca.** Kekhasan konsep masih terbatas karena identitas visual dan materi resmi belum tersedia.
 
 Argumentasi: pengunjung mengenali tujuan situs melalui judul dan pengantar; menemukan berita lewat daftar ringkasan; melihat contoh waktu ibadah dalam blok jadwal; mengenal struktur profil lewat tautan yang jelas. Halaman turunan menyediakan isi masing-masing tanpa memerlukan akun.
 
-Copy deck sebelum markup: “Jemaat Leihari” / “Ruang informasi jemaat di Maluku untuk mengikuti berita, mengenal jemaat, dan menemukan jadwal ibadah.” / “Lihat jadwal ibadah”; bagian lanjutan “Berita jemaat”, “Jadwal ibadah”, “Mengenal jemaat”. Judul halaman turunan “Profil jemaat”, “Berita jemaat”, “Jadwal ibadah”. Semua berita dan jadwal diberi label dummy.
+Copy deck sebelum markup: “Jemaat Leahari” / “Ruang informasi jemaat di Maluku untuk mengikuti berita, mengenal jemaat, dan menemukan jadwal ibadah.” / “Lihat jadwal ibadah”; bagian lanjutan “Berita jemaat”, “Jadwal ibadah”, “Mengenal jemaat”. Judul halaman turunan “Profil jemaat”, “Berita jemaat”, “Jadwal ibadah”. Semua berita dan jadwal diberi label dummy.
 
 Live thing: filter jenis ibadah, status jumlah hasil, seluruh jadwal tersedia tanpa JavaScript. Navigasi mobile juga memiliki fallback `noscript`.
 
-Penyesuaian skill terhadap brief: navbar tetap dibuat karena diminta; tidak memakai scroll scene, entrance berulang, atau video otomatis agar akses informasi tenang dan hemat. Inspector dijalankan dengan `--allow palette-purple,still-page`: warna berasal dari brief dan gerak dibatasi pada umpan balik tombol. Tidak ada foto stok/gambar generated, gambar pengganti, video, atau aset yang memerlukan kredit. Pencarian `assets.mjs "Leihari Maluku"` tidak menemukan aset yang dapat digunakan. **Kebutuhan skill minimal empat foto belum terpenuhi**, tetap dilaporkan sebagai FAIL, bukan disembunyikan.
+Penyesuaian skill terhadap brief: navbar tetap dibuat karena diminta; tidak memakai scroll scene, entrance berulang, atau video otomatis agar akses informasi tenang dan hemat. Inspector dijalankan dengan `--allow palette-purple,still-page`: warna berasal dari brief dan gerak dibatasi pada umpan balik tombol. Tidak ada foto stok/gambar generated, gambar pengganti, video, atau aset yang memerlukan kredit. Pencarian `assets.mjs "Leahari Maluku"` tidak menemukan aset yang dapat digunakan. **Kebutuhan skill minimal empat foto belum terpenuhi**, tetap dilaporkan sebagai FAIL, bukan disembunyikan.
 
 ## Hasil validasi yang telah dijalankan
 
@@ -61,7 +61,7 @@ Penyesuaian skill terhadap brief: navbar tetap dibuat karena diminta; tidak mema
 ## Kritik visual terakhir
 
 ROUND 2
-Seen in one second: nama Jemaat Leihari pada bidang ungu.
+Seen in one second: nama Jemaat Leahari pada bidang ungu.
 Idea (one sentence): nama jemaat menjadi masthead warta digital untuk berita dan jadwal.
 Live thing: filter jenis ibadah dengan fallback daftar lengkap.
 Layout words by section: hero=type field / berita=editorial rows / jadwal=split / profil=wide paragraph / footer=masthead.

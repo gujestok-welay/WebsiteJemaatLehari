@@ -1,6 +1,6 @@
 <header class="site-header">
     <nav class="navbar navbar-expand-md container-fluid site-frame" aria-label="Navigasi utama">
-        <a class="navbar-brand" href="<?= site_url('/') ?>">Jemaat Leihari<span>Maluku</span></a>
+        <a class="navbar-brand" href="<?= site_url('/') ?>">Jemaat Leahari<span>Maluku</span></a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navigasi" aria-controls="navigasi" aria-expanded="false" aria-label="Buka atau tutup navigasi">Menu</button>
         <div class="collapse navbar-collapse" id="navigasi">
             <ul class="navbar-nav ms-auto">
