@@ -14,7 +14,7 @@ final class PublicPagesTest extends CIUnitTestCase
             $result->assertStatus(200);
             $result->assertSee('Pratinjau dengan konten dummy.');
             $this->assertStringContainsString('aria-current="page"', $result->getBody());
-            $result->assertSee($label . ' | Jemaat Leihari');
+            $result->assertSee($label . ' | Jemaat Leahari');
             $this->assertStringContainsString('id="konten"', $result->getBody());
         }
     }

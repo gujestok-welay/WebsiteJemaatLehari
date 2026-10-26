@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-26T00:00:00+09:00",
+  "title": "Design System: Website Informasi Jemaat Leahari",
+  "extensions": {
+    "colorMeta": {
+      "purple": { "role": "primary", "displayName": "Ungu Leahari" },
+      "purple-dark": { "role": "primary", "displayName": "Ungu Gelap" },
+      "gold": { "role": "secondary", "displayName": "Emas Aksen" },
+      "paper": { "role": "neutral", "displayName": "Putih Kertas" },
+      "surface": { "role": "neutral", "displayName": "Permukaan Ungu Pucat" },
+      "ink": { "role": "neutral", "displayName": "Tinta Ungu Arang" },
+      "muted": { "role": "neutral", "displayName": "Teks Sekunder" }
+    },
+    "breakpoints": [
+      { "name": "public-mobile-layout", "value": "767.98px" },
+      { "name": "bootstrap-navbar-collapse", "value": "Bootstrap md breakpoint" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Tombol Aksen Emas",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Tindakan utama pada hero beranda.",
+      "html": "<button class=\"ds-button\">Lihat jadwal ibadah</button>",
+      "css": ".ds-button { background: #d8bd72; color: #29232c; padding: .85rem 1.35rem; border: 0; border-radius: 0; font: 700 1.125rem Arial, Helvetica, sans-serif; transition: transform .15s ease; } .ds-button:hover, .ds-button:focus { color: #29232c; background: #d8bd72; transform: translateY(-2px); } .ds-button:focus-visible { outline: 3px solid #d8bd72; outline-offset: 5px; } .ds-button:active { transform: translateY(1px); }"
+    },
+    {
+      "name": "Filter Jadwal",
+      "kind": "input",
+      "description": "Select filter jenis ibadah di halaman jadwal.",
+      "html": "<label class=\"ds-label\" for=\"ds-service\">Jenis ibadah</label><select class=\"ds-select\" id=\"ds-service\"><option>Semua ibadah</option></select>",
+      "css": ".ds-label { display: block; margin-bottom: .4rem; font: 400 1rem/1.65 Arial, Helvetica, sans-serif; color: #29232c; } .ds-select { min-width: 15rem; min-height: 48px; border: 2px solid #663f72; border-radius: 0; padding: .5rem; color: #29232c; background: #fff; font: 400 1.125rem Arial, Helvetica, sans-serif; } .ds-select:focus-visible { outline: 3px solid #663f72; outline-offset: 5px; }"
+    },
+    {
+      "name": "Navigasi Halaman Aktif",
+      "kind": "nav",
+      "description": "Tautan navigasi dengan underline pada halaman aktif.",
+      "html": "<nav class=\"ds-nav\"><a href=\"#\">Beranda</a><a class=\"ds-active\" href=\"#\" aria-current=\"page\">Profil</a></nav>",
+      "css": ".ds-nav { display: flex; gap: 1.2rem; font: 400 1.125rem/1.5 Arial, Helvetica, sans-serif; } .ds-nav a { color: #29232c; text-underline-offset: .5em; } .ds-nav a:hover { color: #482950; } .ds-nav a.ds-active { color: #663f72; text-decoration: underline; text-decoration-thickness: 3px; } .ds-nav a:focus-visible { outline: 3px solid #663f72; outline-offset: 5px; }"
+    },
+    {
+      "name": "Baris Jadwal Ibadah",
+      "kind": "custom",
+      "description": "Grid informasi waktu dan lokasi jadwal.",
+      "html": "<article class=\"ds-schedule\"><div><h3>Ibadah Minggu</h3><p>Dummy · Minggu</p></div><p class=\"ds-time\">09.00 <span>WIT</span></p><div><strong>Lokasi contoh</strong><p>Jadwal contoh</p></div></article>",
+      "css": ".ds-schedule { display: grid; grid-template-columns: 1.5fr .7fr 1fr; align-items: center; gap: 2rem; padding: 2rem 1.5rem; color: #29232c; background: #f3f0f4; font: 400 1.125rem/1.65 Arial, Helvetica, sans-serif; } .ds-schedule h3 { margin: 0; font: 400 2.5rem/1.2 Georgia, 'Times New Roman', serif; } .ds-schedule p { margin: 0; } .ds-schedule .ds-time { font-size: 2.5rem; font-variant-numeric: tabular-nums; } .ds-time span { font-size: 1rem; } @media (max-width: 767.98px) { .ds-schedule { grid-template-columns: 1fr; gap: 1.25rem; padding-inline: 1rem; } }"
+    }
+  ],
+  "narrative": {
+    "northStar": "Ruang Informasi yang Terbuka (deskripsi observasional)",
+    "overview": "Identitas visual yang terdokumentasi di sini berasal dari implementasi empat halaman publik: Beranda, Profil, Berita, dan Jadwal Ibadah. Karakternya menggabungkan ungu yang kuat pada area pengantar, judul bergaya serif, serta isi sans-serif yang lapang dan mudah dibaca. Ini adalah ringkasan keadaan kode saat ini, bukan penetapan identitas resmi; keputusan desain visual, logo, dan palet masih terbuka untuk validasi mitra (PRD DEC-09).\n\nHalaman admin boleh menggunakan susunan operasional yang berbeda untuk mendukung tugas pengelolaan. Admin tetap mempertahankan warna, tipografi, dan pola komponen bersama yang tercatat di sini agar tetap dikenali sebagai bagian dari Jemaat Leahari. Konten contoh tidak menjadi sumber fakta resmi.",
+    "keyCharacteristics": [
+      "Kontras jelas antara bidang ungu, bidang netral, dan aksen emas.",
+      "Judul serif dan teks isi sans-serif sistem tanpa font web eksternal yang terdeteksi.",
+      "Bentuk siku dan komposisi grid yang menyatu menjadi satu kolom pada layar kecil."
+    ],
+    "rules": [
+      { "name": "The Shared Palette Rule", "body": "Gunakan nilai warna yang sama untuk permukaan publik dan admin; admin dapat mengubah tata letak, bukan palet bersama.", "section": "colors" },
+      { "name": "The System Font Rule", "body": "Pertahankan stack Georgia dan Arial beserta fallback sistemnya; jangan menganggap font eksternal atau font mono bagian dari sistem yang terimplementasi.", "section": "typography" },
+      { "name": "The Flat Surface Rule", "body": "Bedakan permukaan melalui warna dan struktur; jangan menambahkan bayangan sebagai token bersama yang tidak digunakan halaman publik.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do gunakan ungu sebagai warna utama bidang pengantar/tautan, dan emas untuk tindakan utama yang sudah memakai pola tersebut.",
+      "Do pertahankan pasangan Georgia dan Arial, bentuk siku, serta outline keyboard yang jelas.",
+      "Do susun ulang grid menjadi satu kolom pada layar kecil seperti pola halaman publik.",
+      "Do izinkan dashboard admin memakai layout kerja yang lebih padat, sambil mempertahankan palet, tipografi, dan komponen bersama."
+    ],
+    "donts": [
+      "Don't menambahkan warna, font, radius, atau bayangan ke token bersama tanpa bukti implementasi atau keputusan identitas yang disahkan.",
+      "Don't memberi admin identitas warna dan tipografi yang terpisah dari halaman publik.",
+      "Don't menghapus penanda konten contoh atau menyajikan konten demo sebagai fakta resmi jemaat."
+    ]
+  }
+}

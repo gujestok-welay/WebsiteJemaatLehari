@@ -90,7 +90,16 @@ class Session extends BaseConfig
      * when auto-regenerating the session ID. When set to FALSE, the data
      * will be later deleted by the garbage collector.
      */
-    public bool $regenerateDestroy = false;
+    public bool $regenerateDestroy = true;
+
+    /** Restrict session cookies to HTTPS outside local development. */
+    public bool $cookieSecure = ENVIRONMENT === 'production';
+
+    /** Prevent JavaScript from reading the session cookie. */
+    public bool $cookieHTTPOnly = true;
+
+    /** Limit cross-site cookie sending while preserving normal top-level navigation. */
+    public string $cookieSameSite = 'Lax';
 
     /**
      * --------------------------------------------------------------------------

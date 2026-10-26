@@ -2,6 +2,7 @@
 /.env
 /build/
 /.taste-skill/
+/resources/private/
 
 # AI assistants and their local configuration
 /.agents/
@@ -16,7 +17,7 @@
 /.github/prompts/
 /.windsurf/
 
-AGENTS.md
+!AGENTS.md
 CLAUDE.md
 GEMINI.md
 *.agent.md
