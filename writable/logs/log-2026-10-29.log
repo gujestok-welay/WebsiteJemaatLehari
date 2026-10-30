@@ -1,0 +1,45 @@
+ERROR - 2026-10-29 04:21:29 --> Error connecting to the database: mysqli_sql_exception: No connection could be made because the target machine actively refused it in D:\Code\WebsiteJemaatLehari\system\Database\MySQLi\Connection.php:200
+Stack trace:
+#0 D:\Code\WebsiteJemaatLehari\system\Database\MySQLi\Connection.php(200): mysqli->real_connect('localhost', 'root', Object(SensitiveParameterValue), 'jemaat_leahari', 3306, '', 0)
+#1 D:\Code\WebsiteJemaatLehari\system\Database\BaseConnection.php(550): CodeIgniter\Database\MySQLi\Connection->connect(false)
+#2 D:\Code\WebsiteJemaatLehari\system\Database\BaseConnection.php(792): CodeIgniter\Database\BaseConnection->initialize()
+#3 D:\Code\WebsiteJemaatLehari\system\Database\BaseBuilder.php(2874): CodeIgniter\Database\BaseConnection->query('DELETE FROM `ad...', Array, false)
+#4 D:\Code\WebsiteJemaatLehari\app\Controllers\AdminAuth.php(32): CodeIgniter\Database\BaseBuilder->delete()
+#5 D:\Code\WebsiteJemaatLehari\system\CodeIgniter.php(974): App\Controllers\AdminAuth->login()
+#6 D:\Code\WebsiteJemaatLehari\system\CodeIgniter.php(520): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\AdminAuth))
+#7 D:\Code\WebsiteJemaatLehari\system\CodeIgniter.php(363): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 D:\Code\WebsiteJemaatLehari\system\Boot.php(417): CodeIgniter\CodeIgniter->run()
+#9 D:\Code\WebsiteJemaatLehari\system\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+#10 D:\Code\WebsiteJemaatLehari\public\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+#11 D:\Code\WebsiteJemaatLehari\system\rewrite.php(44): require_once('D:\\Code\\Website...')
+#12 {main}
+
+Next CodeIgniter\Database\Exceptions\DatabaseException: No connection could be made because the target machine actively refused it in D:\Code\WebsiteJemaatLehari\system\Database\MySQLi\Connection.php:230
+Stack trace:
+#0 D:\Code\WebsiteJemaatLehari\system\Database\BaseConnection.php(550): CodeIgniter\Database\MySQLi\Connection->connect(false)
+#1 D:\Code\WebsiteJemaatLehari\system\Database\BaseConnection.php(792): CodeIgniter\Database\BaseConnection->initialize()
+#2 D:\Code\WebsiteJemaatLehari\system\Database\BaseBuilder.php(2874): CodeIgniter\Database\BaseConnection->query('DELETE FROM `ad...', Array, false)
+#3 D:\Code\WebsiteJemaatLehari\app\Controllers\AdminAuth.php(32): CodeIgniter\Database\BaseBuilder->delete()
+#4 D:\Code\WebsiteJemaatLehari\system\CodeIgniter.php(974): App\Controllers\AdminAuth->login()
+#5 D:\Code\WebsiteJemaatLehari\system\CodeIgniter.php(520): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\AdminAuth))
+#6 D:\Code\WebsiteJemaatLehari\system\CodeIgniter.php(363): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#7 D:\Code\WebsiteJemaatLehari\system\Boot.php(417): CodeIgniter\CodeIgniter->run()
+#8 D:\Code\WebsiteJemaatLehari\system\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+#9 D:\Code\WebsiteJemaatLehari\public\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+#10 D:\Code\WebsiteJemaatLehari\system\rewrite.php(44): require_once('D:\\Code\\Website...')
+#11 {main}
+CRITICAL - 2026-10-29 04:21:29 --> CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No connection could be made because the target machine actively refused it
+[Method: POST, Route: admin/login]
+in SYSTEMPATH\Database\BaseConnection.php on line 601.
+ 1 SYSTEMPATH\Database\BaseConnection.php(792): CodeIgniter\Database\BaseConnection->initialize()
+ 2 SYSTEMPATH\Database\BaseBuilder.php(2874): CodeIgniter\Database\BaseConnection->query('DELETE FROM `admin_login_attempts`
+WHERE `attempted_at` < :attempted_at:', [...], false)
+ 3 APPPATH\Controllers\AdminAuth.php(32): CodeIgniter\Database\BaseBuilder->delete()
+ 4 SYSTEMPATH\CodeIgniter.php(974): App\Controllers\AdminAuth->login()
+ 5 SYSTEMPATH\CodeIgniter.php(520): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\AdminAuth))
+ 6 SYSTEMPATH\CodeIgniter.php(363): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+ 8 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 9 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+10 SYSTEMPATH\rewrite.php(44): require_once('D:\\Code\\WebsiteJemaatLehari\\public\\index.php')

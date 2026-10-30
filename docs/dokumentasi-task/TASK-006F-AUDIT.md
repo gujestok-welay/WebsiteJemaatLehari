@@ -12,7 +12,7 @@ Temuan terverifikasi: **P1: 1 kelompok masalah sistemik; P2: 1; P3: 1**. Tidak d
 
 ## Metode dan batasan
 
-- Dibaca: `AGENTS.md`, `PRODUCT.md`, seluruh `docs/PRD.md` (draft untuk validasi), `docs/TASK-006E-TYPOGRAPHY.md`, DESIGN.md sebagai konteks historis, controller publik, konten contoh, layout/partials/views publik, CSS, JavaScript, serta laporan inspector TASK-006E.
+- Dibaca: `AGENTS.md`, `PRODUCT.md`, seluruh `docs/PRD.md` (draft untuk validasi), `docs/dokumentasi-task/TASK-006E-TYPOGRAPHY.md`, DESIGN.md sebagai konteks historis, controller publik, konten contoh, layout/partials/views publik, CSS, JavaScript, serta laporan inspector TASK-006E.
 - Skill Impeccable `audit` digunakan. Launcher `context --target app/Views/publik` dicoba sekali: engine 0.1.5 belum terpasang dan direktori cache tidak dapat dibuat. Tidak menginstal engine atau mengubah konteks proyek. Audit manual mengikuti playbook `reference/audit.md`.
 - Chrome headless melalui CDP pada 375×812, 768×1000, dan 1440×1000. Percobaan sandbox gagal pada `Page.enable`; pemeriksaan berhasil setelah izin menjalankan browser di luar sandbox.
 - Satu putaran matriks dan satu putaran konfirmasi. Event Enter pada harness awal belum menyertakan virtual key/text yang diperlukan aktivasi native; harness dikoreksi lalu matriks dikonfirmasi. Hasil akhir menu/detail berasal dari putaran konfirmasi, bukan kegagalan harness awal.
