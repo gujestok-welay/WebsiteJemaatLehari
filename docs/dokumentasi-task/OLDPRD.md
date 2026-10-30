@@ -9,11 +9,11 @@
 | Versi                   | **3.0 — Draft penyelarasan dengan konteks KKN Tematik Kelompok 13**                                                                                 |
 | Disusun                 | 24 Oktober 2026                                                                                                                                     |
 | Status                  | **DRAFT UNTUK VALIDASI** — bukan persetujuan final mitra, bukan instruksi perubahan kode/database                                                   |
-| Mitra/pemilik kebutuhan | Jemaat Leahari (konfirmasi penanggung jawab resmi diperlukan)                                                                                       |
+| Mitra/pemilik kebutuhan | Jemaat Leahari                                                                                                                                      |
 | Tim pelaksana           | KKN Tematik Kelompok 13, FILKOM UKIM                                                                                                                |
-| Mitra operasional       | Media Center Jemaat Leahari; hubungan koordinasi dengan sekretariat/Majelis perlu disepakati                                                        |
+| Mitra operasional       | Media Center Jemaat Leahari disepakati                                                                                                              |
 | Sasaran produk          | Website publik + dashboard pengelolaan konten oleh Media Center                                                                                     |
-| Stack usulan            | **CodeIgniter 4, PHP, MySQL, Bootstrap**, HTML/CSS/JavaScript (menunggu keputusan tim dan audit aset yang telah ada)                                |
+| Stack usulan            | **CodeIgniter 4, PHP, MySQL, Bootstrap**, HTML/CSS/JavaScript                                                                                       |
 | Metode kerja            | Analisis kebutuhan → desain → implementasi bertahap → pengujian bersama mitra → pelatihan → serah terima                                            |
 | Sumber penyusunan       | PRD Leahari v2.1 (22 Oktober 2026); penuturan hasil wawancara Ketua Majelis dalam percakapan proyek; arahan umum Template Proposal KKNT FILKOM 2026 |
 
