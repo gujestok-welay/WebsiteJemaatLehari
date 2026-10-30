@@ -1,0 +1,202 @@
+@font-face {
+    font-family: 'Cormorant Garamond';
+    font-style: normal;
+    font-weight: 600;
+    font-display: swap;
+    src: url('../fonts/cormorant-garamond/latin-600-normal.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'DM Sans';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('../fonts/dm-sans/latin-400-normal.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'DM Sans';
+    font-style: normal;
+    font-weight: 600;
+    font-display: swap;
+    src: url('../fonts/dm-sans/latin-600-normal.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'DM Sans';
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url('../fonts/dm-sans/latin-700-normal.woff2') format('woff2');
+}
+
+.login-page {
+    --purple: #663f72;
+    --purple-dark: #482950;
+    --paper: #fffefa;
+    --surface: #f5f1f6;
+    --ink: #29232c;
+    --muted: #5d5361;
+    --error-ink: #831c1e;
+    --error-surface: #ffedea;
+    --display-font: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+    --body-font: 'DM Sans', Arial, Helvetica, sans-serif;
+    min-height: 100vh; /* taste-skill-ignore: fallback for browsers without svh. */
+    min-height: 100svh;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--body-font);
+    font-size: 1rem;
+    line-height: 1.6;
+}
+
+.login-page ::selection { background: var(--purple); color: var(--paper); }
+
+/* A compact, centred composition; content can grow freely with errors or zoom. */
+.login-shell {
+    display: grid;
+    grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr);
+    align-items: center;
+    gap: clamp(2rem, 5vw, 4rem);
+    width: 100%;
+    max-width: 66rem;
+    margin-inline: auto;
+    min-height: 100vh; /* taste-skill-ignore: fallback for browsers without svh. */
+    min-height: 100svh;
+    padding: 1.25rem 2rem;
+}
+
+.login-content {
+    grid-column: 2;
+    grid-row: 1;
+    display: grid;
+    align-items: center;
+    background: var(--paper);
+    padding: .5rem 0;
+    min-width: 0;
+}
+
+.login-form-wrap { width: 100%; max-width: 26rem; margin-inline: auto; }
+.login-identity { display: flex; align-items: center; gap: .75rem; margin-bottom: 1.5rem; }
+.login-logo { width: 3rem; height: auto; flex-shrink: 0; }
+.login-identity p { margin: 0; font-weight: 600; }
+
+.login-content h1 {
+    margin: 0 0 .75rem;
+    color: var(--purple-dark);
+    font-family: var(--display-font);
+    font-size: clamp(2rem, 3vw, 2.5rem);
+    font-weight: 600;
+    line-height: 1.1;
+    letter-spacing: -.02em;
+    text-wrap: balance;
+}
+
+.login-intro { margin: 0 0 1.5rem; color: var(--muted); text-wrap: pretty; }
+.login-form { display: grid; gap: 1rem; }
+.login-field .form-label { margin-bottom: .5rem; font-size: 1rem; font-weight: 600; }
+
+.login-field .form-control {
+    min-height: 3.25rem;
+    padding: .75rem 1rem;
+    border: 1px solid var(--muted); /* taste-skill-ignore: visible form field boundary. */
+    border-radius: 0;
+    background: var(--paper);
+    color: var(--ink);
+    caret-color: var(--purple);
+    font: inherit;
+    box-shadow: none; /* taste-skill-ignore: remove Bootstrap's field shadow. */
+}
+
+.login-password { position: relative; }
+.login-password .form-control { padding-right: 4rem; }
+
+.password-toggle {
+    position: absolute;
+    right: .375rem;
+    top: .25rem;
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: var(--paper);
+    color: var(--purple-dark);
+}
+
+.password-toggle[hidden], .password-toggle svg[hidden] { display: none; }
+.password-toggle svg, .login-public-link svg { width: 1.375rem; height: 1.375rem; flex-shrink: 0; }
+.password-toggle:hover { background: var(--surface); }
+
+.login-form .btn-login {
+    min-height: 3.25rem;
+    margin-top: .5rem;
+    padding: .75rem 1.5rem;
+    border: 0;
+    border-radius: 0;
+    background: var(--purple);
+    color: var(--paper);
+    font: inherit;
+    font-weight: 700;
+    transition: background-color .15s ease, transform .15s ease;
+}
+
+.login-form .btn-login:hover { background: var(--purple-dark); }
+.login-form .btn-login:active { background: var(--purple-dark); color: var(--paper); transform: translateY(1px); }
+
+.login-public-link {
+    display: inline-flex;
+    align-items: center;
+    gap: .75rem;
+    min-height: 2.75rem;
+    margin-top: 1rem;
+    color: var(--purple);
+    font-size: 1rem;
+    text-underline-offset: .25em;
+    text-decoration-thickness: .08em;
+}
+
+.login-public-link:hover { color: var(--purple-dark); text-decoration-thickness: .14em; }
+
+.login-page :is(.form-control, .btn-login, .password-toggle, .login-public-link):focus-visible {
+    outline: 3px solid var(--purple-dark);
+    outline-offset: 5px;
+    box-shadow: none; /* taste-skill-ignore: use the visible outline for keyboard focus. */
+}
+
+.login-error { margin-bottom: 1rem; padding: .75rem; background: var(--error-surface); color: var(--error-ink); font-size: 1rem; overflow-wrap: anywhere; }
+.login-error strong { font-weight: 700; }
+.login-error p { margin: .25rem 0 0; }
+.login-photo {
+    grid-column: 1;
+    grid-row: 1;
+    position: relative;
+    min-width: 0;
+    width: 100%;
+    max-width: 25rem;
+    aspect-ratio: 4 / 5;
+    margin: 0 auto;
+    border-radius: 1rem;
+    overflow: hidden;
+    background: var(--surface);
+}
+.login-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 58% center; }
+
+@media (max-width: 991.98px) {
+    .login-shell { grid-template-columns: minmax(0, 1fr); align-content: start; gap: 0; padding: 1.25rem; }
+    .login-content { grid-column: 1; padding: 0; }
+    .login-identity { margin-bottom: 1rem; }
+    .login-content h1 { font-size: 2rem; }
+    .login-intro { margin-bottom: 1rem; }
+    .login-form { gap: .875rem; }
+    .login-form .btn-login { margin-top: .25rem; }
+    .login-public-link { margin-top: .75rem; }
+    /* Keep the mobile composition focused on signing in; retain the GPM identity. */
+    .login-photo { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .login-page * { transition: none !important; transform: none !important; scroll-behavior: auto !important; }
+}

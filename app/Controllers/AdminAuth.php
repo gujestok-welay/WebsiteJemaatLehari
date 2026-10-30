@@ -4,10 +4,17 @@ namespace App\Controllers;
 
 class AdminAuth extends BaseController
 {
-    public function loginForm(): string
+    public function index(): \CodeIgniter\HTTP\RedirectResponse
+    {
+        $target = session()->get('admin_id') ? 'admin/dashboard' : 'admin/login';
+
+        return redirect()->to(site_url($target));
+    }
+
+    public function loginForm(): string|\CodeIgniter\HTTP\RedirectResponse
     {
         if (session()->get('admin_id')) {
-            return redirect()->to(site_url('admin/dashboard'))->getBody();
+            return redirect()->to(site_url('admin/dashboard'));
         }
 
         return view('admin/login', ['error' => session()->getFlashdata('error')]);
@@ -25,13 +32,13 @@ class AdminAuth extends BaseController
         $db->table('admin_login_attempts')->where('attempted_at <', $now - 900)->delete();
         $attempts = $db->table('admin_login_attempts')->where('identity_hash', $identityHash)->countAllResults();
         if ($attempts >= 5) {
-            return redirect()->back()->withInput()->with('error', 'Terlalu banyak percobaan. Coba lagi dalam 15 menit.');
+            return redirect()->to(site_url('admin/login'))->withInput()->with('error', 'Terlalu banyak percobaan. Coba lagi dalam 15 menit.');
         }
 
         $admin = $db->table('admin_users')->where('email', $email)->get()->getRowArray();
         if (! $admin || ! password_verify($password, $admin['password_hash'])) {
             $db->table('admin_login_attempts')->insert(['identity_hash' => $identityHash, 'attempted_at' => $now]);
-            return redirect()->back()->withInput()->with('error', 'Email atau kata sandi tidak sesuai.');
+            return redirect()->to(site_url('admin/login'))->withInput()->with('error', 'Email atau kata sandi tidak sesuai.');
         }
 
         $db->table('admin_login_attempts')->where('identity_hash', $identityHash)->delete();
