@@ -1,0 +1,60 @@
+CRITICAL - 2026-10-31 15:45:28 --> CodeIgniter\Filters\Exceptions\FilterException: "adminAuth,superAdmin" filter must have a matching alias defined.
+[Method: CLI, Route: routes]
+in SYSTEMPATH\Filters\Filters.php on line 590.
+ 1 SYSTEMPATH\Filters\Filters.php(590): CodeIgniter\Filters\Exceptions\FilterException::forNoAlias('adminAuth,superAdmin')
+ 2 SYSTEMPATH\Filters\Filters.php(641): CodeIgniter\Filters\Filters->enableFilter('adminAuth,superAdmin', 'before')
+ 3 SYSTEMPATH\Commands\Utilities\Routes\FilterFinder.php(61): CodeIgniter\Filters\Filters->enableFilters([...], 'before')
+ 4 SYSTEMPATH\Commands\Utilities\Routes\FilterCollector.php(78): CodeIgniter\Commands\Utilities\Routes\FilterFinder->find('admin/users')
+ 5 SYSTEMPATH\Commands\Utilities\Routes.php(120): CodeIgniter\Commands\Utilities\Routes\FilterCollector->get('GET', 'admin/users')
+ 6 SYSTEMPATH\CLI\Commands.php(72): CodeIgniter\Commands\Utilities\Routes->run([])
+ 7 SYSTEMPATH\CLI\Console.php(47): CodeIgniter\CLI\Commands->run('routes', [])
+ 8 SYSTEMPATH\Boot.php(444): CodeIgniter\CLI\Console->run()
+ 9 SYSTEMPATH\Boot.php(166): CodeIgniter\Boot::runCommand(Object(CodeIgniter\CLI\Console))
+10 ROOTPATH\spark(87): CodeIgniter\Boot::bootSpark(Object(Config\Paths))
+ERROR - 2026-10-31 15:48:37 --> Error connecting to the database: mysqli_sql_exception: No connection could be made because the target machine actively refused it in D:\Code\WebsiteJemaatLehari\system\Database\MySQLi\Connection.php:200
+Stack trace:
+#0 D:\Code\WebsiteJemaatLehari\system\Database\MySQLi\Connection.php(200): mysqli->real_connect('localhost', 'root', Object(SensitiveParameterValue), 'jemaat_leahari', 3306, '', 0)
+#1 D:\Code\WebsiteJemaatLehari\system\Database\BaseConnection.php(550): CodeIgniter\Database\MySQLi\Connection->connect(false)
+#2 D:\Code\WebsiteJemaatLehari\system\Database\BaseConnection.php(792): CodeIgniter\Database\BaseConnection->initialize()
+#3 D:\Code\WebsiteJemaatLehari\system\Database\BaseConnection.php(1709): CodeIgniter\Database\BaseConnection->query('SHOW TABLES FRO...')
+#4 D:\Code\WebsiteJemaatLehari\system\Database\BaseConnection.php(1729): CodeIgniter\Database\BaseConnection->listTables()
+#5 D:\Code\WebsiteJemaatLehari\app\Controllers\AdminAuth.php(32): CodeIgniter\Database\BaseConnection->tableExists('admin_login_att...')
+#6 D:\Code\WebsiteJemaatLehari\system\CodeIgniter.php(974): App\Controllers\AdminAuth->login()
+#7 D:\Code\WebsiteJemaatLehari\system\CodeIgniter.php(520): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\AdminAuth))
+#8 D:\Code\WebsiteJemaatLehari\system\CodeIgniter.php(363): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#9 D:\Code\WebsiteJemaatLehari\system\Boot.php(417): CodeIgniter\CodeIgniter->run()
+#10 D:\Code\WebsiteJemaatLehari\system\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+#11 D:\Code\WebsiteJemaatLehari\public\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+#12 D:\Code\WebsiteJemaatLehari\system\rewrite.php(44): require_once('D:\\Code\\Website...')
+#13 {main}
+
+Next CodeIgniter\Database\Exceptions\DatabaseException: No connection could be made because the target machine actively refused it in D:\Code\WebsiteJemaatLehari\system\Database\MySQLi\Connection.php:230
+Stack trace:
+#0 D:\Code\WebsiteJemaatLehari\system\Database\BaseConnection.php(550): CodeIgniter\Database\MySQLi\Connection->connect(false)
+#1 D:\Code\WebsiteJemaatLehari\system\Database\BaseConnection.php(792): CodeIgniter\Database\BaseConnection->initialize()
+#2 D:\Code\WebsiteJemaatLehari\system\Database\BaseConnection.php(1709): CodeIgniter\Database\BaseConnection->query('SHOW TABLES FRO...')
+#3 D:\Code\WebsiteJemaatLehari\system\Database\BaseConnection.php(1729): CodeIgniter\Database\BaseConnection->listTables()
+#4 D:\Code\WebsiteJemaatLehari\app\Controllers\AdminAuth.php(32): CodeIgniter\Database\BaseConnection->tableExists('admin_login_att...')
+#5 D:\Code\WebsiteJemaatLehari\system\CodeIgniter.php(974): App\Controllers\AdminAuth->login()
+#6 D:\Code\WebsiteJemaatLehari\system\CodeIgniter.php(520): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\AdminAuth))
+#7 D:\Code\WebsiteJemaatLehari\system\CodeIgniter.php(363): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 D:\Code\WebsiteJemaatLehari\system\Boot.php(417): CodeIgniter\CodeIgniter->run()
+#9 D:\Code\WebsiteJemaatLehari\system\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+#10 D:\Code\WebsiteJemaatLehari\public\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+#11 D:\Code\WebsiteJemaatLehari\system\rewrite.php(44): require_once('D:\\Code\\Website...')
+#12 {main}
+CRITICAL - 2026-10-31 15:48:37 --> CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No connection could be made because the target machine actively refused it
+[Method: POST, Route: admin/login]
+in SYSTEMPATH\Database\BaseConnection.php on line 601.
+ 1 SYSTEMPATH\Database\BaseConnection.php(792): CodeIgniter\Database\BaseConnection->initialize()
+ 2 SYSTEMPATH\Database\BaseConnection.php(1709): CodeIgniter\Database\BaseConnection->query('SHOW TABLES FROM `jemaat_leahari`')
+ 3 SYSTEMPATH\Database\BaseConnection.php(1729): CodeIgniter\Database\BaseConnection->listTables()
+ 4 APPPATH\Controllers\AdminAuth.php(32): CodeIgniter\Database\BaseConnection->tableExists('admin_login_attempts')
+ 5 SYSTEMPATH\CodeIgniter.php(974): App\Controllers\AdminAuth->login()
+ 6 SYSTEMPATH\CodeIgniter.php(520): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\AdminAuth))
+ 7 SYSTEMPATH\CodeIgniter.php(363): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 8 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+ 9 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+10 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+11 SYSTEMPATH\rewrite.php(44): require_once('D:\\Code\\WebsiteJemaatLehari\\public\\index.php')

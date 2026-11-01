@@ -1,0 +1,264 @@
+ERROR - 2026-11-01 05:21:14 --> Error connecting to the database: mysqli_sql_exception: No connection could be made because the target machine actively refused it in D:\Code\WebsiteJemaatLehari\system\Database\MySQLi\Connection.php:200
+Stack trace:
+#0 D:\Code\WebsiteJemaatLehari\system\Database\MySQLi\Connection.php(200): mysqli->real_connect('localhost', 'root', Object(SensitiveParameterValue), 'jemaat_leahari', 3306, '', 0)
+#1 D:\Code\WebsiteJemaatLehari\system\Database\BaseConnection.php(550): CodeIgniter\Database\MySQLi\Connection->connect(false)
+#2 D:\Code\WebsiteJemaatLehari\system\Database\BaseConnection.php(792): CodeIgniter\Database\BaseConnection->initialize()
+#3 D:\Code\WebsiteJemaatLehari\system\Database\BaseConnection.php(1709): CodeIgniter\Database\BaseConnection->query('SHOW TABLES FRO...')
+#4 D:\Code\WebsiteJemaatLehari\system\Database\BaseConnection.php(1729): CodeIgniter\Database\BaseConnection->listTables()
+#5 D:\Code\WebsiteJemaatLehari\app\Controllers\AdminAuth.php(32): CodeIgniter\Database\BaseConnection->tableExists('admin_login_att...')
+#6 D:\Code\WebsiteJemaatLehari\system\CodeIgniter.php(974): App\Controllers\AdminAuth->login()
+#7 D:\Code\WebsiteJemaatLehari\system\CodeIgniter.php(520): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\AdminAuth))
+#8 D:\Code\WebsiteJemaatLehari\system\CodeIgniter.php(363): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#9 D:\Code\WebsiteJemaatLehari\system\Boot.php(417): CodeIgniter\CodeIgniter->run()
+#10 D:\Code\WebsiteJemaatLehari\system\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+#11 D:\Code\WebsiteJemaatLehari\public\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+#12 D:\Code\WebsiteJemaatLehari\system\rewrite.php(44): require_once('D:\\Code\\Website...')
+#13 {main}
+
+Next CodeIgniter\Database\Exceptions\DatabaseException: No connection could be made because the target machine actively refused it in D:\Code\WebsiteJemaatLehari\system\Database\MySQLi\Connection.php:230
+Stack trace:
+#0 D:\Code\WebsiteJemaatLehari\system\Database\BaseConnection.php(550): CodeIgniter\Database\MySQLi\Connection->connect(false)
+#1 D:\Code\WebsiteJemaatLehari\system\Database\BaseConnection.php(792): CodeIgniter\Database\BaseConnection->initialize()
+#2 D:\Code\WebsiteJemaatLehari\system\Database\BaseConnection.php(1709): CodeIgniter\Database\BaseConnection->query('SHOW TABLES FRO...')
+#3 D:\Code\WebsiteJemaatLehari\system\Database\BaseConnection.php(1729): CodeIgniter\Database\BaseConnection->listTables()
+#4 D:\Code\WebsiteJemaatLehari\app\Controllers\AdminAuth.php(32): CodeIgniter\Database\BaseConnection->tableExists('admin_login_att...')
+#5 D:\Code\WebsiteJemaatLehari\system\CodeIgniter.php(974): App\Controllers\AdminAuth->login()
+#6 D:\Code\WebsiteJemaatLehari\system\CodeIgniter.php(520): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\AdminAuth))
+#7 D:\Code\WebsiteJemaatLehari\system\CodeIgniter.php(363): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 D:\Code\WebsiteJemaatLehari\system\Boot.php(417): CodeIgniter\CodeIgniter->run()
+#9 D:\Code\WebsiteJemaatLehari\system\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+#10 D:\Code\WebsiteJemaatLehari\public\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+#11 D:\Code\WebsiteJemaatLehari\system\rewrite.php(44): require_once('D:\\Code\\Website...')
+#12 {main}
+CRITICAL - 2026-11-01 05:21:14 --> CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No connection could be made because the target machine actively refused it
+[Method: POST, Route: admin/login]
+in SYSTEMPATH\Database\BaseConnection.php on line 601.
+ 1 SYSTEMPATH\Database\BaseConnection.php(792): CodeIgniter\Database\BaseConnection->initialize()
+ 2 SYSTEMPATH\Database\BaseConnection.php(1709): CodeIgniter\Database\BaseConnection->query('SHOW TABLES FROM `jemaat_leahari`')
+ 3 SYSTEMPATH\Database\BaseConnection.php(1729): CodeIgniter\Database\BaseConnection->listTables()
+ 4 APPPATH\Controllers\AdminAuth.php(32): CodeIgniter\Database\BaseConnection->tableExists('admin_login_attempts')
+ 5 SYSTEMPATH\CodeIgniter.php(974): App\Controllers\AdminAuth->login()
+ 6 SYSTEMPATH\CodeIgniter.php(520): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\AdminAuth))
+ 7 SYSTEMPATH\CodeIgniter.php(363): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 8 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+ 9 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+10 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+11 SYSTEMPATH\rewrite.php(44): require_once('D:\\Code\\WebsiteJemaatLehari\\public\\index.php')
+ERROR - 2026-11-01 05:22:00 --> Duplicate column name 'is_active'
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 294.
+ 1 SYSTEMPATH\Database\MySQLi\Connection.php(294): mysqli->query('ALTER TABLE `admin_users`
+	ADD `is_active` TINYINT(1) DEFAULT 1', 0)
+ 2 SYSTEMPATH\Database\BaseConnection.php(905): CodeIgniter\Database\MySQLi\Connection->execute('ALTER TABLE `admin_users`
+	ADD `is_active` TINYINT(1) DEFAULT 1')
+ 3 SYSTEMPATH\Database\BaseConnection.php(822): CodeIgniter\Database\BaseConnection->simpleQuery('ALTER TABLE `admin_users`
+	ADD `is_active` TINYINT(1) DEFAULT 1')
+ 4 SYSTEMPATH\Database\Forge.php(779): CodeIgniter\Database\BaseConnection->query('ALTER TABLE `admin_users`
+	ADD `is_active` TINYINT(1) DEFAULT 1')
+ 5 APPPATH\Database\Migrations\2026-11-01-000001_AddAdminUserRoles.php(29): CodeIgniter\Database\Forge->addColumn('admin_users', [...])
+ 6 SYSTEMPATH\Database\MigrationRunner.php(1024): App\Database\Migrations\AddAdminUserRoles->up()
+ 7 SYSTEMPATH\Database\MigrationRunner.php(202): CodeIgniter\Database\MigrationRunner->migrate('up', Object(stdClass))
+ 8 SYSTEMPATH\Commands\Database\Migrate.php(89): CodeIgniter\Database\MigrationRunner->latest(null)
+ 9 SYSTEMPATH\CLI\SignalTrait.php(243): CodeIgniter\Commands\Database\Migrate::{closure:CodeIgniter\Commands\Database\Migrate::run():88}()
+10 SYSTEMPATH\Commands\Database\Migrate.php(88): CodeIgniter\Commands\Database\Migrate->withSignalsBlocked(Object(Closure))
+11 SYSTEMPATH\CLI\Commands.php(72): CodeIgniter\Commands\Database\Migrate->run([])
+12 SYSTEMPATH\CLI\Console.php(47): CodeIgniter\CLI\Commands->run('migrate', [])
+13 SYSTEMPATH\Boot.php(444): CodeIgniter\CLI\Console->run()
+14 SYSTEMPATH\Boot.php(166): CodeIgniter\Boot::runCommand(Object(CodeIgniter\CLI\Console))
+15 ROOTPATH\spark(87): CodeIgniter\Boot::bootSpark(Object(Config\Paths))
+CRITICAL - 2026-11-01 08:40:39 --> CodeIgniter\Exceptions\CriticalError: The required PHP extension "sqlite3" is not loaded. Install and enable it to use "SQLite3" driver.
+[Method: GET, Route: /]
+in SYSTEMPATH\Database\Database.php on line 186.
+ 1 SYSTEMPATH\Database\Database.php(61): CodeIgniter\Database\Database->checkDbExtension('SQLite3')
+ 2 SYSTEMPATH\Database\Config.php(80): CodeIgniter\Database\Database->load([...], 'tests')
+ 3 SYSTEMPATH\Model.php(153): CodeIgniter\Database\Config::connect('tests')
+ 4 APPPATH\Controllers\Home.php(24): CodeIgniter\Model->__construct()
+ 5 ROOTPATH\tests\unit\verify_public_pages.php(5): App\Controllers\Home->__construct()
+CRITICAL - 2026-11-01 08:40:54 --> CodeIgniter\Exceptions\CriticalError: The required PHP extension "sqlite3" is not loaded. Install and enable it to use "SQLite3" driver.
+[Method: GET, Route: /]
+in SYSTEMPATH\Database\Database.php on line 186.
+ 1 SYSTEMPATH\Database\Database.php(61): CodeIgniter\Database\Database->checkDbExtension('SQLite3')
+ 2 SYSTEMPATH\Database\Config.php(80): CodeIgniter\Database\Database->load([...], 'tests')
+ 3 SYSTEMPATH\Model.php(153): CodeIgniter\Database\Config::connect('tests')
+ 4 APPPATH\Controllers\Home.php(24): CodeIgniter\Model->__construct()
+ 5 ROOTPATH\tests\unit\verify_public_pages.php(8): App\Controllers\Home->__construct()
+ERROR - 2026-11-01 11:24:52 --> Error connecting to the database: mysqli_sql_exception: No connection could be made because the target machine actively refused it in D:\Code\WebsiteJemaatLehari\system\Database\MySQLi\Connection.php:200
+Stack trace:
+#0 D:\Code\WebsiteJemaatLehari\system\Database\MySQLi\Connection.php(200): mysqli->real_connect('localhost', 'root', Object(SensitiveParameterValue), 'jemaat_leahari', 3306, '', 0)
+#1 D:\Code\WebsiteJemaatLehari\system\Database\BaseConnection.php(550): CodeIgniter\Database\MySQLi\Connection->connect(false)
+#2 D:\Code\WebsiteJemaatLehari\system\Database\BaseConnection.php(792): CodeIgniter\Database\BaseConnection->initialize()
+#3 D:\Code\WebsiteJemaatLehari\system\Database\BaseConnection.php(1709): CodeIgniter\Database\BaseConnection->query('SHOW TABLES FRO...')
+#4 D:\Code\WebsiteJemaatLehari\system\Database\BaseConnection.php(1729): CodeIgniter\Database\BaseConnection->listTables()
+#5 D:\Code\WebsiteJemaatLehari\system\Database\MigrationRunner.php(831): CodeIgniter\Database\BaseConnection->tableExists('migrations')
+#6 D:\Code\WebsiteJemaatLehari\system\Database\MigrationRunner.php(705): CodeIgniter\Database\MigrationRunner->ensureTable()
+#7 D:\Code\WebsiteJemaatLehari\system\Commands\Database\MigrateStatus.php(113): CodeIgniter\Database\MigrationRunner->getHistory('')
+#8 D:\Code\WebsiteJemaatLehari\system\CLI\Commands.php(72): CodeIgniter\Commands\Database\MigrateStatus->run(Array)
+#9 D:\Code\WebsiteJemaatLehari\system\CLI\Console.php(47): CodeIgniter\CLI\Commands->run('migrate:status', Array)
+#10 D:\Code\WebsiteJemaatLehari\system\Boot.php(444): CodeIgniter\CLI\Console->run()
+#11 D:\Code\WebsiteJemaatLehari\system\Boot.php(166): CodeIgniter\Boot::runCommand(Object(CodeIgniter\CLI\Console))
+#12 D:\Code\WebsiteJemaatLehari\spark(87): CodeIgniter\Boot::bootSpark(Object(Config\Paths))
+#13 {main}
+
+Next CodeIgniter\Database\Exceptions\DatabaseException: No connection could be made because the target machine actively refused it in D:\Code\WebsiteJemaatLehari\system\Database\MySQLi\Connection.php:230
+Stack trace:
+#0 D:\Code\WebsiteJemaatLehari\system\Database\BaseConnection.php(550): CodeIgniter\Database\MySQLi\Connection->connect(false)
+#1 D:\Code\WebsiteJemaatLehari\system\Database\BaseConnection.php(792): CodeIgniter\Database\BaseConnection->initialize()
+#2 D:\Code\WebsiteJemaatLehari\system\Database\BaseConnection.php(1709): CodeIgniter\Database\BaseConnection->query('SHOW TABLES FRO...')
+#3 D:\Code\WebsiteJemaatLehari\system\Database\BaseConnection.php(1729): CodeIgniter\Database\BaseConnection->listTables()
+#4 D:\Code\WebsiteJemaatLehari\system\Database\MigrationRunner.php(831): CodeIgniter\Database\BaseConnection->tableExists('migrations')
+#5 D:\Code\WebsiteJemaatLehari\system\Database\MigrationRunner.php(705): CodeIgniter\Database\MigrationRunner->ensureTable()
+#6 D:\Code\WebsiteJemaatLehari\system\Commands\Database\MigrateStatus.php(113): CodeIgniter\Database\MigrationRunner->getHistory('')
+#7 D:\Code\WebsiteJemaatLehari\system\CLI\Commands.php(72): CodeIgniter\Commands\Database\MigrateStatus->run(Array)
+#8 D:\Code\WebsiteJemaatLehari\system\CLI\Console.php(47): CodeIgniter\CLI\Commands->run('migrate:status', Array)
+#9 D:\Code\WebsiteJemaatLehari\system\Boot.php(444): CodeIgniter\CLI\Console->run()
+#10 D:\Code\WebsiteJemaatLehari\system\Boot.php(166): CodeIgniter\Boot::runCommand(Object(CodeIgniter\CLI\Console))
+#11 D:\Code\WebsiteJemaatLehari\spark(87): CodeIgniter\Boot::bootSpark(Object(Config\Paths))
+#12 {main}
+CRITICAL - 2026-11-01 11:24:52 --> CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No connection could be made because the target machine actively refused it
+[Method: CLI, Route: migrate:status]
+in SYSTEMPATH\Database\BaseConnection.php on line 601.
+ 1 SYSTEMPATH\Database\BaseConnection.php(792): CodeIgniter\Database\BaseConnection->initialize()
+ 2 SYSTEMPATH\Database\BaseConnection.php(1709): CodeIgniter\Database\BaseConnection->query('SHOW TABLES FROM `jemaat_leahari`')
+ 3 SYSTEMPATH\Database\BaseConnection.php(1729): CodeIgniter\Database\BaseConnection->listTables()
+ 4 SYSTEMPATH\Database\MigrationRunner.php(831): CodeIgniter\Database\BaseConnection->tableExists('migrations')
+ 5 SYSTEMPATH\Database\MigrationRunner.php(705): CodeIgniter\Database\MigrationRunner->ensureTable()
+ 6 SYSTEMPATH\Commands\Database\MigrateStatus.php(113): CodeIgniter\Database\MigrationRunner->getHistory('')
+ 7 SYSTEMPATH\CLI\Commands.php(72): CodeIgniter\Commands\Database\MigrateStatus->run([])
+ 8 SYSTEMPATH\CLI\Console.php(47): CodeIgniter\CLI\Commands->run('migrate:status', [])
+ 9 SYSTEMPATH\Boot.php(444): CodeIgniter\CLI\Console->run()
+10 SYSTEMPATH\Boot.php(166): CodeIgniter\Boot::runCommand(Object(CodeIgniter\CLI\Console))
+11 ROOTPATH\spark(87): CodeIgniter\Boot::bootSpark(Object(Config\Paths))
+ERROR - 2026-11-01 11:25:31 --> Error connecting to the database: mysqli_sql_exception: No connection could be made because the target machine actively refused it in D:\Code\WebsiteJemaatLehari\system\Database\MySQLi\Connection.php:200
+Stack trace:
+#0 D:\Code\WebsiteJemaatLehari\system\Database\MySQLi\Connection.php(200): mysqli->real_connect('localhost', 'root', Object(SensitiveParameterValue), 'jemaat_leahari', 3306, '', 0)
+#1 D:\Code\WebsiteJemaatLehari\system\Database\BaseConnection.php(550): CodeIgniter\Database\MySQLi\Connection->connect(false)
+#2 D:\Code\WebsiteJemaatLehari\system\Database\BaseConnection.php(792): CodeIgniter\Database\BaseConnection->initialize()
+#3 D:\Code\WebsiteJemaatLehari\system\Database\BaseConnection.php(1709): CodeIgniter\Database\BaseConnection->query('SHOW TABLES FRO...')
+#4 D:\Code\WebsiteJemaatLehari\system\Database\BaseConnection.php(1729): CodeIgniter\Database\BaseConnection->listTables()
+#5 D:\Code\WebsiteJemaatLehari\system\Database\MigrationRunner.php(831): CodeIgniter\Database\BaseConnection->tableExists('migrations')
+#6 D:\Code\WebsiteJemaatLehari\system\Database\MigrationRunner.php(705): CodeIgniter\Database\MigrationRunner->ensureTable()
+#7 D:\Code\WebsiteJemaatLehari\system\Commands\Database\MigrateStatus.php(113): CodeIgniter\Database\MigrationRunner->getHistory('')
+#8 D:\Code\WebsiteJemaatLehari\system\CLI\Commands.php(72): CodeIgniter\Commands\Database\MigrateStatus->run(Array)
+#9 D:\Code\WebsiteJemaatLehari\system\CLI\Console.php(47): CodeIgniter\CLI\Commands->run('migrate:status', Array)
+#10 D:\Code\WebsiteJemaatLehari\system\Boot.php(444): CodeIgniter\CLI\Console->run()
+#11 D:\Code\WebsiteJemaatLehari\system\Boot.php(166): CodeIgniter\Boot::runCommand(Object(CodeIgniter\CLI\Console))
+#12 D:\Code\WebsiteJemaatLehari\spark(87): CodeIgniter\Boot::bootSpark(Object(Config\Paths))
+#13 {main}
+
+Next CodeIgniter\Database\Exceptions\DatabaseException: No connection could be made because the target machine actively refused it in D:\Code\WebsiteJemaatLehari\system\Database\MySQLi\Connection.php:230
+Stack trace:
+#0 D:\Code\WebsiteJemaatLehari\system\Database\BaseConnection.php(550): CodeIgniter\Database\MySQLi\Connection->connect(false)
+#1 D:\Code\WebsiteJemaatLehari\system\Database\BaseConnection.php(792): CodeIgniter\Database\BaseConnection->initialize()
+#2 D:\Code\WebsiteJemaatLehari\system\Database\BaseConnection.php(1709): CodeIgniter\Database\BaseConnection->query('SHOW TABLES FRO...')
+#3 D:\Code\WebsiteJemaatLehari\system\Database\BaseConnection.php(1729): CodeIgniter\Database\BaseConnection->listTables()
+#4 D:\Code\WebsiteJemaatLehari\system\Database\MigrationRunner.php(831): CodeIgniter\Database\BaseConnection->tableExists('migrations')
+#5 D:\Code\WebsiteJemaatLehari\system\Database\MigrationRunner.php(705): CodeIgniter\Database\MigrationRunner->ensureTable()
+#6 D:\Code\WebsiteJemaatLehari\system\Commands\Database\MigrateStatus.php(113): CodeIgniter\Database\MigrationRunner->getHistory('')
+#7 D:\Code\WebsiteJemaatLehari\system\CLI\Commands.php(72): CodeIgniter\Commands\Database\MigrateStatus->run(Array)
+#8 D:\Code\WebsiteJemaatLehari\system\CLI\Console.php(47): CodeIgniter\CLI\Commands->run('migrate:status', Array)
+#9 D:\Code\WebsiteJemaatLehari\system\Boot.php(444): CodeIgniter\CLI\Console->run()
+#10 D:\Code\WebsiteJemaatLehari\system\Boot.php(166): CodeIgniter\Boot::runCommand(Object(CodeIgniter\CLI\Console))
+#11 D:\Code\WebsiteJemaatLehari\spark(87): CodeIgniter\Boot::bootSpark(Object(Config\Paths))
+#12 {main}
+CRITICAL - 2026-11-01 11:25:31 --> CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No connection could be made because the target machine actively refused it
+[Method: CLI, Route: migrate:status]
+in SYSTEMPATH\Database\BaseConnection.php on line 601.
+ 1 SYSTEMPATH\Database\BaseConnection.php(792): CodeIgniter\Database\BaseConnection->initialize()
+ 2 SYSTEMPATH\Database\BaseConnection.php(1709): CodeIgniter\Database\BaseConnection->query('SHOW TABLES FROM `jemaat_leahari`')
+ 3 SYSTEMPATH\Database\BaseConnection.php(1729): CodeIgniter\Database\BaseConnection->listTables()
+ 4 SYSTEMPATH\Database\MigrationRunner.php(831): CodeIgniter\Database\BaseConnection->tableExists('migrations')
+ 5 SYSTEMPATH\Database\MigrationRunner.php(705): CodeIgniter\Database\MigrationRunner->ensureTable()
+ 6 SYSTEMPATH\Commands\Database\MigrateStatus.php(113): CodeIgniter\Database\MigrationRunner->getHistory('')
+ 7 SYSTEMPATH\CLI\Commands.php(72): CodeIgniter\Commands\Database\MigrateStatus->run([])
+ 8 SYSTEMPATH\CLI\Console.php(47): CodeIgniter\CLI\Commands->run('migrate:status', [])
+ 9 SYSTEMPATH\Boot.php(444): CodeIgniter\CLI\Console->run()
+10 SYSTEMPATH\Boot.php(166): CodeIgniter\Boot::runCommand(Object(CodeIgniter\CLI\Console))
+11 ROOTPATH\spark(87): CodeIgniter\Boot::bootSpark(Object(Config\Paths))
+ERROR - 2026-11-01 12:28:32 --> Error connecting to the database: mysqli_sql_exception: No connection could be made because the target machine actively refused it in D:\Code\WebsiteJemaatLehari\system\Database\MySQLi\Connection.php:200
+Stack trace:
+#0 D:\Code\WebsiteJemaatLehari\system\Database\MySQLi\Connection.php(200): mysqli->real_connect('localhost', 'root', Object(SensitiveParameterValue), 'jemaat_leahari', 3306, '', 0)
+#1 D:\Code\WebsiteJemaatLehari\system\Database\BaseConnection.php(550): CodeIgniter\Database\MySQLi\Connection->connect(false)
+#2 D:\Code\WebsiteJemaatLehari\system\Database\BaseConnection.php(792): CodeIgniter\Database\BaseConnection->initialize()
+#3 D:\Code\WebsiteJemaatLehari\system\Database\BaseBuilder.php(1660): CodeIgniter\Database\BaseConnection->query('SELECT *\nFROM `...', Array, false)
+#4 D:\Code\WebsiteJemaatLehari\system\Model.php(256): CodeIgniter\Database\BaseBuilder->get()
+#5 D:\Code\WebsiteJemaatLehari\system\BaseModel.php(676): CodeIgniter\Model->doFindAll(0, 0)
+#6 D:\Code\WebsiteJemaatLehari\app\Models\BeritaModel.php(55): CodeIgniter\BaseModel->findAll()
+#7 D:\Code\WebsiteJemaatLehari\app\Controllers\Home.php(105): App\Models\BeritaModel->findPublishedByTerm()
+#8 D:\Code\WebsiteJemaatLehari\app\Controllers\Home.php(34): App\Controllers\Home->page('beranda', 'Beranda')
+#9 D:\Code\WebsiteJemaatLehari\tests\unit\verify_public_pages.php(16): App\Controllers\Home->index()
+#10 {main}
+
+Next CodeIgniter\Database\Exceptions\DatabaseException: No connection could be made because the target machine actively refused it in D:\Code\WebsiteJemaatLehari\system\Database\MySQLi\Connection.php:230
+Stack trace:
+#0 D:\Code\WebsiteJemaatLehari\system\Database\BaseConnection.php(550): CodeIgniter\Database\MySQLi\Connection->connect(false)
+#1 D:\Code\WebsiteJemaatLehari\system\Database\BaseConnection.php(792): CodeIgniter\Database\BaseConnection->initialize()
+#2 D:\Code\WebsiteJemaatLehari\system\Database\BaseBuilder.php(1660): CodeIgniter\Database\BaseConnection->query('SELECT *\nFROM `...', Array, false)
+#3 D:\Code\WebsiteJemaatLehari\system\Model.php(256): CodeIgniter\Database\BaseBuilder->get()
+#4 D:\Code\WebsiteJemaatLehari\system\BaseModel.php(676): CodeIgniter\Model->doFindAll(0, 0)
+#5 D:\Code\WebsiteJemaatLehari\app\Models\BeritaModel.php(55): CodeIgniter\BaseModel->findAll()
+#6 D:\Code\WebsiteJemaatLehari\app\Controllers\Home.php(105): App\Models\BeritaModel->findPublishedByTerm()
+#7 D:\Code\WebsiteJemaatLehari\app\Controllers\Home.php(34): App\Controllers\Home->page('beranda', 'Beranda')
+#8 D:\Code\WebsiteJemaatLehari\tests\unit\verify_public_pages.php(16): App\Controllers\Home->index()
+#9 {main}
+CRITICAL - 2026-11-01 12:28:32 --> CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: No connection could be made because the target machine actively refused it
+[Method: GET, Route: /]
+in SYSTEMPATH\Database\BaseConnection.php on line 601.
+ 1 SYSTEMPATH\Database\BaseConnection.php(792): CodeIgniter\Database\BaseConnection->initialize()
+ 2 SYSTEMPATH\Database\BaseBuilder.php(1660): CodeIgniter\Database\BaseConnection->query('SELECT *
+FROM `berita`
+WHERE `status` = :status:
+AND `berita`.`deleted_at` IS NULL
+ORDER BY `created_at` DESC', [...], false)
+ 3 SYSTEMPATH\Model.php(256): CodeIgniter\Database\BaseBuilder->get()
+ 4 SYSTEMPATH\BaseModel.php(676): CodeIgniter\Model->doFindAll(0, 0)
+ 5 APPPATH\Models\BeritaModel.php(55): CodeIgniter\BaseModel->findAll()
+ 6 APPPATH\Controllers\Home.php(105): App\Models\BeritaModel->findPublishedByTerm()
+ 7 APPPATH\Controllers\Home.php(34): App\Controllers\Home->page('beranda', 'Beranda')
+ 8 ROOTPATH\tests\unit\verify_public_pages.php(16): App\Controllers\Home->index()
+CRITICAL - 2026-11-01 16:05:42 --> CodeIgniter\HTTP\Exceptions\BadRequestException: The URI you submitted has disallowed characters: "publicssetsimagesgereja¾ndahara-Jemaat.jpeg"
+[Method: GET, Route: publicssetsimagesgereja%C2%BEndahara-Jemaat.jpeg]
+in SYSTEMPATH\Router\Router.php on line 768.
+ 1 SYSTEMPATH\Router\Router.php(217): CodeIgniter\Router\Router->checkDisallowedChars('publicssetsimagesgereja¾ndahara-Jemaat.jpeg')
+ 2 SYSTEMPATH\CodeIgniter.php(852): CodeIgniter\Router\Router->handle('publicssetsimagesgereja¾ndahara-Jemaat.jpeg')
+ 3 SYSTEMPATH\CodeIgniter.php(464): CodeIgniter\CodeIgniter->tryToRouteIt(Object(CodeIgniter\Router\RouteCollection))
+ 4 SYSTEMPATH\CodeIgniter.php(363): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 5 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+ 6 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 7 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+ 8 SYSTEMPATH\rewrite.php(44): require_once('D:\\Code\\WebsiteJemaatLehari\\public\\index.php')
+CRITICAL - 2026-11-01 16:06:19 --> CodeIgniter\HTTP\Exceptions\BadRequestException: The URI you submitted has disallowed characters: "publicssetsimagesgereja¾ndahara-Jemaat.jpeg"
+[Method: GET, Route: publicssetsimagesgereja%C2%BEndahara-Jemaat.jpeg]
+in SYSTEMPATH\Router\Router.php on line 768.
+ 1 SYSTEMPATH\Router\Router.php(217): CodeIgniter\Router\Router->checkDisallowedChars('publicssetsimagesgereja¾ndahara-Jemaat.jpeg')
+ 2 SYSTEMPATH\CodeIgniter.php(852): CodeIgniter\Router\Router->handle('publicssetsimagesgereja¾ndahara-Jemaat.jpeg')
+ 3 SYSTEMPATH\CodeIgniter.php(464): CodeIgniter\CodeIgniter->tryToRouteIt(Object(CodeIgniter\Router\RouteCollection))
+ 4 SYSTEMPATH\CodeIgniter.php(363): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 5 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+ 6 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 7 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+ 8 SYSTEMPATH\rewrite.php(44): require_once('D:\\Code\\WebsiteJemaatLehari\\public\\index.php')
+CRITICAL - 2026-11-01 16:10:01 --> CodeIgniter\HTTP\Exceptions\BadRequestException: The URI you submitted has disallowed characters: "publicssetsimagesgereja¾ndahara-Jemaat.jpeg"
+[Method: GET, Route: publicssetsimagesgereja%C2%BEndahara-Jemaat.jpeg]
+in SYSTEMPATH\Router\Router.php on line 768.
+ 1 SYSTEMPATH\Router\Router.php(217): CodeIgniter\Router\Router->checkDisallowedChars('publicssetsimagesgereja¾ndahara-Jemaat.jpeg')
+ 2 SYSTEMPATH\CodeIgniter.php(852): CodeIgniter\Router\Router->handle('publicssetsimagesgereja¾ndahara-Jemaat.jpeg')
+ 3 SYSTEMPATH\CodeIgniter.php(464): CodeIgniter\CodeIgniter->tryToRouteIt(Object(CodeIgniter\Router\RouteCollection))
+ 4 SYSTEMPATH\CodeIgniter.php(363): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 5 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+ 6 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 7 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+ 8 SYSTEMPATH\rewrite.php(44): require_once('D:\\Code\\WebsiteJemaatLehari\\public\\index.php')
+CRITICAL - 2026-11-01 16:17:55 --> CodeIgniter\HTTP\Exceptions\BadRequestException: The URI you submitted has disallowed characters: "publicssetsimagesgereja¾ndahara-Jemaat.jpeg"
+[Method: GET, Route: publicssetsimagesgereja%C2%BEndahara-Jemaat.jpeg]
+in SYSTEMPATH\Router\Router.php on line 768.
+ 1 SYSTEMPATH\Router\Router.php(217): CodeIgniter\Router\Router->checkDisallowedChars('publicssetsimagesgereja¾ndahara-Jemaat.jpeg')
+ 2 SYSTEMPATH\CodeIgniter.php(852): CodeIgniter\Router\Router->handle('publicssetsimagesgereja¾ndahara-Jemaat.jpeg')
+ 3 SYSTEMPATH\CodeIgniter.php(464): CodeIgniter\CodeIgniter->tryToRouteIt(Object(CodeIgniter\Router\RouteCollection))
+ 4 SYSTEMPATH\CodeIgniter.php(363): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 5 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+ 6 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 7 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+ 8 SYSTEMPATH\rewrite.php(44): require_once('D:\\Code\\WebsiteJemaatLehari\\public\\index.php')
