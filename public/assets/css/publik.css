@@ -151,7 +151,18 @@ a:hover {
 .skip-link:focus {
   top: 1rem;
 }
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 1030;
+  background: rgba(255, 254, 250, 0.92);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(102, 63, 114, 0.08);
+  box-shadow: 0 0.5rem 1.25rem rgba(72, 41, 80, 0.08);
+}
 .navbar {
+  position: relative;
   padding-block: 1.1rem;
 }
 .navbar-brand {
@@ -262,74 +273,171 @@ a:hover {
 
 /* Profil page */
 .profil-hero {
-    background: linear-gradient(135deg, #0b3d6e 0%, #1565a8 55%, #2a8bc4 100%);
-    padding-bottom: 5rem;
-    position: relative;
-    overflow: hidden;
+  background: linear-gradient(135deg, #0b3d6e 0%, #1565a8 55%, #2a8bc4 100%);
+  padding-bottom: 5rem;
+  position: relative;
+  overflow: hidden;
 }
 .profil-hero::after {
-    content: "";
-    position: absolute;
-    inset: auto -10% -60% auto;
-    width: 60%;
-    aspect-ratio: 1;
-    background: radial-gradient(circle, rgba(255,255,255,.14), transparent 65%);
+  content: "";
+  position: absolute;
+  inset: auto -10% -60% auto;
+  width: 60%;
+  aspect-ratio: 1;
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.14),
+    transparent 65%
+  );
 }
 
 .badge-soft {
-    background: rgba(var(--bs-primary-rgb), .12);
-    color: var(--bs-primary);
-    font-weight: 600;
+  background: rgba(var(--bs-primary-rgb), 0.12);
+  color: var(--bs-primary);
+  font-weight: 600;
 }
 .profil-hero .badge-soft {
-    background: rgba(255,255,255,.18);
-    color: #fff;
+  background: rgba(255, 255, 255, 0.18);
+  color: #fff;
 }
 
 .stat-strip {
-    margin-top: -3rem;
-    position: relative;
-    z-index: 2;
+  margin-top: -3rem;
+  position: relative;
+  z-index: 2;
 }
 
 .card-lift {
-    transition: transform .2s ease, box-shadow .2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 .card-lift:hover {
-    transform: scale(1.03);
-    box-shadow: 0 .75rem 1.5rem rgba(0,0,0,.12) !important;
+  transform: scale(1.03);
+  box-shadow: 0 0.75rem 1.5rem rgba(0, 0, 0, 0.12) !important;
 }
 
 .batas-item {
-    background: rgba(var(--bs-primary-rgb), .06);
+  background: rgba(var(--bs-primary-rgb), 0.06);
 }
 
 .musim-timur {
-    background: linear-gradient(135deg, #e3f0fb, #cfe4f6);
+  background: linear-gradient(135deg, #e3f0fb, #cfe4f6);
 }
 .musim-barat {
-    background: linear-gradient(135deg, #fff3dc, #ffe6b8);
+  background: linear-gradient(135deg, #fff3dc, #ffe6b8);
 }
 [data-bs-theme="dark"] .musim-timur,
 [data-bs-theme="dark"] .musim-barat {
-    background: var(--bs-tertiary-bg);
+  background: var(--bs-tertiary-bg);
 }
 
 .legend-dot {
-    display: inline-block;
-    width: .75rem;
-    height: .75rem;
-    border-radius: 50%;
-    margin-right: .35rem;
+  display: inline-block;
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 50%;
+  margin-right: 0.35rem;
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .card-lift, .card-lift:hover {
-        transition: none;
-        transform: none;
-    }
+  .card-lift,
+  .card-lift:hover {
+    transition: none;
+    transform: none;
+  }
 }
+
+/* News page */
+.berita-page .berita-hero {
+  background: linear-gradient(135deg, #0b3d6e 0%, #1565a8 55%, #2a8bc4 100%);
 }
+.berita-page .badge-soft {
+  background: rgba(255, 255, 255, 0.18);
+  color: #fff;
+  font-weight: 600;
+}
+.berita-page .berita-shell {
+  position: relative;
+  z-index: 1;
+}
+.berita-page .berita-card {
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+  border: 0;
+}
+.berita-page .berita-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 0.75rem 1.5rem rgba(0, 0, 0, 0.12) !important;
+}
+.berita-page .berita-thumb {
+  position: relative;
+  display: block;
+  height: 240px;
+  overflow: hidden;
+  background: var(--bs-tertiary-bg);
+}
+.berita-page .berita-thumb-bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  transform: scale(1.02);
+  transition: transform 0.4s ease;
+}
+.berita-page .berita-card:hover .berita-thumb-bg {
+  transform: scale(1.06);
+}
+.berita-page .berita-chip {
+  position: absolute;
+  left: 1rem;
+  top: 1rem;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.45rem 0.8rem;
+  border-radius: 999px;
+  background: rgba(11, 61, 110, 0.85);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+.berita-page .berita-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1rem;
+  color: var(--bs-secondary-color);
+}
+.berita-page .berita-judul a {
+  color: var(--bs-emphasis-color);
+}
+.berita-page .berita-judul a:hover {
+  color: var(--bs-primary);
+}
+.berita-page .berita-ringkas {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.berita-page #berita-kosong {
+  font-size: 1.05rem;
+}
+@media (prefers-reduced-motion: reduce) {
+  .berita-page .berita-card,
+  .berita-page .berita-thumb-bg {
+    transition: none;
+  }
+  .berita-page .berita-card:hover,
+  .berita-page .berita-card:hover .berita-thumb-bg {
+    transform: none;
+  }
+}
+
+.hero-title,
 .home-hero h1 {
   color: var(--purple-dark);
   font-size: var(--font-size-hero);
