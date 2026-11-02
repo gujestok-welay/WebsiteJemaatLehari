@@ -1,6 +1,7 @@
 <?= $this->extend('layouts/publik') ?>
 <?= $this->section('content') ?>
 
+<div class="profil-page">
 <section class="profil-hero text-white">
     <div class="container py-5 position-relative">
         <span class="badge rounded-pill badge-soft mb-3">Profil Jemaat</span>
@@ -252,5 +253,6 @@
         <?php endforeach; ?>
     </div>
 </section>
+</div>
 
 <?= $this->endSection() ?>

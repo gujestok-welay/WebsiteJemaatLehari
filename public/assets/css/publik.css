@@ -272,13 +272,77 @@ a:hover {
 }
 
 /* Profil page */
-.profil-hero {
-  background: linear-gradient(135deg, #0b3d6e 0%, #1565a8 55%, #2a8bc4 100%);
+.profil-page {
+  --purple: #4b2a6b;
+  --purple-dark: #2e1a45;
+  --gold: #d8bd72;
+  --paper: #fbf8f3;
+  --surface: #f3ecdf;
+  --ink: #241b2e;
+  --muted: #6b6275;
+  --body-font: "DM Sans", Arial, Helvetica, sans-serif;
+  --display-font: "Cormorant Garamond", Georgia, "Times New Roman", serif;
+  --bs-primary: #4b2a6b;
+  --bs-primary-rgb: 75, 42, 107;
+  --bs-warning: #d8bd72;
+  --bs-warning-rgb: 216, 189, 114;
+  --bs-body-bg: #fbf8f3;
+  --bs-body-color: #241b2e;
+  --bs-secondary-color: #6b6275;
+  --bs-secondary-color-rgb: 107, 98, 117;
+  --bs-tertiary-bg: #f3ecdf;
+  --bs-tertiary-bg-rgb: 243, 236, 223;
+  --bs-border-color: #e7decf;
+  color: var(--ink);
+  background-color: var(--paper);
+  font-family: var(--body-font);
+}
+.profil-page h1,
+.profil-page h2,
+.profil-page h3,
+.profil-page h4,
+.profil-page h5,
+.profil-page h6 {
+  color: var(--ink);
+  font-family: var(--display-font);
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+.profil-page .profil-hero h1 {
+  color: #fff;
+}
+.profil-page .stat-strip .fs-4,
+.profil-page .display-6 {
+  color: var(--ink);
+  font-family: var(--display-font);
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+.profil-page .display-6 > small {
+  font-family: var(--body-font);
+  font-weight: 400;
+  letter-spacing: normal;
+}
+.profil-page .card {
+  --bs-card-bg: #fff;
+  --bs-card-color: var(--ink);
+  --bs-card-border-color: #e7decf;
+}
+.profil-page .table {
+  --bs-table-border-color: #e7decf;
+}
+.profil-page .table-light {
+  --bs-table-bg: #f3ecdf;
+}
+.profil-page .profil-hero {
+  background: linear-gradient(135deg, #2e1a45 0%, #4b2a6b 55%, #663f72 100%);
   padding-bottom: 5rem;
   position: relative;
   overflow: hidden;
 }
-.profil-hero::after {
+.profil-page .profil-hero::after {
   content: "";
   position: absolute;
   inset: auto -10% -60% auto;
@@ -296,7 +360,11 @@ a:hover {
   color: var(--bs-primary);
   font-weight: 600;
 }
-.profil-hero .badge-soft {
+.profil-page .badge-soft {
+  background: rgba(75, 42, 107, 0.12);
+  color: var(--purple);
+}
+.profil-page .profil-hero .badge-soft {
   background: rgba(255, 255, 255, 0.18);
   color: #fff;
 }
@@ -317,18 +385,18 @@ a:hover {
   box-shadow: 0 0.75rem 1.5rem rgba(0, 0, 0, 0.12) !important;
 }
 
-.batas-item {
+.profil-page .batas-item {
   background: rgba(var(--bs-primary-rgb), 0.06);
 }
 
-.musim-timur {
-  background: linear-gradient(135deg, #e3f0fb, #cfe4f6);
+.profil-page .musim-timur {
+  background: linear-gradient(135deg, #f3ecdf, #e7decf);
 }
-.musim-barat {
-  background: linear-gradient(135deg, #fff3dc, #ffe6b8);
+.profil-page .musim-barat {
+  background: linear-gradient(135deg, #fbf8f3, #f3ecdf);
 }
-[data-bs-theme="dark"] .musim-timur,
-[data-bs-theme="dark"] .musim-barat {
+[data-bs-theme="dark"] .profil-page .musim-timur,
+[data-bs-theme="dark"] .profil-page .musim-barat {
   background: var(--bs-tertiary-bg);
 }
 
@@ -349,8 +417,74 @@ a:hover {
 }
 
 /* News page */
+.berita-page {
+  --purple: #4b2a6b;
+  --purple-dark: #2e1a45;
+  --paper: #fbf8f3;
+  --surface: #f3ecdf;
+  --ink: #241b2e;
+  --muted: #6b6275;
+  --body-font: "DM Sans", Arial, Helvetica, sans-serif;
+  --display-font: "Cormorant Garamond", Georgia, "Times New Roman", serif;
+  --bs-primary: #4b2a6b;
+  --bs-primary-rgb: 75, 42, 107;
+  --bs-secondary-color: #6b6275;
+  --bs-secondary-color-rgb: 107, 98, 117;
+  --bs-body-bg: #fbf8f3;
+  --bs-body-color: #241b2e;
+  --bs-tertiary-bg: #f3ecdf;
+  --bs-tertiary-bg-rgb: 243, 236, 223;
+  --bs-border-color: #e7decf;
+  color: var(--ink);
+  background-color: var(--paper);
+  font-family: var(--body-font);
+}
+.berita-page h1,
+.berita-page h2,
+.berita-page h3,
+.berita-page h4,
+.berita-page h5,
+.berita-page h6 {
+  color: var(--ink);
+  font-family: var(--display-font);
+  font-weight: 600 !important;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+.berita-page .berita-hero h1 {
+  color: #fff;
+}
+.berita-page .btn-primary {
+  --bs-btn-color: #fff;
+  --bs-btn-bg: #4b2a6b;
+  --bs-btn-border-color: #4b2a6b;
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: #3c2157;
+  --bs-btn-hover-border-color: #3c2157;
+  --bs-btn-focus-shadow-rgb: 75, 42, 107;
+  --bs-btn-active-color: #fff;
+  --bs-btn-active-bg: #2e1a45;
+  --bs-btn-active-border-color: #2e1a45;
+  --bs-btn-disabled-color: #fff;
+  --bs-btn-disabled-bg: #4b2a6b;
+  --bs-btn-disabled-border-color: #4b2a6b;
+}
+.berita-page .btn-outline-secondary {
+  --bs-btn-color: #4b2a6b;
+  --bs-btn-border-color: #4b2a6b;
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: #4b2a6b;
+  --bs-btn-hover-border-color: #4b2a6b;
+  --bs-btn-focus-shadow-rgb: 75, 42, 107;
+  --bs-btn-active-color: #fff;
+  --bs-btn-active-bg: #2e1a45;
+  --bs-btn-active-border-color: #2e1a45;
+  --bs-btn-disabled-color: #4b2a6b;
+  --bs-btn-disabled-bg: transparent;
+  --bs-btn-disabled-border-color: #4b2a6b;
+}
 .berita-page .berita-hero {
-  background: linear-gradient(135deg, #0b3d6e 0%, #1565a8 55%, #2a8bc4 100%);
+  background: linear-gradient(135deg, #2e1a45 0%, #4b2a6b 55%, #3c2157 100%);
 }
 .berita-page .badge-soft {
   background: rgba(255, 255, 255, 0.18);
@@ -362,6 +496,8 @@ a:hover {
   z-index: 1;
 }
 .berita-page .berita-card {
+  --bs-card-bg: #fff;
+  --bs-card-color: #241b2e;
   transition:
     transform 0.2s ease,
     box-shadow 0.2s ease;
@@ -399,8 +535,9 @@ a:hover {
   gap: 0.35rem;
   padding: 0.45rem 0.8rem;
   border-radius: 999px;
-  background: rgba(11, 61, 110, 0.85);
+  background: rgba(46, 26, 69, 0.88);
   color: #fff;
+  font-family: var(--body-font);
   font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.02em;
@@ -410,12 +547,18 @@ a:hover {
   flex-wrap: wrap;
   gap: 0.75rem 1rem;
   color: var(--bs-secondary-color);
+  font-family: var(--body-font);
 }
 .berita-page .berita-judul a {
-  color: var(--bs-emphasis-color);
+  color: var(--ink);
 }
 .berita-page .berita-judul a:hover {
   color: var(--bs-primary);
+}
+.berita-page .berita-ringkas,
+.berita-page #berita-kosong {
+  color: var(--muted) !important;
+  font-family: var(--body-font);
 }
 .berita-page .berita-ringkas {
   display: -webkit-box;
