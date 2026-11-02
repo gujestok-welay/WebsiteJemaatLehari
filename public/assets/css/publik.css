@@ -494,17 +494,22 @@ a:hover {
   position: relative;
   z-index: 1;
 }
-.berita-page .berita-card {
-  --bs-card-bg: #fff;
+.berita-page #daftar-berita .item-berita .berita-card {
+  --bs-card-bg: rgba(217, 217, 217, 0.58);
   --bs-card-color: #241b2e;
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease;
-  border: 0;
+  box-sizing: border-box;
+  border: 1px solid #fff !important;
+  border-radius: 17px !important;
+  box-shadow: 12px 17px 51px rgba(0, 0, 0, 0.22) !important;
+  backdrop-filter: blur(6px);
+  transition: all 0.5s;
 }
-.berita-page .berita-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 0.75rem 1.5rem rgba(0, 0, 0, 0.12) !important;
+.berita-page #daftar-berita .item-berita .berita-card:hover {
+  border-color: #000 !important;
+  transform: scale(1.05);
+}
+.berita-page #daftar-berita .item-berita .berita-card:has(a:active) {
+  transform: scale(0.95) rotateZ(1.7deg);
 }
 .berita-page .berita-thumb {
   position: relative;
@@ -569,11 +574,12 @@ a:hover {
   font-size: 1.05rem;
 }
 @media (prefers-reduced-motion: reduce) {
-  .berita-page .berita-card,
+  .berita-page #daftar-berita .item-berita .berita-card,
   .berita-page .berita-thumb-bg {
     transition: none;
   }
-  .berita-page .berita-card:hover,
+  .berita-page #daftar-berita .item-berita .berita-card:hover,
+  .berita-page #daftar-berita .item-berita .berita-card:has(a:active),
   .berita-page .berita-card:hover .berita-thumb-bg {
     transform: none;
   }
@@ -1638,11 +1644,23 @@ details[open] summary {
   position: relative;
   z-index: 2;
   width: min(100%, 360px);
-  background: #ffffff;
-  border-radius: 1rem;
-  border: 1px solid rgba(41, 35, 44, 0.08);
-  box-shadow: 0 12px 32px rgba(72, 41, 80, 0.12); /* Bayangan ungu lembut v2 */
+
   padding: 1.5rem;
+
+  box-sizing: border-box;
+
+  background: rgba(217, 217, 217, 0.58);
+  border: 1px solid white;
+  box-shadow: 12px 17px 51px rgba(0, 0, 0, 0.22);
+  backdrop-filter: blur(6px);
+  border-radius: 17px;
+
+  cursor: pointer;
+  transition: all 0.5s;
+
+  user-select: none;
+  font-weight: bolder;
+  color: black;
 
   /* Membuat kartu menjorok keluar ke kiri dan bawah */
   margin-bottom: -5.5rem;
@@ -1660,10 +1678,13 @@ details[open] summary {
 
 .hero-panel-card:hover,
 .hero-panel-card:focus-visible {
-  border-color: rgba(102, 63, 114, 0.32);
-  transform: translateY(-2px);
-  box-shadow: 0 10px 22px rgba(75, 42, 107, 0.06);
+  border: 1px solid black;
+  transform: scale(1.05);
 }
+.card:active {
+  transform: scale(0.95) rotateZ(1.7deg);
+}
+
 .panel-kicker {
   font-size: 0.875rem;
   font-weight: 500;
