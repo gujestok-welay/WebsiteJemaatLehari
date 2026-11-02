@@ -11,20 +11,89 @@ class Home extends BaseController
         $schedules = $this->normalizeSchedules(PublicSampleContent::schedules());
 
         return view('publik/beranda', [
-            'title'          => 'Beranda',
-            'activePage'     => 'beranda',
-            'isSample'       => true, // jadi false saat data database dipakai (Langkah 7)
-            'news'           => $this->normalizeNews(array_slice(PublicSampleContent::news(), 0, 2)),
-            'schedules'      => array_slice($schedules, 0, 4),
-            'nextService'    => $schedules[0] ?? null,
-            'majelis'        => [],
+            'title' => 'Beranda',
+            'activePage' => 'beranda',
+            'isSample' => true, // jadi false saat data database dipakai (Langkah 7)
+            'news' => $this->normalizeNews(array_slice(PublicSampleContent::news(), 0, 2)),
+            'schedules' => array_slice($schedules, 0, 4),
+            'nextService' => $schedules[0] ?? null,
+            'majelis' => [],
             'majelisPeriode' => null,
         ]);
     }
 
     public function profil(): string
     {
-        return $this->page('profil', 'Profil');
+        $data = [
+            'title' => 'Profil',
+            'activePage' => 'profil',
+            'batas' => [
+                ['arah' => 'Utara', 'ikon' => 'bi-arrow-up-circle', 'nama' => 'Jemaat GPM Soya'],
+                ['arah' => 'Timur', 'ikon' => 'bi-arrow-right-circle', 'nama' => 'Jemaat GPM Rutong'],
+                ['arah' => 'Selatan', 'ikon' => 'bi-arrow-down-circle', 'nama' => 'Laut Banda'],
+                ['arah' => 'Barat', 'ikon' => 'bi-arrow-left-circle', 'nama' => 'Jemaat GPM Hukurila'],
+            ],
+            'sektor' => [
+                ['nama' => 'Koinonia', 'unit' => 3, 'luas' => 34.15],
+                ['nama' => 'Diakonia', 'unit' => 3, 'luas' => 12.19],
+                ['nama' => 'Marturia', 'unit' => 3, 'luas' => 6.78],
+            ],
+            'luas_total' => 53.12,
+            'orbitasi' => [
+                ['label' => 'Pusat Kecamatan', 'jarak' => '200 M'],
+                ['label' => 'Pusat Kota', 'jarak' => '24 Km'],
+                ['label' => 'Ibu Kota Provinsi', 'jarak' => '24 Km'],
+                ['label' => 'RSUD Haulussy', 'jarak' => '29 Km'],
+                ['label' => 'Pasar Passo', 'jarak' => '13 Km'],
+                ['label' => 'Pantai Wisata Natsepa', 'jarak' => '19 Km'],
+                ['label' => 'Pusat Perbelanjaan Mall', 'jarak' => '13 Km'],
+                ['label' => 'Angkutan Umum (roda 4)', 'jarak' => '4 buah'],
+            ],
+            'usia' => [
+                ['label' => '0-3', 'lk' => 12, 'pr' => 7],
+                ['label' => '4-6', 'lk' => 11, 'pr' => 6],
+                ['label' => '7-9', 'lk' => 8, 'pr' => 4],
+                ['label' => '10-12', 'lk' => 13, 'pr' => 17],
+                ['label' => '13-15', 'lk' => 12, 'pr' => 19],
+                ['label' => '16-45', 'lk' => 171, 'pr' => 143],
+                ['label' => '46-59', 'lk' => 61, 'pr' => 64],
+                ['label' => '60-85', 'lk' => 35, 'pr' => 39],
+                ['label' => '> 86', 'lk' => 2, 'pr' => 0],
+            ],
+            'total_kk' => 199,
+            'ibadah' => [
+                ['hari' => 'Minggu', 'nama' => 'Ibadah Minggu', 'tempat' => 'Gedung gereja', 'ket' => 'Dihadiri seluruh jemaat dari berbagai usia'],
+                ['hari' => 'Minggu', 'nama' => 'Sekolah Minggu', 'tempat' => 'Gedung gereja', 'ket' => 'Dihadiri pengasuh dan anak SMTPI'],
+                ['hari' => 'Minggu', 'nama' => 'Ibadah Pengasuh', 'tempat' => 'Rumah pengasuh', 'ket' => 'Sebulan 1x, sesuai jadwal'],
+                ['hari' => 'Senin', 'nama' => 'Tunas Pekabaran Injil', 'tempat' => 'Rumah jemaat', 'ket' => 'Tiap jenjang SMTPI, bergiliran'],
+                ['hari' => 'Senin', 'nama' => 'Batu Tungku', 'tempat' => 'Gereja, kantor negeri, sekolah', 'ket' => 'Sesuai jadwal'],
+                ['hari' => 'Senin', 'nama' => 'Warga Gereja Senior', 'tempat' => 'Rumah WGS', 'ket' => 'Sesuai jadwal'],
+                ['hari' => 'Selasa', 'nama' => 'Wadah Pelayanan Laki-laki', 'tempat' => 'Rumah anggota wadah', 'ket' => 'Dijadwalkan di tiap sektor'],
+                ['hari' => 'Selasa', 'nama' => 'HIPPMAL', 'tempat' => 'Rumah anggota HIPPMAL', 'ket' => 'Himpunan Pemuda Pelajar asal Leahari'],
+                ['hari' => 'Selasa / Rabu', 'nama' => 'Kemitraan', 'tempat' => 'Rumah jemaat', 'ket' => 'Dijadwalkan 2 bulan 1x'],
+                ['hari' => 'Rabu', 'nama' => 'Wadah Pelayanan Perempuan', 'tempat' => 'Rumah anggota wadah', 'ket' => 'Dijadwalkan di tiap sektor'],
+                ['hari' => 'Kamis', 'nama' => 'AMGPM', 'tempat' => 'Rumah anggota AMGPM', 'ket' => 'Sesuai jadwal'],
+                ['hari' => 'Kamis', 'nama' => 'Keluarga MJ dan Tuagama', 'tempat' => 'Rumah MJ dan tuagama', 'ket' => 'Setiap bulan, minggu I'],
+                ['hari' => 'Jumat', 'nama' => 'Ibadah Unit', 'tempat' => 'Rumah jemaat', 'ket' => 'Dilaksanakan di tiap sektor'],
+            ],
+        ];
+
+        $totalJiwa = 0;
+        foreach ($data['usia'] as $u) {
+            $totalJiwa += $u['lk'] + $u['pr'];
+        }
+
+        $maxJumlah = max(array_map(fn($u) => $u['lk'] + $u['pr'], $data['usia']));
+        foreach ($data['usia'] as &$u) {
+            $u['jumlah'] = $u['lk'] + $u['pr'];
+            $u['persen'] = $maxJumlah ? round($u['jumlah'] / $maxJumlah * 100) : 0;
+        }
+        unset($u);
+
+        $data['total_jiwa'] = $totalJiwa;
+        $data['luas_total'] = array_sum(array_column($data['sektor'], 'luas'));
+
+        return view('publik/profil', $data);
     }
 
     public function berita(): string
@@ -50,13 +119,13 @@ class Home extends BaseController
     /** Bentuk seragam untuk kartu berita di Beranda. */
     private function normalizeNews(array $rows): array
     {
-        return array_map(static fn (array $row): array => [
-            'title'    => $row['title'],
-            'summary'  => $row['summary'],
-            'date'     => $row['date'],
+        return array_map(static fn(array $row): array => [
+            'title' => $row['title'],
+            'summary' => $row['summary'],
+            'date' => $row['date'],
             'category' => $row['category'] ?? null,
-            'url'      => site_url('berita') . '#' . $row['id'],
-            'image'    => null,
+            'url' => site_url('berita') . '#' . $row['id'],
+            'image' => null,
         ], $rows);
     }
 
@@ -69,14 +138,14 @@ class Home extends BaseController
             $date = new \DateTimeImmutable($row['date']);
 
             return [
-                'name'      => $row['name'],
-                'date'      => $row['date'],
+                'name' => $row['name'],
+                'date' => $row['date'],
                 'day_label' => $row['day'],
-                'dow'       => $dow[(int) $date->format('w')],
-                'dom'       => $date->format('j'),
-                'time'      => $row['time'],
-                'location'  => $row['location'],
-                'minister'  => $row['minister'] ?? null,
+                'dow' => $dow[(int) $date->format('w')],
+                'dom' => $date->format('j'),
+                'time' => $row['time'],
+                'location' => $row['location'],
+                'minister' => $row['minister'] ?? null,
                 'cancelled' => false,
             ];
         }, $rows);
