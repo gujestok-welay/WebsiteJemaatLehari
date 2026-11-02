@@ -34,7 +34,7 @@ Untuk host/port berbeda, atur `app.baseURL` pada `.env` lokal mengikuti contoh `
 
 Skill: `.agents/skills/design-taste-frontend/SKILL.md`.
 Direction: **Type and nothing else**, seed **250235948**; tidak ada redraw.
-Palet dipertahankan dari brief: ungu `#663F72`, emas `#D8BD72`, putih. Georgia untuk judul dan Arial untuk teks, tanpa permintaan font eksternal. Teks utama 18px, permukaan datar, tanpa gradient/glass/kartu dekoratif.
+Palet dipertahankan dari brief: ungu `#663F72`, emas `#D8BD72`, putih. Georgia untuk judul dan Arial untuk teks, tanpa permintaan font eksternal. Teks utama 18px. Kartu berita beranda memakai komponen Bootstrap 5 dengan elevasi ringan dan gerak mengambang halus; animasi berhenti saat diarahkan atau difokuskan dan dinonaktifkan untuk preferensi reduced motion. Tidak memakai glass effect atau gambar dekoratif.
 
 Inventaris yang dapat digunakan dengan jujur: nama Jemaat Leahari, konteks Maluku, Bahasa Indonesia, empat tujuan navigasi, kebutuhan berita dan jadwal, zona WIT, pembaca semua usia, palet usulan, serta status data belum disahkan. Tidak ada foto, logo, nama pengurus, sejarah, atau kontak resmi di aset proyek. Tidak mengarang makna nama, tahun berdiri, statistik, atau identitas personel untuk melengkapi konsep.
 

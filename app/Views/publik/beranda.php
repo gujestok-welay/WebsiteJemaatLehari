@@ -112,15 +112,16 @@ $latestNews = array_slice($news, 0, 2);
                     <?php else: ?>
                         <div class="news-list">
                             <?php foreach ($latestNews as $item): ?>
-                                <article class="news-card">
+                                <article class="news-card card rounded-4 shadow-sm overflow-hidden">
                                     <div class="news-card-thumb" aria-hidden="true">Warta</div>
-                                    <div class="news-card-copy">
-                                        <p class="meta">Contoh · <?= esc($item['category'] ?? 'Umum') ?> ·
+                                    <div class="news-card-copy card-body">
+                                        <p class="meta small text-body-secondary">Contoh · <?= esc($item['category'] ?? 'Umum') ?> ·
                                             <?= esc($item['date'] ?? '') ?>
                                         </p>
                                         <h3><a href="<?= esc($item['url'], 'attr') ?>"><?= esc($item['title']) ?></a></h3>
                                         <p><?= esc($item['summary']) ?></p>
-                                        <a class="inline-link" href="<?= esc($item['url'], 'attr') ?>">Baca selengkapnya <span
+                                        <a class="inline-link fw-semibold text-decoration-none"
+                                            href="<?= esc($item['url'], 'attr') ?>">Baca selengkapnya <span
                                                 aria-hidden="true">→</span></a>
                                     </div>
                                 </article>
@@ -131,7 +132,7 @@ $latestNews = array_slice($news, 0, 2);
             </div>
 
             <div class="col-lg-5">
-                <aside class="home-schedule" aria-labelledby="jadwal-contoh">
+                <aside class="home-schedule card shadow-sm" aria-labelledby="jadwal-contoh">
                     <div class="schedule-intro">
                         <h2 id="jadwal-contoh">Jadwal ibadah</h2>
                         <p>Contoh tampilan jadwal. Pastikan waktu dan tempat melalui informasi resmi jemaat.</p>
