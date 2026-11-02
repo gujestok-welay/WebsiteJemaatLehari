@@ -1,8 +1,13 @@
 /vendor/
+/node_modules/
+/bower_components/
+/packages/
 /.env
 /build/
 /.taste-skill/
 /resources/private/
+
+# Large dependency folders: install locally instead of committing them
 
 # AI assistants and their local configuration
 /.agents/
@@ -28,3 +33,5 @@ GEMINI.md
 .windsurfrules
 skills-lock.json
 .codex
+.impeccable
+.taste-skill
