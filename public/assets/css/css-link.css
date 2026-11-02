@@ -1,0 +1,37 @@
+.css-link {
+    position: relative;
+    text-decoration: none;
+}
+
+.css-link::before {
+    content: "";
+    position: absolute;
+    right: 0;
+    z-index: 2;
+    bottom: 0.05em;
+    left: 0;
+    height: 1px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: right center;
+    transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+}
+
+.css-link:hover::before,
+.css-link:focus-visible::before,
+.css-link:active::before {
+    transform: scaleX(1);
+    transform-origin: left center;
+}
+
+.css-link:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .css-link::before {
+        transition: none;
+    }
+}
