@@ -14,6 +14,7 @@
         type="font/woff2" crossorigin>
     <link rel="stylesheet" href="<?= base_url('assets/vendor/bootstrap/bootstrap.min.css') ?>">
     <link rel="stylesheet" href="<?= base_url('assets/css/publik.css') ?>">
+    <link rel="stylesheet" href="<?= base_url('assets/css/css-link.css') ?>">
     <script defer src="<?= base_url('assets/vendor/bootstrap/bootstrap.bundle.min.js') ?>"></script>
     <script defer src="<?= base_url('assets/js/publik.js') ?>"></script>
 </head>

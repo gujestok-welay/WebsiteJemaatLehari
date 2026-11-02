@@ -20,9 +20,16 @@ $latestNews = array_slice($news, 0, 2);
                     merencanakan kehadiran dalam ibadah.</p>
 
                 <div class="d-flex flex-wrap align-items-center gap-3 home-actions">
-                    <a class="btn btn-gold" href="<?= site_url('jadwal-ibadah') ?>">Lihat jadwal ibadah <span
-                            aria-hidden="true">↗</span></a>
-                    <a class="home-inline-link" href="<?= site_url('berita') ?>">Berita jemaat</a>
+                    <a class="btn btn-gold" href="<?= site_url('jadwal-ibadah') ?>">
+                        <span class="btn-gold-label">Lihat jadwal ibadah</span>
+                        <span class="btn-gold-icon" aria-hidden="true">↗</span>
+                    </a>
+                    <?= view('components/css-link', [
+                        'url' => site_url('berita'),
+                        'label' => 'Berita jemaat',
+                        'className' => 'home-inline-link',
+                        'icon' => '',
+                    ]) ?>
                 </div>
 
 
@@ -51,8 +58,12 @@ $latestNews = array_slice($news, 0, 2);
                                     </svg>
                                     <?= esc($nextService['time']) ?> WIT
                                 </span>
-                                <a class="panel-link" href="<?= site_url('jadwal-ibadah') ?>">Detail <span
-                                        aria-hidden="true">→</span></a>
+                                <?= view('components/css-link', [
+                                    'url' => site_url('jadwal-ibadah'),
+                                    'label' => 'Detail',
+                                    'icon' => '→',
+                                    'className' => 'panel-link',
+                                ]) ?>
                             </div>
                         </div>
                     <?php else: ?>
@@ -104,7 +115,12 @@ $latestNews = array_slice($news, 0, 2);
                 <section class="home-news" aria-labelledby="warta">
                     <div class="section-heading">
                         <h2 id="warta">Berita jemaat</h2>
-                        <a href="<?= site_url('berita') ?>">Semua berita <span aria-hidden="true">↗</span></a>
+                        <?= view('components/css-link', [
+                            'url' => site_url('berita'),
+                            'label' => 'Semua berita',
+                            'icon' => '↗',
+                            'className' => '',
+                        ]) ?>
                     </div>
 
                     <?php if (empty($news)): ?>
@@ -118,11 +134,19 @@ $latestNews = array_slice($news, 0, 2);
                                         <p class="meta small text-body-secondary">Contoh · <?= esc($item['category'] ?? 'Umum') ?> ·
                                             <?= esc($item['date'] ?? '') ?>
                                         </p>
-                                        <h3><a href="<?= esc($item['url'], 'attr') ?>"><?= esc($item['title']) ?></a></h3>
+                                        <h3><?= view('components/css-link', [
+                                            'url' => $item['url'],
+                                            'label' => $item['title'],
+                                            'className' => '',
+                                            'icon' => '',
+                                        ]) ?></h3>
                                         <p><?= esc($item['summary']) ?></p>
-                                        <a class="inline-link fw-semibold text-decoration-none"
-                                            href="<?= esc($item['url'], 'attr') ?>">Baca selengkapnya <span
-                                                aria-hidden="true">→</span></a>
+                                        <?= view('components/css-link', [
+                                            'url' => $item['url'],
+                                            'label' => 'Baca selengkapnya',
+                                            'icon' => '→',
+                                            'className' => 'inline-link fw-semibold text-decoration-none',
+                                        ]) ?>
                                     </div>
                                 </article>
                             <?php endforeach ?>
@@ -136,8 +160,12 @@ $latestNews = array_slice($news, 0, 2);
                     <div class="schedule-intro">
                         <h2 id="jadwal-contoh">Jadwal ibadah</h2>
                         <p>Contoh tampilan jadwal. Pastikan waktu dan tempat melalui informasi resmi jemaat.</p>
-                        <a href="<?= site_url('jadwal-ibadah') ?>">Lihat seluruh jadwal <span
-                                aria-hidden="true">↗</span></a>
+                        <?= view('components/css-link', [
+                            'url' => site_url('jadwal-ibadah'),
+                            'label' => 'Lihat seluruh jadwal',
+                            'icon' => '↗',
+                            'className' => '',
+                        ]) ?>
                     </div>
 
                     <div class="schedule-list">
@@ -175,7 +203,12 @@ $latestNews = array_slice($news, 0, 2);
                     <h2>Jemaat tumbuh bukan hanya dalam ibadah, tetapi dalam pelayanan bersama.</h2>
                     <p>Informasi resmi tetap mengikuti saluran yang telah ditetapkan, agar setiap pembaruan dapat dibaca
                         dengan jelas dan konsisten.</p>
-                    <a href="<?= site_url('profil') ?>">Baca profil jemaat <span aria-hidden="true">↗</span></a>
+                    <?= view('components/css-link', [
+                        'url' => site_url('profil'),
+                        'label' => 'Baca profil jemaat',
+                        'icon' => '↗',
+                        'className' => '',
+                    ]) ?>
                 </div>
             </div>
         </div>
@@ -191,7 +224,12 @@ $latestNews = array_slice($news, 0, 2);
                     <p class="intro-text">Profil menjadi tempat mengenal sejarah, pelayanan, dan orang-orang yang
                         melayani di Jemaat Leahari.</p>
                     <p>Isi profil masih menunggu data resmi yang disetujui untuk publikasi.</p>
-                    <a href="<?= site_url('profil') ?>">Baca profil jemaat <span aria-hidden="true">↗</span></a>
+                    <?= view('components/css-link', [
+                        'url' => site_url('profil'),
+                        'label' => 'Baca profil jemaat',
+                        'icon' => '↗',
+                        'className' => '',
+                    ]) ?>
                 </div>
             </div>
         </div>

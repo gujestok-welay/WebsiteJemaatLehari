@@ -44,9 +44,12 @@
                             </div>
 
                             <h2 class="berita-judul h4 fw-bold mb-3">
-                                <a href="<?= site_url('berita') . '#' . esc($item['id'], 'attr') ?>" class="stretched-link text-decoration-none">
-                                    <?= esc($item['title']) ?>
-                                </a>
+                                <?= view('components/css-link', [
+                                    'url' => site_url('berita') . '#' . (string) $item['id'],
+                                    'label' => $item['title'],
+                                    'className' => 'stretched-link text-decoration-none',
+                                    'icon' => '',
+                                ]) ?>
                             </h2>
 
                             <p class="text-body-secondary mb-0 berita-ringkas"><?= esc($item['summary']) ?></p>
