@@ -8,6 +8,11 @@
 /resources/private/
 
 # Large dependency folders: install locally instead of committing them
+.pdf
+.doc
+.docx
+.ppt
+.pptx
 
 # AI assistants and their local configuration
 /.agents/
