@@ -2,12 +2,86 @@
 <?= $this->section('content') ?>
 <style>
     .jadwal-page {
+        --purple: #4B2A6B;
+        --purple-dark: #2E1A45;
+        --paper: #FBF8F3;
+        --surface: #F3ECDF;
+        --ink: #241B2E;
+        --muted: #6B6275;
+        --body-font: "DM Sans", Arial, Helvetica, sans-serif;
+        --display-font: "Cormorant Garamond", Georgia, "Times New Roman", serif;
+        --bs-primary: #4B2A6B;
+        --bs-primary-rgb: 75, 42, 107;
+        --bs-secondary-color: #6B6275;
+        --bs-secondary-color-rgb: 107, 98, 117;
+        --bs-tertiary-color: #8A7F94;
+        --bs-body-bg: #FBF8F3;
+        --bs-body-color: #241B2E;
+        --bs-tertiary-bg: #F3ECDF;
+        --bs-border-color: #E7DECF;
+        --bs-link-color: #4B2A6B;
+        --bs-link-hover-color: #3C2157;
         color: var(--ink);
-        background: linear-gradient(180deg, #f9f4ef 0%, var(--paper) 16rem, var(--paper) 100%);
+        background: linear-gradient(180deg, var(--surface) 0%, var(--paper) 16rem, var(--paper) 100%);
+        font-family: var(--body-font);
+    }
+
+    .jadwal-page h1,
+    .jadwal-page h2,
+    .jadwal-page h3,
+    .jadwal-page h4,
+    .jadwal-page h5,
+    .jadwal-page h6 {
+        color: var(--ink);
+        font-family: var(--display-font);
+        font-weight: 600 !important;
+        line-height: 1.1;
+        letter-spacing: -0.02em;
+    }
+
+    .jadwal-page .jadwal-hero h1 {
+        color: #fff;
+    }
+
+    .jadwal-page .card {
+        --bs-card-bg: #fff;
+        --bs-card-color: var(--ink);
+        --bs-card-title-color: var(--ink);
+    }
+
+    .jadwal-page .btn-primary {
+        --bs-btn-color: #fff;
+        --bs-btn-bg: #4B2A6B;
+        --bs-btn-border-color: #4B2A6B;
+        --bs-btn-hover-color: #fff;
+        --bs-btn-hover-bg: #3C2157;
+        --bs-btn-hover-border-color: #3C2157;
+        --bs-btn-focus-shadow-rgb: 75, 42, 107;
+        --bs-btn-active-color: #fff;
+        --bs-btn-active-bg: #2E1A45;
+        --bs-btn-active-border-color: #2E1A45;
+        --bs-btn-disabled-color: #fff;
+        --bs-btn-disabled-bg: #4B2A6B;
+        --bs-btn-disabled-border-color: #4B2A6B;
+    }
+
+    .jadwal-page .btn-outline-primary {
+        --bs-btn-color: #4B2A6B;
+        --bs-btn-border-color: #4B2A6B;
+        --bs-btn-hover-color: #fff;
+        --bs-btn-hover-bg: #4B2A6B;
+        --bs-btn-hover-border-color: #4B2A6B;
+        --bs-btn-focus-shadow-rgb: 75, 42, 107;
+        --bs-btn-active-color: #fff;
+        --bs-btn-active-bg: #2E1A45;
+        --bs-btn-active-border-color: #2E1A45;
+        --bs-btn-disabled-color: #4B2A6B;
+        --bs-btn-disabled-bg: transparent;
+        --bs-btn-disabled-border-color: #4B2A6B;
     }
 
     .jadwal-page .jadwal-hero {
-        background: linear-gradient(135deg, #0b3d6e 0%, #1565a8 55%, #2a8bc4 100%);
+        background: linear-gradient(135deg, #2E1A45 0%, #4B2A6B 55%, #3C2157 100%);
         padding: 6.5rem 0 5rem;
         position: relative;
         overflow: hidden;
