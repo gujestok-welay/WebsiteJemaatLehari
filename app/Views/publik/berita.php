@@ -1,9 +1,94 @@
 <?= $this->extend('layouts/publik') ?>
 <?= $this->section('content') ?>
-<div class="page-intro site-frame"><h1>Berita jemaat</h1><p>Kabar kegiatan dan pelayanan dalam satu tempat. Semua artikel di bawah ini merupakan konten dummy.</p></div>
-<section class="site-frame news-archive" aria-labelledby="daftar-berita"><h2 id="daftar-berita">Warta & kegiatan</h2>
-    <?php foreach ($news as $item): ?>
-        <article class="news-row" id="<?= esc($item['id'], 'attr') ?>"><div><h3><?= esc($item['title']) ?></h3><p class="meta">Dummy · <?= esc($item['category']) ?></p><p class="meta"><?= esc($item['date']) ?> · Tanggal contoh</p></div><div><p><?= esc($item['summary']) ?></p><details><summary>Baca isi contoh</summary><p><?= esc($item['body']) ?></p></details></div></article>
-    <?php endforeach ?>
-</section>
+
+<div class="berita-page">
+    <section class="berita-hero text-white">
+        <div class="container py-5">
+            <span class="badge rounded-pill badge-soft mb-3">Berita</span>
+            <h1 class="display-6 fw-bold mb-2">Berita &amp; Peristiwa</h1>
+            <p class="lead mb-0 col-lg-7">Kabar terbaru kegiatan dan pelayanan Jemaat GPM Leahari.</p>
+        </div>
+    </section>
+
+    <section class="container py-5 berita-shell">
+        <?php
+        $categories = [];
+        foreach ($news as $item) {
+            $categories[(string) $item['category']] = true;
+        }
+        ?>
+
+        <div class="d-flex flex-wrap gap-2 mb-4" id="filter-kategori">
+            <button type="button" class="btn btn-sm rounded-pill btn-primary" data-kategori="all">Semua</button>
+            <?php foreach (array_keys($categories) as $nama): ?>
+                <button type="button" class="btn btn-sm rounded-pill btn-outline-secondary" data-kategori="<?= esc($nama, 'attr') ?>"><?= esc($nama) ?></button>
+            <?php endforeach; ?>
+        </div>
+
+        <div class="row g-4" id="daftar-berita">
+            <?php foreach ($news as $index => $item):
+                $categoryName = (string) ($item['category'] ?? 'Umum');
+                $bgImage = base_url('assets/images/kegiatan/berita' . (($index % 3) + 1) . '.jpeg');
+            ?>
+                <div class="col-md-6 col-lg-4 item-berita" data-kategori="<?= esc($categoryName, 'attr') ?>">
+                    <article class="card berita-card border-0 shadow-sm rounded-4 h-100 overflow-hidden">
+                        <a href="<?= site_url('berita') . '#' . esc($item['id'], 'attr') ?>" class="berita-thumb d-block" aria-label="Buka <?= esc($item['title'], 'attr') ?>">
+                            <span class="berita-thumb-bg" style="background-image:url('<?= $bgImage ?>');"></span>
+                            <span class="berita-chip"><?= esc($categoryName) ?></span>
+                        </a>
+
+                        <div class="card-body p-4 d-flex flex-column">
+                            <div class="berita-meta small text-body-secondary d-flex flex-wrap gap-3 mb-3">
+                                <span><i class="bi bi-calendar3 me-1"></i><?= esc($item['date']) ?></span>
+                                <span><i class="bi bi-person-fill me-1"></i>Admin</span>
+                            </div>
+
+                            <h2 class="berita-judul h4 fw-bold mb-3">
+                                <a href="<?= site_url('berita') . '#' . esc($item['id'], 'attr') ?>" class="stretched-link text-decoration-none">
+                                    <?= esc($item['title']) ?>
+                                </a>
+                            </h2>
+
+                            <p class="text-body-secondary mb-0 berita-ringkas"><?= esc($item['summary']) ?></p>
+                        </div>
+                    </article>
+                </div>
+            <?php endforeach; ?>
+        </div>
+
+        <p id="berita-kosong" class="text-center text-body-secondary py-5 d-none">Belum ada berita pada kategori ini.</p>
+    </section>
+</div>
+
+<script>
+(function () {
+    var buttons = document.querySelectorAll('#filter-kategori button');
+    var items = document.querySelectorAll('.item-berita');
+    var empty = document.getElementById('berita-kosong');
+
+    buttons.forEach(function (button) {
+        button.addEventListener('click', function () {
+            var selected = button.dataset.kategori;
+            var visible = 0;
+
+            buttons.forEach(function (btn) {
+                var active = btn === button;
+                btn.classList.toggle('btn-primary', active);
+                btn.classList.toggle('btn-outline-secondary', !active);
+            });
+
+            items.forEach(function (item) {
+                var match = selected === 'all' || item.dataset.kategori === selected;
+                item.classList.toggle('d-none', !match);
+                if (match) visible++;
+            });
+
+            if (empty) {
+                empty.classList.toggle('d-none', visible > 0);
+            }
+        });
+    });
+})();
+</script>
+
 <?= $this->endSection() ?>
