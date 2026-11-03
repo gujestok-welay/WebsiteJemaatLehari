@@ -17,7 +17,7 @@
         a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 3px solid var(--focus); outline-offset: 5px; }
         .topbar { background:var(--panel); border-bottom:1px solid var(--line); }
         .brand { display:flex; align-items:center; gap:12px; font-weight:700; color:var(--ink); text-decoration:none; }
-        .brand-mark { width:38px; height:38px; display:grid; place-items:center; background:var(--accent); color:#fff; border-radius:6px; }
+        .brand-mark { display:block; width:38px; height:38px; flex:0 0 auto; object-fit:contain; }
         .main-shell { max-width:1200px; margin:0 auto; padding:32px 20px 60px; }
         .page-head { display:flex; justify-content:space-between; align-items:flex-start; gap:16px; margin-bottom:24px; }
         .page-head h1 { margin:0; font-size:clamp(2rem, 4vw, 2.8rem); font-weight:700; }
@@ -49,7 +49,7 @@
 <header class="topbar">
     <div class="container-fluid px-4 py-3 d-flex justify-content-between align-items-center">
         <a class="brand" href="<?= site_url('admin/dashboard') ?>">
-            <span class="brand-mark" aria-hidden="true">L</span>
+            <img class="brand-mark" src="<?= base_url('assets/images/logo/LogoGPM.png') ?>" alt="" width="38" height="38">
             <span>Media Center<br>Jemaat Leahari</span>
         </a>
         <form method="post" action="<?= site_url('admin/logout') ?>"><?= csrf_field() ?><button class="btn btn-secondary" type="submit">Keluar</button></form>
