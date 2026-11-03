@@ -1,7 +1,7 @@
 <?php $currentPath = trim(uri_string(), '/'); ?>
 <aside class="admin-sidebar" id="adminSidebar" aria-label="Navigasi administrasi">
     <a class="sidebar-brand" href="<?= site_url('admin/dashboard') ?>">
-        <span class="brand-mark" aria-hidden="true">L</span>
+        <img class="brand-mark" src="<?= base_url('assets/images/logo/LogoGPM.png') ?>" alt="" width="42" height="42">
         <span><strong>Media Center</strong><small>Jemaat Leahari</small></span>
     </a>
 
