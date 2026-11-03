@@ -2,6 +2,8 @@
 
 namespace App\Controllers;
 
+use App\Models\BeritaModel;
+
 class AdminAuth extends BaseController
 {
     public function index(): \CodeIgniter\HTTP\RedirectResponse
@@ -113,6 +115,9 @@ class AdminAuth extends BaseController
             'latestNews' => $latestNews,
             'nextSchedule' => $nextSchedule,
             'scheduleError' => session()->getFlashdata('schedule_error') ?? '',
+            'newsError' => session()->getFlashdata('news_error') ?? '',
+            'newsModalOpen' => $this->request->getGet('create') === '1',
+            'statusOptions' => BeritaModel::statusOptions(),
         ], 'Ringkasan');
     }
 

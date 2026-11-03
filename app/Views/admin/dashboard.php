@@ -1,12 +1,12 @@
 <?= $this->extend('layouts/admin') ?>
 
 <?= $this->section('content') ?>
-<section class="welcome-panel" aria-labelledby="welcome-title">
+<section class="welcome-panel" aria-labelledby="welcome-title" style="background-image: linear-gradient(to right, rgba(46, 26, 69, .95) 0%, rgba(46, 26, 69, .8) 55%, rgba(46, 26, 69, .58) 100%), url('<?= esc(base_url('assets/images/gereja/Gereja-tampak-dalam.jpg'), 'attr') ?>');">
     <div class="welcome-copy">
         <h1 id="welcome-title">Selamat datang, <?= esc($name) ?></h1>
         <p>Kelola berita, jadwal ibadah, profil, dan statistik jemaat dari satu tempat.</p>
         <div class="welcome-actions">
-            <a class="button button-light" href="<?= site_url('admin/berita/create') ?>">Tulis berita</a>
+            <a class="button button-outline-light" href="<?= site_url('admin/berita/create') ?>" data-rm-open="#news-create-modal">Tulis berita</a>
             <a class="button button-outline-light" href="<?= site_url('admin/jadwal/create') ?>" data-rm-open="#schedule-create-modal">Tambah jadwal</a>
         </div>
     </div>
@@ -46,7 +46,7 @@
                 <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M12 8h19l7 7v25H12a3 3 0 0 1-3-3V11a3 3 0 0 1 3-3Z"/><path d="M30 8v8h8M17 23h16M17 29h16M17 35h10"/></svg>
                 <h3>Belum ada berita</h3>
                 <p>Berita yang disimpan akan tampil di sini.</p>
-                <a class="text-link" href="<?= site_url('admin/berita/create') ?>">Buat berita pertama</a>
+                <a class="text-link" href="<?= site_url('admin/berita/create') ?>" data-rm-open="#news-create-modal">Buat berita pertama</a>
             </div>
         <?php else: ?>
             <ul class="news-list">
@@ -96,5 +96,11 @@
 <?= $this->include('components/ui/schedule-create-modal', [
     'scheduleError' => $scheduleError ?? '',
     'returnTo' => 'admin/dashboard',
+]) ?>
+<?= $this->include('components/ui/news-create-modal', [
+    'newsError' => $newsError ?? '',
+    'returnTo' => 'admin/dashboard',
+    'defaultOpen' => $newsModalOpen ?? false,
+    'statusOptions' => $statusOptions,
 ]) ?>
 <?= $this->endSection() ?>

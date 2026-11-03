@@ -250,7 +250,8 @@ a:focus-visible, button:focus-visible {
     overflow: hidden;
     border-radius: 16px;
     padding: clamp(24px, 4vw, 42px);
-    background: var(--admin-purple-dark);
+    background-size: cover;
+    background-position: center;
     color: #fff;
 }
 

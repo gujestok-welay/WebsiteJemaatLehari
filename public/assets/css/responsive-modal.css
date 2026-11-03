@@ -26,11 +26,16 @@
     box-shadow: none;
 }
 
-.rm-schedule-form {
+.rm-form {
     display: flex;
     min-height: 0;
     flex: 1 1 auto;
     flex-direction: column;
+}
+
+.rm-news-form .modal-body {
+    max-height: calc(100dvh - 220px);
+    overflow-y: auto;
 }
 
 .rm.offcanvas-bottom {
@@ -98,6 +103,10 @@
     color: var(--admin-ink, #241b2e);
     font-size: .86rem;
     font-weight: 600;
+}
+
+.rm-field-full {
+    grid-column: 1 / -1;
 }
 
 .rm-field .form-control,

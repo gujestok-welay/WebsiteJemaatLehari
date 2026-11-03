@@ -27,16 +27,14 @@ class AdminBerita extends BaseController
             'statusOptions' => BeritaModel::statusOptions(),
             'success' => session()->getFlashdata('success'),
             'error' => session()->getFlashdata('error'),
+            'newsError' => session()->getFlashdata('news_error') ?? '',
+            'newsModalOpen' => $this->request->getGet('create') === '1',
         ], 'Berita');
     }
 
-    public function create(): string
+    public function create(): \CodeIgniter\HTTP\RedirectResponse
     {
-        return view('admin/berita/form', [
-            'item' => null,
-            'statusOptions' => BeritaModel::statusOptions(),
-            'error' => session()->getFlashdata('error'),
-        ]);
+        return redirect()->to(site_url('admin/berita?create=1'));
     }
 
     public function edit(int $id): string
@@ -63,7 +61,7 @@ class AdminBerita extends BaseController
         $slug = trim((string) $this->request->getPost('slug'));
 
         if ($title === '' || $summary === '' || $content === '' || ! in_array($status, BeritaModel::statusOptions(), true)) {
-            return redirect()->back()->withInput()->with('error', 'Judul, ringkasan, isi, dan status berita wajib diisi.');
+            return $this->redirectWithSaveError('Judul, ringkasan, isi, dan status berita wajib diisi.', $id);
         }
 
         $slug = $slug !== '' ? $slug : BeritaModel::generateSlug($title);
@@ -83,7 +81,7 @@ class AdminBerita extends BaseController
         if ($uploadedFile instanceof UploadedFile && $uploadedFile->getError() !== UPLOAD_ERR_NO_FILE) {
             $uploadResult = $this->handleCoverUpload($uploadedFile, $id ? $id : null);
             if ($uploadResult['success'] === false) {
-                return redirect()->back()->withInput()->with('error', $uploadResult['message']);
+                return $this->redirectWithSaveError($uploadResult['message'], $id);
             }
             $data['cover_image'] = $uploadResult['file'];
         }
@@ -98,6 +96,20 @@ class AdminBerita extends BaseController
         $this->model->insert($data);
 
         return redirect()->to(site_url('admin/berita'))->with('success', 'Berita baru berhasil disimpan.');
+    }
+
+    protected function redirectWithSaveError(string $message, int $id): \CodeIgniter\HTTP\RedirectResponse
+    {
+        if ($id > 0) {
+            return redirect()->back()->withInput()->with('error', $message);
+        }
+
+        $returnTo = (string) $this->request->getPost('return_to');
+        if (! in_array($returnTo, ['admin/berita', 'admin/dashboard'], true)) {
+            $returnTo = 'admin/berita';
+        }
+
+        return redirect()->to(site_url($returnTo) . '?create=1')->withInput()->with('news_error', $message);
     }
 
     public function delete(int $id): \CodeIgniter\HTTP\RedirectResponse

@@ -1,5 +1,7 @@
 <?php
 
+use App\Controllers\AdminBerita;
+use App\Controllers\AdminJadwal;
 use App\Controllers\BaseController;
 use CodeIgniter\Test\CIUnitTestCase;
 
@@ -78,6 +80,26 @@ final class TestableAdminPageController extends BaseController
 
 final class AdminPartialNavigationTest extends CIUnitTestCase
 {
+    public function testCreateRouteRedirectsToNewsListWithModalOpen(): void
+    {
+        $controller = (new ReflectionClass(AdminBerita::class))->newInstanceWithoutConstructor();
+        $controller->initController(service('request'), service('response'), service('logger'));
+
+        $response = $controller->create();
+
+        $this->assertSame(site_url('admin/berita?create=1'), $response->getHeaderLine('Location'));
+    }
+
+    public function testScheduleCreateRouteRedirectsToScheduleListWithModalOpen(): void
+    {
+        $controller = (new ReflectionClass(AdminJadwal::class))->newInstanceWithoutConstructor();
+        $controller->initController(service('request'), service('response'), service('logger'));
+
+        $response = $controller->create();
+
+        $this->assertSame(site_url('admin/jadwal?create=1'), $response->getHeaderLine('Location'));
+    }
+
     public function testPartialNewsResponseContainsOnlyContentAndSetsNavigationHeaders(): void
     {
         $request = service('request');
@@ -90,6 +112,10 @@ final class AdminPartialNavigationTest extends CIUnitTestCase
         $body = $controller->showNews();
 
         $this->assertStringContainsString('news-page-title', $body);
+        $this->assertStringContainsString('news-create-modal', $body);
+        $this->assertStringContainsString('data-rm-open="#news-create-modal"', $body);
+        $this->assertStringContainsString('name="cover_image"', $body);
+        $this->assertStringContainsString('Simpan Berita', $body);
         $this->assertStringNotContainsString('<!doctype html>', strtolower($body));
         $this->assertStringNotContainsString('adminSidebar', $body);
         $this->assertSame('1', $response->getHeaderLine('X-Partial-Response'));
@@ -109,7 +135,14 @@ final class AdminPartialNavigationTest extends CIUnitTestCase
         $schedule = $controller->showSchedule();
         $this->assertStringContainsString('schedule-page-title', $schedule);
         $this->assertStringContainsString('schedule-create-modal', $schedule);
+        $this->assertStringNotContainsString('data-rm-default-open', $schedule);
         $this->assertStringNotContainsString('adminSidebar', $schedule);
+
+        $scheduleWithCreateModal = view('components/ui/schedule-create-modal', [
+            'defaultOpen' => true,
+            'statusOptions' => [],
+        ]);
+        $this->assertStringContainsString('data-rm-default-open', $scheduleWithCreateModal);
 
         $form = $controller->showScheduleForm();
         $this->assertStringContainsString('schedule-form-title', $form);

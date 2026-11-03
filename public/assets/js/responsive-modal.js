@@ -124,6 +124,9 @@
 
     function bind(root) {
         var state = getState(root);
+        if (state.bound) return;
+        state.bound = true;
+
         apply(root, MOBILE_QUERY.matches ? 'mobile' : 'desktop');
 
         root.addEventListener('shown.bs.modal', function () {
@@ -151,6 +154,17 @@
             state.instance = createInstance(root, state);
             state.instance.show();
         }
+    }
+
+    function init(container) {
+        var scope = container || document;
+        var roots = [];
+
+        if (scope.matches && scope.matches('[data-rm]')) {
+            roots.push(scope);
+        }
+        roots = roots.concat(Array.prototype.slice.call(scope.querySelectorAll('[data-rm]')));
+        roots.forEach(bind);
     }
 
     function open(root, trigger) {
@@ -206,7 +220,7 @@
             return;
         }
 
-        document.querySelectorAll('[data-rm]').forEach(bind);
+        init(document);
 
         document.addEventListener('click', function (event) {
             var target = event.target instanceof Element ? event.target : null;
@@ -241,6 +255,7 @@
         isMobile: function () {
             return MOBILE_QUERY.matches;
         },
+        init: init,
         open: function (selector) {
             var root = document.querySelector(selector);
             if (root) open(root, null);

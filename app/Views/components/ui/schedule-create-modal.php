@@ -3,7 +3,7 @@ helper('modal');
 
 $scheduleError = $scheduleError ?? '';
 $returnTo = $returnTo ?? 'admin/jadwal';
-$defaultOpen = $scheduleError !== '';
+$defaultOpen = ($defaultOpen ?? false) || $scheduleError !== '';
 ?>
 <?php modal_open(
     'schedule-create-modal',
@@ -12,7 +12,7 @@ $defaultOpen = $scheduleError !== '';
     ['aria-labelledby' => 'schedule-create-title', 'aria-describedby' => 'schedule-create-description']
 ) ?>
 <?php modal_content_open() ?>
-<form class="rm-schedule-form" method="post" action="<?= site_url('admin/jadwal/save') ?>">
+<form class="rm-form" method="post" action="<?= site_url('admin/jadwal/save') ?>">
     <?= csrf_field() ?>
     <input type="hidden" name="return_to" value="<?= esc($returnTo, 'attr') ?>">
 
