@@ -59,16 +59,19 @@ for (let attempt = 0; attempt < 6; attempt++) {
 console.log('PASS invalid credentials and rate limit: POST 303 -> login 200, safe flash, no loop');
 await assertProtected();
 console.log('PASS failed login never grants dashboard access');
-for (const path of ['login', 'logout']) {
-  const response = await request(`${base}/index.php/admin/${path}`, {
+for (const tokenValue of [null, 'invalid-csrf-token']) {
+  const response = await request(login, {
     method: 'POST', headers: { Referer: login, 'X-Requested-With': 'XMLHttpRequest' },
-    body: new URLSearchParams({ email: identity, password: randomUUID() }),
+    body: new URLSearchParams({
+      email: identity, password: randomUUID(),
+      ...(tokenValue === null ? {} : { [Object.keys(csrf)[0]]: tokenValue }),
+    }),
   });
   // AJAX requests expose the CSRF rejection directly, including in production.
   assert.equal(response.status, 403);
   await response.text();
 }
-console.log('PASS missing CSRF rejected on login and logout');
+console.log('PASS missing and invalid CSRF rejected on login; authenticated logout CSRF is covered by admin-entry-http.mjs');
 for (const path of ['/', '/profil', '/berita', '/jadwal-ibadah']) {
   const response = await request(`${base}${path}`);
   assert.equal(response.status, 200);
