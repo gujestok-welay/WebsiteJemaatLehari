@@ -50,7 +50,69 @@ class AdminAuth extends BaseController
 
     public function dashboard(): string
     {
-        return view('admin/dashboard', ['name' => session()->get('admin_name')]);
+        $db = db_connect();
+        $timezone = new \DateTimeZone('Asia/Jayapura');
+        $today = new \DateTimeImmutable('today', $timezone);
+        $months = [
+            1 => 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+            'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember',
+        ];
+        $days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+        $formatDate = static function (string $date) use ($timezone, $months): string {
+            $value = new \DateTimeImmutable($date, $timezone);
+
+            return $value->format('j') . ' ' . $months[(int) $value->format('n')] . ' ' . $value->format('Y');
+        };
+
+        $publishedNewsCount = $db->table('berita')
+            ->where('deleted_at', null)
+            ->where('status', 'Terbit')
+            ->countAllResults();
+        $draftNewsCount = $db->table('berita')
+            ->where('deleted_at', null)
+            ->where('status', 'Draft')
+            ->countAllResults();
+        $upcomingScheduleCount = $db->table('jadwal_ibadah')
+            ->where('deleted_at', null)
+            ->where('is_cancelled', 0)
+            ->where('tanggal >=', $today->format('Y-m-d'))
+            ->countAllResults();
+        $latestNews = $db->table('berita')
+            ->select('id, title, status, created_at')
+            ->where('deleted_at', null)
+            ->orderBy('created_at', 'DESC')
+            ->limit(5)
+            ->get()
+            ->getResultArray();
+        $nextSchedule = $db->table('jadwal_ibadah')
+            ->select('jenis_ibadah, tanggal, waktu, lokasi')
+            ->where('deleted_at', null)
+            ->where('is_cancelled', 0)
+            ->where('tanggal >=', $today->format('Y-m-d'))
+            ->orderBy('tanggal', 'ASC')
+            ->orderBy('waktu', 'ASC')
+            ->get(1)
+            ->getRowArray();
+
+        foreach ($latestNews as &$item) {
+            $item['date_label'] = empty($item['created_at']) ? null : $formatDate($item['created_at']);
+        }
+        unset($item);
+
+        if ($nextSchedule !== null) {
+            $nextSchedule['date_label'] = $formatDate($nextSchedule['tanggal']);
+            $nextSchedule['time_label'] = substr((string) $nextSchedule['waktu'], 0, 5);
+        }
+
+        return view('admin/dashboard', [
+            'name' => session()->get('admin_name'),
+            'todayLabel' => $days[(int) $today->format('w')] . ', ' . $formatDate($today->format('Y-m-d')),
+            'publishedNewsCount' => $publishedNewsCount,
+            'draftNewsCount' => $draftNewsCount,
+            'upcomingScheduleCount' => $upcomingScheduleCount,
+            'latestNews' => $latestNews,
+            'nextSchedule' => $nextSchedule,
+        ]);
     }
 
     public function logout()

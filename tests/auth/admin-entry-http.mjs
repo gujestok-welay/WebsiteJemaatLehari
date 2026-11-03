@@ -13,6 +13,7 @@ const cookies = new Map();
 const login = `${base}/index.php/admin/login`;
 const dashboard = `${base}/index.php/admin/dashboard`;
 const entries = ['/admin', '/index.php/admin'];
+const protectedPages = ['/admin/berita', '/admin/jadwal', '/admin/profil', '/admin/statistik'];
 
 function sessionPath(id) {
   assert.match(id, /^[a-zA-Z0-9,-]+$/);
@@ -62,6 +63,7 @@ try {
     await page(login, '<form');
   }
   await redirect(dashboard, login);
+  for (const path of protectedPages) await redirect(path, login);
   console.log('PASS anonymous /admin and /index.php/admin -> login 200; dashboard protected; no loop');
 
   // Match the current FileHandler/php session serialization, without an account.
@@ -75,9 +77,14 @@ try {
     await redirect(entry, dashboard);
     await page(dashboard, 'Entry fixture');
   }
+  for (const path of protectedPages) {
+    const response = await request(path);
+    assert.equal(response.status, 200, `${path} should be available to an authenticated admin`);
+    await response.text();
+  }
   await redirect(login, dashboard);
   const html = await page(dashboard, 'Entry fixture');
-  console.log('PASS synthetic active session: both entry URLs and existing login -> dashboard 200; no loop');
+  console.log('PASS synthetic active session: dashboard and all linked admin modules return 200; no loop');
 
   for (const path of [login, '/index.php/admin/logout']) {
     const response = await request(path, {
