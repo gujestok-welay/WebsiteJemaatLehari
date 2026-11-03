@@ -36,4 +36,29 @@ final class PublicPagesTest extends CIUnitTestCase
         $result->assertSee('Susunan Majelis aktif belum tersedia');
         $result->assertSee('Menunggu konfirmasi resmi.');
     }
+
+    public function testProfileAgeChartShowsBothGenderCountsForEveryRange(): void
+    {
+        $result = $this->get('/profil');
+        $result->assertStatus(200);
+
+        foreach ([
+            ['0-3', 12, 7, 19],
+            ['4-6', 11, 6, 17],
+            ['7-9', 8, 4, 12],
+            ['10-12', 13, 17, 30],
+            ['13-15', 12, 19, 31],
+            ['16-45', 171, 143, 314],
+            ['46-59', 61, 64, 125],
+            ['60-85', 35, 39, 74],
+            ['> 86', 2, 0, 2],
+        ] as [$ageRange, $men, $women, $total]) {
+            $this->assertStringContainsString(
+                'aria-label="Jemaat usia ' . htmlspecialchars($ageRange, ENT_QUOTES, 'UTF-8') . ' tahun: ' . $men . ' laki-laki, ' . $women . ' perempuan, total ' . $total . ' orang"',
+                $result->getBody()
+            );
+            $this->assertStringContainsString('Laki-laki: ' . $men, $result->getBody());
+            $this->assertStringContainsString('Perempuan: ' . $women, $result->getBody());
+        }
+    }
 }

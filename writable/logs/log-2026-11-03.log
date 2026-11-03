@@ -1,0 +1,135 @@
+ERROR - 2026-11-03 04:08:40 --> Error connecting to the database: mysqli_sql_exception: Access denied for user ''@'localhost' (using password: NO) in D:\Jess\Code\WebsiteJemaatLehari\system\Database\MySQLi\Connection.php:200
+Stack trace:
+#0 D:\Jess\Code\WebsiteJemaatLehari\system\Database\MySQLi\Connection.php(200): mysqli->real_connect('localhost', '', Object(SensitiveParameterValue), '', 3306, '', 0)
+#1 D:\Jess\Code\WebsiteJemaatLehari\system\Database\BaseConnection.php(550): CodeIgniter\Database\MySQLi\Connection->connect(false)
+#2 D:\Jess\Code\WebsiteJemaatLehari\system\Database\BaseConnection.php(792): CodeIgniter\Database\BaseConnection->initialize()
+#3 D:\Jess\Code\WebsiteJemaatLehari\system\Database\BaseBuilder.php(2874): CodeIgniter\Database\BaseConnection->query('DELETE FROM `ad...', Array, false)
+#4 D:\Jess\Code\WebsiteJemaatLehari\app\Controllers\AdminAuth.php(32): CodeIgniter\Database\BaseBuilder->delete()
+#5 D:\Jess\Code\WebsiteJemaatLehari\system\CodeIgniter.php(974): App\Controllers\AdminAuth->login()
+#6 D:\Jess\Code\WebsiteJemaatLehari\system\CodeIgniter.php(520): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\AdminAuth))
+#7 D:\Jess\Code\WebsiteJemaatLehari\system\CodeIgniter.php(363): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 D:\Jess\Code\WebsiteJemaatLehari\system\Boot.php(417): CodeIgniter\CodeIgniter->run()
+#9 D:\Jess\Code\WebsiteJemaatLehari\system\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+#10 D:\Jess\Code\WebsiteJemaatLehari\public\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+#11 D:\Jess\Code\WebsiteJemaatLehari\system\rewrite.php(44): require_once('D:\\Jess\\Code\\We...')
+#12 {main}
+
+Next CodeIgniter\Database\Exceptions\DatabaseException: Access denied for user ''@'localhost' (using password: NO) in D:\Jess\Code\WebsiteJemaatLehari\system\Database\MySQLi\Connection.php:230
+Stack trace:
+#0 D:\Jess\Code\WebsiteJemaatLehari\system\Database\BaseConnection.php(550): CodeIgniter\Database\MySQLi\Connection->connect(false)
+#1 D:\Jess\Code\WebsiteJemaatLehari\system\Database\BaseConnection.php(792): CodeIgniter\Database\BaseConnection->initialize()
+#2 D:\Jess\Code\WebsiteJemaatLehari\system\Database\BaseBuilder.php(2874): CodeIgniter\Database\BaseConnection->query('DELETE FROM `ad...', Array, false)
+#3 D:\Jess\Code\WebsiteJemaatLehari\app\Controllers\AdminAuth.php(32): CodeIgniter\Database\BaseBuilder->delete()
+#4 D:\Jess\Code\WebsiteJemaatLehari\system\CodeIgniter.php(974): App\Controllers\AdminAuth->login()
+#5 D:\Jess\Code\WebsiteJemaatLehari\system\CodeIgniter.php(520): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\AdminAuth))
+#6 D:\Jess\Code\WebsiteJemaatLehari\system\CodeIgniter.php(363): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#7 D:\Jess\Code\WebsiteJemaatLehari\system\Boot.php(417): CodeIgniter\CodeIgniter->run()
+#8 D:\Jess\Code\WebsiteJemaatLehari\system\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+#9 D:\Jess\Code\WebsiteJemaatLehari\public\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+#10 D:\Jess\Code\WebsiteJemaatLehari\system\rewrite.php(44): require_once('D:\\Jess\\Code\\We...')
+#11 {main}
+CRITICAL - 2026-11-03 04:08:40 --> CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: Access denied for user ''@'localhost' (using password: NO)
+[Method: POST, Route: admin/login]
+in SYSTEMPATH\Database\BaseConnection.php on line 601.
+ 1 SYSTEMPATH\Database\BaseConnection.php(792): CodeIgniter\Database\BaseConnection->initialize()
+ 2 SYSTEMPATH\Database\BaseBuilder.php(2874): CodeIgniter\Database\BaseConnection->query('DELETE FROM `admin_login_attempts`
+WHERE `attempted_at` < :attempted_at:', [...], false)
+ 3 APPPATH\Controllers\AdminAuth.php(32): CodeIgniter\Database\BaseBuilder->delete()
+ 4 SYSTEMPATH\CodeIgniter.php(974): App\Controllers\AdminAuth->login()
+ 5 SYSTEMPATH\CodeIgniter.php(520): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\AdminAuth))
+ 6 SYSTEMPATH\CodeIgniter.php(363): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+ 8 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 9 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+10 SYSTEMPATH\rewrite.php(44): require_once('D:\\Jess\\Code\\WebsiteJemaatLehari\\public\\index.php')
+ERROR - 2026-11-03 04:22:57 --> Error connecting to the database: mysqli_sql_exception: Access denied for user ''@'localhost' (using password: NO) in D:\Jess\Code\WebsiteJemaatLehari\system\Database\MySQLi\Connection.php:200
+Stack trace:
+#0 D:\Jess\Code\WebsiteJemaatLehari\system\Database\MySQLi\Connection.php(200): mysqli->real_connect('localhost', '', Object(SensitiveParameterValue), '', 3306, '', 0)
+#1 D:\Jess\Code\WebsiteJemaatLehari\system\Database\BaseConnection.php(550): CodeIgniter\Database\MySQLi\Connection->connect(false)
+#2 D:\Jess\Code\WebsiteJemaatLehari\system\Database\BaseConnection.php(792): CodeIgniter\Database\BaseConnection->initialize()
+#3 D:\Jess\Code\WebsiteJemaatLehari\system\Database\BaseBuilder.php(2874): CodeIgniter\Database\BaseConnection->query('DELETE FROM `ad...', Array, false)
+#4 D:\Jess\Code\WebsiteJemaatLehari\app\Controllers\AdminAuth.php(32): CodeIgniter\Database\BaseBuilder->delete()
+#5 D:\Jess\Code\WebsiteJemaatLehari\system\CodeIgniter.php(974): App\Controllers\AdminAuth->login()
+#6 D:\Jess\Code\WebsiteJemaatLehari\system\CodeIgniter.php(520): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\AdminAuth))
+#7 D:\Jess\Code\WebsiteJemaatLehari\system\CodeIgniter.php(363): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 D:\Jess\Code\WebsiteJemaatLehari\system\Boot.php(417): CodeIgniter\CodeIgniter->run()
+#9 D:\Jess\Code\WebsiteJemaatLehari\system\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+#10 D:\Jess\Code\WebsiteJemaatLehari\public\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+#11 D:\Jess\Code\WebsiteJemaatLehari\system\rewrite.php(44): require_once('D:\\Jess\\Code\\We...')
+#12 {main}
+
+Next CodeIgniter\Database\Exceptions\DatabaseException: Access denied for user ''@'localhost' (using password: NO) in D:\Jess\Code\WebsiteJemaatLehari\system\Database\MySQLi\Connection.php:230
+Stack trace:
+#0 D:\Jess\Code\WebsiteJemaatLehari\system\Database\BaseConnection.php(550): CodeIgniter\Database\MySQLi\Connection->connect(false)
+#1 D:\Jess\Code\WebsiteJemaatLehari\system\Database\BaseConnection.php(792): CodeIgniter\Database\BaseConnection->initialize()
+#2 D:\Jess\Code\WebsiteJemaatLehari\system\Database\BaseBuilder.php(2874): CodeIgniter\Database\BaseConnection->query('DELETE FROM `ad...', Array, false)
+#3 D:\Jess\Code\WebsiteJemaatLehari\app\Controllers\AdminAuth.php(32): CodeIgniter\Database\BaseBuilder->delete()
+#4 D:\Jess\Code\WebsiteJemaatLehari\system\CodeIgniter.php(974): App\Controllers\AdminAuth->login()
+#5 D:\Jess\Code\WebsiteJemaatLehari\system\CodeIgniter.php(520): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\AdminAuth))
+#6 D:\Jess\Code\WebsiteJemaatLehari\system\CodeIgniter.php(363): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#7 D:\Jess\Code\WebsiteJemaatLehari\system\Boot.php(417): CodeIgniter\CodeIgniter->run()
+#8 D:\Jess\Code\WebsiteJemaatLehari\system\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+#9 D:\Jess\Code\WebsiteJemaatLehari\public\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+#10 D:\Jess\Code\WebsiteJemaatLehari\system\rewrite.php(44): require_once('D:\\Jess\\Code\\We...')
+#11 {main}
+CRITICAL - 2026-11-03 04:22:57 --> CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: Access denied for user ''@'localhost' (using password: NO)
+[Method: POST, Route: admin/login]
+in SYSTEMPATH\Database\BaseConnection.php on line 601.
+ 1 SYSTEMPATH\Database\BaseConnection.php(792): CodeIgniter\Database\BaseConnection->initialize()
+ 2 SYSTEMPATH\Database\BaseBuilder.php(2874): CodeIgniter\Database\BaseConnection->query('DELETE FROM `admin_login_attempts`
+WHERE `attempted_at` < :attempted_at:', [...], false)
+ 3 APPPATH\Controllers\AdminAuth.php(32): CodeIgniter\Database\BaseBuilder->delete()
+ 4 SYSTEMPATH\CodeIgniter.php(974): App\Controllers\AdminAuth->login()
+ 5 SYSTEMPATH\CodeIgniter.php(520): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\AdminAuth))
+ 6 SYSTEMPATH\CodeIgniter.php(363): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+ 8 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 9 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+10 SYSTEMPATH\rewrite.php(44): require_once('D:\\Jess\\Code\\WebsiteJemaatLehari\\public\\index.php')
+ERROR - 2026-11-03 05:56:27 --> Error connecting to the database: mysqli_sql_exception: Access denied for user ''@'localhost' (using password: NO) in D:\Jess\Code\WebsiteJemaatLehari\system\Database\MySQLi\Connection.php:200
+Stack trace:
+#0 D:\Jess\Code\WebsiteJemaatLehari\system\Database\MySQLi\Connection.php(200): mysqli->real_connect('localhost', '', Object(SensitiveParameterValue), '', 3306, '', 0)
+#1 D:\Jess\Code\WebsiteJemaatLehari\system\Database\BaseConnection.php(550): CodeIgniter\Database\MySQLi\Connection->connect(false)
+#2 D:\Jess\Code\WebsiteJemaatLehari\system\Database\BaseConnection.php(792): CodeIgniter\Database\BaseConnection->initialize()
+#3 D:\Jess\Code\WebsiteJemaatLehari\system\Database\BaseBuilder.php(2874): CodeIgniter\Database\BaseConnection->query('DELETE FROM `ad...', Array, false)
+#4 D:\Jess\Code\WebsiteJemaatLehari\app\Controllers\AdminAuth.php(32): CodeIgniter\Database\BaseBuilder->delete()
+#5 D:\Jess\Code\WebsiteJemaatLehari\system\CodeIgniter.php(974): App\Controllers\AdminAuth->login()
+#6 D:\Jess\Code\WebsiteJemaatLehari\system\CodeIgniter.php(520): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\AdminAuth))
+#7 D:\Jess\Code\WebsiteJemaatLehari\system\CodeIgniter.php(363): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 D:\Jess\Code\WebsiteJemaatLehari\system\Boot.php(417): CodeIgniter\CodeIgniter->run()
+#9 D:\Jess\Code\WebsiteJemaatLehari\system\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+#10 D:\Jess\Code\WebsiteJemaatLehari\public\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+#11 D:\Jess\Code\WebsiteJemaatLehari\system\rewrite.php(44): require_once('D:\\Jess\\Code\\We...')
+#12 {main}
+
+Next CodeIgniter\Database\Exceptions\DatabaseException: Access denied for user ''@'localhost' (using password: NO) in D:\Jess\Code\WebsiteJemaatLehari\system\Database\MySQLi\Connection.php:230
+Stack trace:
+#0 D:\Jess\Code\WebsiteJemaatLehari\system\Database\BaseConnection.php(550): CodeIgniter\Database\MySQLi\Connection->connect(false)
+#1 D:\Jess\Code\WebsiteJemaatLehari\system\Database\BaseConnection.php(792): CodeIgniter\Database\BaseConnection->initialize()
+#2 D:\Jess\Code\WebsiteJemaatLehari\system\Database\BaseBuilder.php(2874): CodeIgniter\Database\BaseConnection->query('DELETE FROM `ad...', Array, false)
+#3 D:\Jess\Code\WebsiteJemaatLehari\app\Controllers\AdminAuth.php(32): CodeIgniter\Database\BaseBuilder->delete()
+#4 D:\Jess\Code\WebsiteJemaatLehari\system\CodeIgniter.php(974): App\Controllers\AdminAuth->login()
+#5 D:\Jess\Code\WebsiteJemaatLehari\system\CodeIgniter.php(520): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\AdminAuth))
+#6 D:\Jess\Code\WebsiteJemaatLehari\system\CodeIgniter.php(363): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#7 D:\Jess\Code\WebsiteJemaatLehari\system\Boot.php(417): CodeIgniter\CodeIgniter->run()
+#8 D:\Jess\Code\WebsiteJemaatLehari\system\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+#9 D:\Jess\Code\WebsiteJemaatLehari\public\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+#10 D:\Jess\Code\WebsiteJemaatLehari\system\rewrite.php(44): require_once('D:\\Jess\\Code\\We...')
+#11 {main}
+CRITICAL - 2026-11-03 05:56:27 --> CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: Access denied for user ''@'localhost' (using password: NO)
+[Method: POST, Route: admin/login]
+in SYSTEMPATH\Database\BaseConnection.php on line 601.
+ 1 SYSTEMPATH\Database\BaseConnection.php(792): CodeIgniter\Database\BaseConnection->initialize()
+ 2 SYSTEMPATH\Database\BaseBuilder.php(2874): CodeIgniter\Database\BaseConnection->query('DELETE FROM `admin_login_attempts`
+WHERE `attempted_at` < :attempted_at:', [...], false)
+ 3 APPPATH\Controllers\AdminAuth.php(32): CodeIgniter\Database\BaseBuilder->delete()
+ 4 SYSTEMPATH\CodeIgniter.php(974): App\Controllers\AdminAuth->login()
+ 5 SYSTEMPATH\CodeIgniter.php(520): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\AdminAuth))
+ 6 SYSTEMPATH\CodeIgniter.php(363): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+ 8 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 9 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+10 SYSTEMPATH\rewrite.php(44): require_once('D:\\Jess\\Code\\WebsiteJemaatLehari\\public\\index.php')

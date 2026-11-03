@@ -179,15 +179,19 @@
                 <?php foreach ($usia as $u): ?>
                     <div class="row align-items-center g-2 mb-2">
                         <div class="col-3 col-md-2 small fw-semibold"><?= esc($u['label']) ?> th</div>
-                        <div class="col-7 col-md-8">
-                            <div class="progress rounded-pill" style="height:18px" role="progressbar"
-                                aria-label="Jemaat usia <?= esc($u['label']) ?> tahun">
+                        <div class="col-7 col-md-8 age-range-chart">
+                            <div class="progress rounded-pill age-range-progress" style="height:18px" role="img" tabindex="0"
+                                aria-label="Jemaat usia <?= esc($u['label']) ?> tahun: <?= esc($u['lk']) ?> laki-laki, <?= esc($u['pr']) ?> perempuan, total <?= esc($u['jumlah']) ?> orang">
                                 <?php
                                 $lkWidth = $u['jumlah'] ? ($u['lk'] / $u['jumlah']) * $u['persen'] : 0;
                                 $prWidth = $u['jumlah'] ? ($u['pr'] / $u['jumlah']) * $u['persen'] : 0;
                                 ?>
                                 <div class="progress-bar bg-primary" style="width: <?= $lkWidth ?>%"></div>
                                 <div class="progress-bar bg-warning" style="width: <?= $prWidth ?>%"></div>
+                            </div>
+                            <div class="age-range-counts" aria-hidden="true">
+                                <span class="age-range-count age-range-count-men">Laki-laki: <?= esc($u['lk']) ?></span>
+                                <span class="age-range-count age-range-count-women">Perempuan: <?= esc($u['pr']) ?></span>
                             </div>
                         </div>
                         <div class="col-2 text-end small fw-bold"><?= $u['jumlah'] ?></div>
