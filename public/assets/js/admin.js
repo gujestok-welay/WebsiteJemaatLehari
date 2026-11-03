@@ -117,6 +117,12 @@
                 return;
             }
 
+            var destination = new URL(response.url, url.href);
+            if (destination.origin !== window.location.origin || !isPartialRoute(destination)) {
+                window.location.assign(destination.href);
+                return;
+            }
+
             var html = await response.text();
             var encodedTitle = response.headers.get('X-Page-Title');
             if (!encodedTitle) {
@@ -126,13 +132,14 @@
             var title = decodeURIComponent(encodedTitle || '');
 
             main.innerHTML = html;
+            if (window.ResponsiveModal) window.ResponsiveModal.init(main);
             main.removeAttribute('aria-busy');
             topbarTitle.textContent = title;
             document.title = title + pageTitleSuffix;
-            updateNavigation(url.pathname);
+            updateNavigation(destination.pathname);
 
             if (addHistoryEntry) {
-                window.history.pushState({ adminPartial: true }, '', url.href);
+                window.history.pushState({ adminPartial: true }, '', destination.href);
             }
 
             window.scrollTo(0, 0);

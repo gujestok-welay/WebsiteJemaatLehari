@@ -74,15 +74,13 @@ class AdminJadwal extends BaseController
             'success' => session()->getFlashdata('success'),
             'error' => session()->getFlashdata('error'),
             'scheduleError' => session()->getFlashdata('schedule_error') ?? '',
+            'scheduleModalOpen' => $this->request->getGet('create') === '1',
         ], 'Jadwal Ibadah');
     }
 
-    public function create(): string
+    public function create(): \CodeIgniter\HTTP\RedirectResponse
     {
-        return $this->renderAdminPage('admin/jadwal/form', [
-            'item' => null,
-            'error' => session()->getFlashdata('schedule_error') ?? session()->getFlashdata('error'),
-        ], 'Tambah Jadwal');
+        return redirect()->to(site_url('admin/jadwal?create=1'));
     }
 
     public function edit(int $id): string

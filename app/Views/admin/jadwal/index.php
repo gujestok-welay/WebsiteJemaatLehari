@@ -163,5 +163,6 @@ $statusTerpilih = $cancelled === null ? 'semua' : ($cancelled === 1 ? 'dibatalka
 <?= $this->include('components/ui/schedule-create-modal', [
     'scheduleError' => $scheduleError ?? '',
     'returnTo' => 'admin/jadwal',
+    'defaultOpen' => $scheduleModalOpen ?? false,
 ]) ?>
 <?= $this->endSection() ?>

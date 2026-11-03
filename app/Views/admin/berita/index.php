@@ -4,7 +4,7 @@
 <section class="news-page" aria-labelledby="news-page-title">
     <header class="news-page-heading">
         <h1 id="news-page-title">Berita</h1>
-        <a class="button button-primary" href="<?= site_url('admin/berita/create') ?>">Tambah berita</a>
+        <a class="button button-primary" href="<?= site_url('admin/berita/create') ?>" data-rm-open="#news-create-modal">Tambah berita</a>
     </header>
 
     <?php if (! empty($success)): ?>
@@ -37,7 +37,7 @@
                 <h2><?= ($term ?? '') !== '' || ($status ?? '') !== '' ? 'Tidak ada berita yang cocok' : 'Belum ada berita' ?></h2>
                 <p><?= ($term ?? '') !== '' || ($status ?? '') !== '' ? 'Coba ubah kata pencarian atau status berita.' : 'Berita yang disimpan akan tampil di sini.' ?></p>
                 <?php if (($term ?? '') === '' && ($status ?? '') === ''): ?>
-                    <a class="text-link" href="<?= site_url('admin/berita/create') ?>">Tulis berita pertama</a>
+                    <a class="text-link" href="<?= site_url('admin/berita/create') ?>" data-rm-open="#news-create-modal">Tulis berita pertama</a>
                 <?php endif; ?>
             </div>
         <?php else: ?>
@@ -81,4 +81,10 @@
     </section>
     <span class="visually-hidden" aria-live="polite"><?= count($items) ?> berita ditemukan.</span>
 </section>
+<?= $this->include('components/ui/news-create-modal', [
+    'newsError' => $newsError ?? '',
+    'returnTo' => 'admin/berita',
+    'defaultOpen' => $newsModalOpen ?? false,
+    'statusOptions' => $statusOptions,
+]) ?>
 <?= $this->endSection() ?>
