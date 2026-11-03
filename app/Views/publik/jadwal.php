@@ -220,6 +220,26 @@
         transform: rotate(-6deg) scale(1.05);
     }
 
+    .jadwal-page #grid-ibadah .jadwal-card {
+        background: rgba(217, 217, 217, 0.58);
+        border: 1px solid white !important;
+        box-shadow: 12px 17px 51px rgba(0, 0, 0, 0.22) !important;
+        backdrop-filter: blur(6px);
+        border-radius: 17px;
+        transition: all 0.5s;
+        animation-fill-mode: backwards;
+    }
+
+    .jadwal-page #grid-ibadah .jadwal-card:hover,
+    .jadwal-page #grid-ibadah .jadwal-card:focus-within {
+        border-color: black !important;
+        transform: scale(1.05);
+    }
+
+    .jadwal-page #grid-ibadah .jadwal-card.is-today {
+        box-shadow: 0 0 0 2px #10b981, 12px 17px 51px rgba(0, 0, 0, 0.22) !important;
+    }
+
     .jadwal-page .card-ikon {
         width: 3rem;
         height: 3rem;
@@ -321,6 +341,13 @@
             transform: none;
             transition: none;
         }
+
+        .jadwal-page #grid-ibadah .jadwal-card,
+        .jadwal-page #grid-ibadah .jadwal-card:hover,
+        .jadwal-page #grid-ibadah .jadwal-card:focus-within {
+            transition: none;
+            transform: none;
+        }
     }
 </style>
 
@@ -366,9 +393,9 @@
                 <div class="row g-2 align-items-center">
                     <div class="col-md-5">
                         <div class="input-group rounded-pill overflow-hidden border">
-                            <span class="input-group-text bg-transparent border-0"><i class="bi bi-search"></i></span>
                             <input type="search" id="cari" class="form-control border-0 shadow-none"
                                 placeholder="Cari ibadah atau tempat..." aria-label="Cari ibadah">
+                            <span class="input-group-text border-0"><img src="https://img.icons8.com/?size=50&id=83218&format=png&color=000000" alt="" class="w-100"></span>
                         </div>
                     </div>
                     <div class="col-md-7">
@@ -452,7 +479,7 @@
 </div>
 
 <script>
-    (function () {
+    (function() {
         var pills = document.querySelectorAll('.day-pill');
         var chips = document.querySelectorAll('.kat-chip');
         var items = document.querySelectorAll('.item-ibadah');
@@ -464,13 +491,17 @@
             return;
         }
 
-        var state = { hari: 'semua', kat: 'semua', q: '' };
+        var state = {
+            hari: 'semua',
+            kat: 'semua',
+            q: ''
+        };
         var namaHari = ['minggu', 'senin', 'selasa', 'rabu', 'kamis', 'jumat', 'sabtu'];
         var labelHari = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
         var today = namaHari[new Date().getDay()];
 
         function setActive(list, attr, val) {
-            list.forEach(function (el) {
+            list.forEach(function(el) {
                 var on = el.getAttribute(attr) === val;
                 el.classList.toggle('active', on);
                 if (el.hasAttribute('aria-selected')) {
@@ -482,7 +513,7 @@
         function render() {
             var n = 0;
             var q = state.q.trim().toLowerCase();
-            items.forEach(function (el) {
+            items.forEach(function(el) {
                 var okHari = state.hari === 'semua' || el.dataset.hari.split(' ').indexOf(state.hari) !== -1;
                 var okKat = state.kat === 'semua' || el.dataset.kat === state.kat;
                 var okQ = !q || (el.dataset.cari || '').indexOf(q) !== -1;
@@ -503,29 +534,33 @@
             kosong.classList.toggle('d-none', n > 0);
         }
 
-        pills.forEach(function (p) {
-            p.addEventListener('click', function () {
+        pills.forEach(function(p) {
+            p.addEventListener('click', function() {
                 state.hari = p.dataset.hari;
                 setActive(pills, 'data-hari', state.hari);
                 render();
             });
         });
 
-        chips.forEach(function (c) {
-            c.addEventListener('click', function () {
+        chips.forEach(function(c) {
+            c.addEventListener('click', function() {
                 state.kat = c.dataset.kat;
                 setActive(chips, 'data-kat', state.kat);
                 render();
             });
         });
 
-        cari.addEventListener('input', function () {
+        cari.addEventListener('input', function() {
             state.q = cari.value;
             render();
         });
 
-        document.getElementById('reset').addEventListener('click', function () {
-            state = { hari: 'semua', kat: 'semua', q: '' };
+        document.getElementById('reset').addEventListener('click', function() {
+            state = {
+                hari: 'semua',
+                kat: 'semua',
+                q: ''
+            };
             cari.value = '';
             setActive(pills, 'data-hari', 'semua');
             setActive(chips, 'data-kat', 'semua');
@@ -538,7 +573,7 @@
         }
 
         var todayItems = [];
-        items.forEach(function (el) {
+        items.forEach(function(el) {
             if ((el.dataset.hari || '').split(' ').indexOf(today) !== -1) {
                 var card = el.querySelector('.jadwal-card');
                 var badge = el.querySelector('.badge-today');
@@ -554,11 +589,14 @@
         document.getElementById('bn-teks').textContent = todayItems.length ? todayItems.join(' · ') : 'Tidak ada ibadah terjadwal hari ini';
 
         if (todayItems.length) {
-            document.getElementById('bn-lihat').addEventListener('click', function () {
+            document.getElementById('bn-lihat').addEventListener('click', function() {
                 state.hari = today;
                 setActive(pills, 'data-hari', today);
                 render();
-                document.getElementById('grid-ibadah').scrollIntoView({ behavior: 'smooth', block: 'start' });
+                document.getElementById('grid-ibadah').scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
             });
         } else {
             document.getElementById('bn-lihat').classList.add('d-none');
