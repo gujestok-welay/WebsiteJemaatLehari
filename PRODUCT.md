@@ -27,9 +27,9 @@ Menurut temuan wawancara yang dilaporkan dalam PRD, jemaat menggunakan WhatsApp 
 ## Capabilities and Constraints
 
 - Implementasi saat ini merupakan prototipe empat halaman publik: `/`, `/profil`, `/berita`, dan `/jadwal-ibadah`.
-- Stack implementasi saat ini: CodeIgniter 4.7.5, PHP Views, Bootstrap 5, CSS, JavaScript, dan MySQL melalui XAMPP. Koneksi ke database `jemaat_leahari` telah berhasil. Database belum memiliki tabel fitur.
+- Stack implementasi saat ini: CodeIgniter 4.7.5, PHP Views, Bootstrap 5, CSS, JavaScript, dan MySQL melalui XAMPP. Koneksi ke database `jemaat_leahari` serta tabel admin dan konten sudah diverifikasi pada lingkungan lokal; status deployment lain belum diverifikasi.
 - Berita dan jadwal bersumber dari data contoh di `app/Libraries/PublicSampleContent.php`. Berita dapat dibuka melalui elemen `details`; jadwal memiliki filter jenis ibadah dan tetap tersedia tanpa JavaScript.
-- Keempat halaman publik masih memakai data contoh. Belum ada dashboard atau autentikasi admin; keduanya tetap rencana implementasi. Koneksi database sudah tersedia, tetapi tabel fitur dan persistence konten belum dibuat.
+- Keempat halaman publik masih memakai data contoh. Login/logout admin, dashboard, dan modul pengelolaan Berita, Jadwal Ibadah, Profil/Majelis, serta Statistik sudah tersedia dengan route admin terlindungi. Dashboard merangkum data berita dan jadwal yang tersimpan; isi publik tetap harus diverifikasi sebelum diperlakukan sebagai informasi resmi.
 - Keputusan implementasi terbaru: admin Media Center dapat menerbitkan konten secara langsung. Berita internal dan eksternal akan didukung. Rincian Rich Text Editor ditunda.
 - Stack di atas menjelaskan kondisi implementasi terkini. Status draft PRD, persetujuan mitra, rincian fitur admin lainnya, prioritas rilis, domain/hosting, dan tata kelola tetap mengikuti proses validasi; jangan menganggapnya sebagai keputusan final.
 - Bahasa antarmuka adalah Bahasa Indonesia. Waktu ibadah menggunakan WIT.
