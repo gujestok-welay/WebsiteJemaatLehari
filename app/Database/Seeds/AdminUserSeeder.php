@@ -10,7 +10,7 @@ class AdminUserSeeder extends Seeder
     {
         $db = db_connect();
 
-        if (! $db->tableExists('admin_users')) {
+        if (!$db->tableExists('admin_users')) {
             throw new \RuntimeException('Table admin_users does not exist. Run migrations before seeding.');
         }
 
