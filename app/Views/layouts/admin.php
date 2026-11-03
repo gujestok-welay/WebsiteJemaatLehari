@@ -1,3 +1,7 @@
+<?php if (! empty($partial)): ?>
+<?= $this->renderSection('content') ?>
+<?php return; ?>
+<?php endif; ?>
 <!doctype html>
 <html lang="id">
 <head>
@@ -7,6 +11,7 @@
     <title><?= esc($title ?? 'Dashboard') ?> · Media Center Jemaat Leahari</title>
     <link href="<?= base_url('assets/vendor/bootstrap/bootstrap.min.css') ?>" rel="stylesheet">
     <link href="<?= base_url('assets/css/admin.css') ?>" rel="stylesheet">
+    <link href="<?= base_url('assets/css/responsive-modal.css') ?>" rel="stylesheet">
 </head>
 <body>
 <a class="skip-link" href="#main-content">Langsung ke konten utama</a>
@@ -42,6 +47,7 @@
 </div>
 
 <script src="<?= base_url('assets/vendor/bootstrap/bootstrap.bundle.min.js') ?>"></script>
+<script src="<?= base_url('assets/js/responsive-modal.js') ?>"></script>
 <script src="<?= base_url('assets/js/admin.js') ?>"></script>
 </body>
 </html>

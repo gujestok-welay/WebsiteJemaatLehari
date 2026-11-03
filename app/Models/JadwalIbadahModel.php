@@ -29,6 +29,7 @@ class JadwalIbadahModel extends Model
     public function findByTerm(?string $term = null, ?int $cancelled = null)
     {
         $builder = $this->builder();
+        $builder->where($this->deletedField, null);
 
         if (! empty($term)) {
             $builder->groupStart()

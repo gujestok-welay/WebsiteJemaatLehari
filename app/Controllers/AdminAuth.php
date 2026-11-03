@@ -104,7 +104,7 @@ class AdminAuth extends BaseController
             $nextSchedule['time_label'] = substr((string) $nextSchedule['waktu'], 0, 5);
         }
 
-        return view('admin/dashboard', [
+        return $this->renderAdminPage('admin/dashboard', [
             'name' => session()->get('admin_name'),
             'todayLabel' => $days[(int) $today->format('w')] . ', ' . $formatDate($today->format('Y-m-d')),
             'publishedNewsCount' => $publishedNewsCount,
@@ -112,7 +112,8 @@ class AdminAuth extends BaseController
             'upcomingScheduleCount' => $upcomingScheduleCount,
             'latestNews' => $latestNews,
             'nextSchedule' => $nextSchedule,
-        ]);
+            'scheduleError' => session()->getFlashdata('schedule_error') ?? '',
+        ], 'Ringkasan');
     }
 
     public function logout()

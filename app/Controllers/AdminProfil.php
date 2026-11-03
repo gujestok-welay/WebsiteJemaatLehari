@@ -39,14 +39,14 @@ class AdminProfil extends BaseController
             $members = $this->anggotaModel->findByPeriode($selectedPeriod);
         }
 
-        return view('admin/profil/index', [
+        return $this->renderAdminPage('admin/profil/index', [
             'profile' => $profile,
             'periods' => $periods,
             'selectedPeriod' => $selectedPeriod,
             'members' => $members,
             'success' => session()->getFlashdata('success'),
             'error' => session()->getFlashdata('error'),
-        ]);
+        ], 'Profil & Majelis');
     }
 
     public function saveProfile(): \CodeIgniter\HTTP\RedirectResponse
@@ -209,7 +209,7 @@ class AdminProfil extends BaseController
             return ['success' => false, 'message' => 'Ukuran foto maksimal 2MB.'];
         }
 
-        $directory = WRITEPATH . 'uploads/majelis';
+        $directory = FCPATH . 'uploads/majelis';
         if (! is_dir($directory) && ! @mkdir($directory, 0775, true) && ! is_dir($directory)) {
             return ['success' => false, 'message' => 'Direktori upload foto tidak dapat dibuat.'];
         }
