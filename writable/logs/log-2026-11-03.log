@@ -298,3 +298,67 @@ in SYSTEMPATH\Database\MySQLi\Connection.php on line 294.
 13 SYSTEMPATH\Boot.php(444): CodeIgniter\CLI\Console->run()
 14 SYSTEMPATH\Boot.php(166): CodeIgniter\Boot::runCommand(Object(CodeIgniter\CLI\Console))
 15 ROOTPATH\spark(87): CodeIgniter\Boot::bootSpark(Object(Config\Paths))
+CRITICAL - 2026-11-03 11:43:29 --> ErrorException: Undefined variable $name
+[Method: GET, Route: admin/jadwal/create]
+in APPPATH\Views\layouts\admin.php on line 29.
+ 1 APPPATH\Views\layouts\admin.php(29): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined variable $name', 'D:\\Jess\\Code\\WebsiteJemaatLehari\\app\\Views\\layouts\\admin.php', 29)
+ 2 SYSTEMPATH\View\View.php(240): include('D:\\Jess\\Code\\WebsiteJemaatLehari\\app\\Views\\layouts\\admin.php')
+ 3 SYSTEMPATH\View\View.php(243): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\View\View.php(256): CodeIgniter\View\View->render('layouts/admin', [], true)
+ 5 SYSTEMPATH\Common.php(1268): CodeIgniter\View\View->render('admin/jadwal/form', [], true)
+ 6 APPPATH\Controllers\AdminJadwal.php(34): view('admin/jadwal/form', [...])
+ 7 SYSTEMPATH\CodeIgniter.php(974): App\Controllers\AdminJadwal->create()
+ 8 SYSTEMPATH\CodeIgniter.php(520): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\AdminJadwal))
+ 9 SYSTEMPATH\CodeIgniter.php(363): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+10 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+11 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+12 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+13 SYSTEMPATH\rewrite.php(44): require_once('D:\\Jess\\Code\\WebsiteJemaatLehari\\public\\index.php')
+CRITICAL - 2026-11-03 11:44:05 --> ErrorException: Undefined variable $name
+[Method: GET, Route: admin/jadwal/create]
+in APPPATH\Views\layouts\admin.php on line 29.
+ 1 APPPATH\Views\layouts\admin.php(29): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined variable $name', 'D:\\Jess\\Code\\WebsiteJemaatLehari\\app\\Views\\layouts\\admin.php', 29)
+ 2 SYSTEMPATH\View\View.php(240): include('D:\\Jess\\Code\\WebsiteJemaatLehari\\app\\Views\\layouts\\admin.php')
+ 3 SYSTEMPATH\View\View.php(243): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\View\View.php(256): CodeIgniter\View\View->render('layouts/admin', [], true)
+ 5 SYSTEMPATH\Common.php(1268): CodeIgniter\View\View->render('admin/jadwal/form', [], true)
+ 6 APPPATH\Controllers\AdminJadwal.php(34): view('admin/jadwal/form', [...])
+ 7 SYSTEMPATH\CodeIgniter.php(974): App\Controllers\AdminJadwal->create()
+ 8 SYSTEMPATH\CodeIgniter.php(520): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\AdminJadwal))
+ 9 SYSTEMPATH\CodeIgniter.php(363): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+10 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+11 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+12 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+13 SYSTEMPATH\rewrite.php(44): require_once('D:\\Jess\\Code\\WebsiteJemaatLehari\\public\\index.php')
+CRITICAL - 2026-11-03 11:44:14 --> ErrorException: Undefined variable $name
+[Method: GET, Route: admin/jadwal/create]
+in APPPATH\Views\layouts\admin.php on line 29.
+ 1 APPPATH\Views\layouts\admin.php(29): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined variable $name', 'D:\\Jess\\Code\\WebsiteJemaatLehari\\app\\Views\\layouts\\admin.php', 29)
+ 2 SYSTEMPATH\View\View.php(240): include('D:\\Jess\\Code\\WebsiteJemaatLehari\\app\\Views\\layouts\\admin.php')
+ 3 SYSTEMPATH\View\View.php(243): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\View\View.php(256): CodeIgniter\View\View->render('layouts/admin', [], true)
+ 5 SYSTEMPATH\Common.php(1268): CodeIgniter\View\View->render('admin/jadwal/form', [], true)
+ 6 APPPATH\Controllers\AdminJadwal.php(34): view('admin/jadwal/form', [...])
+ 7 SYSTEMPATH\CodeIgniter.php(974): App\Controllers\AdminJadwal->create()
+ 8 SYSTEMPATH\CodeIgniter.php(520): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\AdminJadwal))
+ 9 SYSTEMPATH\CodeIgniter.php(363): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+10 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+11 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+12 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+13 SYSTEMPATH\rewrite.php(44): require_once('D:\\Jess\\Code\\WebsiteJemaatLehari\\public\\index.php')
+CRITICAL - 2026-11-03 11:44:21 --> ErrorException: Undefined variable $name
+[Method: GET, Route: admin/jadwal/create]
+in APPPATH\Views\layouts\admin.php on line 29.
+ 1 APPPATH\Views\layouts\admin.php(29): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined variable $name', 'D:\\Jess\\Code\\WebsiteJemaatLehari\\app\\Views\\layouts\\admin.php', 29)
+ 2 SYSTEMPATH\View\View.php(240): include('D:\\Jess\\Code\\WebsiteJemaatLehari\\app\\Views\\layouts\\admin.php')
+ 3 SYSTEMPATH\View\View.php(243): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\View\View.php(256): CodeIgniter\View\View->render('layouts/admin', [], true)
+ 5 SYSTEMPATH\Common.php(1268): CodeIgniter\View\View->render('admin/jadwal/form', [], true)
+ 6 APPPATH\Controllers\AdminJadwal.php(34): view('admin/jadwal/form', [...])
+ 7 SYSTEMPATH\CodeIgniter.php(974): App\Controllers\AdminJadwal->create()
+ 8 SYSTEMPATH\CodeIgniter.php(520): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\AdminJadwal))
+ 9 SYSTEMPATH\CodeIgniter.php(363): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+10 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+11 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+12 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+13 SYSTEMPATH\rewrite.php(44): require_once('D:\\Jess\\Code\\WebsiteJemaatLehari\\public\\index.php')
