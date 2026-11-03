@@ -133,3 +133,168 @@ WHERE `attempted_at` < :attempted_at:', [...], false)
  8 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
  9 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
 10 SYSTEMPATH\rewrite.php(44): require_once('D:\\Jess\\Code\\WebsiteJemaatLehari\\public\\index.php')
+ERROR - 2026-11-03 08:04:50 --> Error connecting to the database: mysqli_sql_exception: Access denied for user 'root'@'localhost' (using password: YES) in D:\Jess\Code\WebsiteJemaatLehari\system\Database\MySQLi\Connection.php:200
+Stack trace:
+#0 D:\Jess\Code\WebsiteJemaatLehari\system\Database\MySQLi\Connection.php(200): mysqli->real_connect('localhost', 'root', Object(SensitiveParameterValue), 'ci4', 3306, '', 0)
+#1 D:\Jess\Code\WebsiteJemaatLehari\system\Database\BaseConnection.php(550): CodeIgniter\Database\MySQLi\Connection->connect(false)
+#2 D:\Jess\Code\WebsiteJemaatLehari\system\Database\BaseConnection.php(792): CodeIgniter\Database\BaseConnection->initialize()
+#3 D:\Jess\Code\WebsiteJemaatLehari\system\Database\BaseConnection.php(1709): CodeIgniter\Database\BaseConnection->query('SHOW TABLES FRO...')
+#4 D:\Jess\Code\WebsiteJemaatLehari\system\Database\BaseConnection.php(1729): CodeIgniter\Database\BaseConnection->listTables()
+#5 D:\Jess\Code\WebsiteJemaatLehari\system\Database\MigrationRunner.php(831): CodeIgniter\Database\BaseConnection->tableExists('migrations')
+#6 D:\Jess\Code\WebsiteJemaatLehari\system\Database\MigrationRunner.php(173): CodeIgniter\Database\MigrationRunner->ensureTable()
+#7 D:\Jess\Code\WebsiteJemaatLehari\system\Commands\Database\Migrate.php(89): CodeIgniter\Database\MigrationRunner->latest(NULL)
+#8 D:\Jess\Code\WebsiteJemaatLehari\system\CLI\SignalTrait.php(243): CodeIgniter\Commands\Database\Migrate::CodeIgniter\Commands\Database\{closure}()
+#9 D:\Jess\Code\WebsiteJemaatLehari\system\Commands\Database\Migrate.php(88): CodeIgniter\Commands\Database\Migrate->withSignalsBlocked(Object(Closure))
+#10 D:\Jess\Code\WebsiteJemaatLehari\system\CLI\Commands.php(72): CodeIgniter\Commands\Database\Migrate->run(Array)
+#11 D:\Jess\Code\WebsiteJemaatLehari\system\CLI\Console.php(47): CodeIgniter\CLI\Commands->run('migrate', Array)
+#12 D:\Jess\Code\WebsiteJemaatLehari\system\Boot.php(444): CodeIgniter\CLI\Console->run()
+#13 D:\Jess\Code\WebsiteJemaatLehari\system\Boot.php(166): CodeIgniter\Boot::runCommand(Object(CodeIgniter\CLI\Console))
+#14 D:\Jess\Code\WebsiteJemaatLehari\spark(87): CodeIgniter\Boot::bootSpark(Object(Config\Paths))
+#15 {main}
+
+Next CodeIgniter\Database\Exceptions\DatabaseException: Access denied for user '****'@'localhost' (using password: YES) in D:\Jess\Code\WebsiteJemaatLehari\system\Database\MySQLi\Connection.php:230
+Stack trace:
+#0 D:\Jess\Code\WebsiteJemaatLehari\system\Database\BaseConnection.php(550): CodeIgniter\Database\MySQLi\Connection->connect(false)
+#1 D:\Jess\Code\WebsiteJemaatLehari\system\Database\BaseConnection.php(792): CodeIgniter\Database\BaseConnection->initialize()
+#2 D:\Jess\Code\WebsiteJemaatLehari\system\Database\BaseConnection.php(1709): CodeIgniter\Database\BaseConnection->query('SHOW TABLES FRO...')
+#3 D:\Jess\Code\WebsiteJemaatLehari\system\Database\BaseConnection.php(1729): CodeIgniter\Database\BaseConnection->listTables()
+#4 D:\Jess\Code\WebsiteJemaatLehari\system\Database\MigrationRunner.php(831): CodeIgniter\Database\BaseConnection->tableExists('migrations')
+#5 D:\Jess\Code\WebsiteJemaatLehari\system\Database\MigrationRunner.php(173): CodeIgniter\Database\MigrationRunner->ensureTable()
+#6 D:\Jess\Code\WebsiteJemaatLehari\system\Commands\Database\Migrate.php(89): CodeIgniter\Database\MigrationRunner->latest(NULL)
+#7 D:\Jess\Code\WebsiteJemaatLehari\system\CLI\SignalTrait.php(243): CodeIgniter\Commands\Database\Migrate::CodeIgniter\Commands\Database\{closure}()
+#8 D:\Jess\Code\WebsiteJemaatLehari\system\Commands\Database\Migrate.php(88): CodeIgniter\Commands\Database\Migrate->withSignalsBlocked(Object(Closure))
+#9 D:\Jess\Code\WebsiteJemaatLehari\system\CLI\Commands.php(72): CodeIgniter\Commands\Database\Migrate->run(Array)
+#10 D:\Jess\Code\WebsiteJemaatLehari\system\CLI\Console.php(47): CodeIgniter\CLI\Commands->run('migrate', Array)
+#11 D:\Jess\Code\WebsiteJemaatLehari\system\Boot.php(444): CodeIgniter\CLI\Console->run()
+#12 D:\Jess\Code\WebsiteJemaatLehari\system\Boot.php(166): CodeIgniter\Boot::runCommand(Object(CodeIgniter\CLI\Console))
+#13 D:\Jess\Code\WebsiteJemaatLehari\spark(87): CodeIgniter\Boot::bootSpark(Object(Config\Paths))
+#14 {main}
+ERROR - 2026-11-03 08:06:23 --> Error connecting to the database: mysqli_sql_exception: Access denied for user 'root'@'localhost' (using password: YES) in D:\Jess\Code\WebsiteJemaatLehari\system\Database\MySQLi\Connection.php:200
+Stack trace:
+#0 D:\Jess\Code\WebsiteJemaatLehari\system\Database\MySQLi\Connection.php(200): mysqli->real_connect('localhost', 'root', Object(SensitiveParameterValue), 'ci4', 3306, '', 0)
+#1 D:\Jess\Code\WebsiteJemaatLehari\system\Database\BaseConnection.php(550): CodeIgniter\Database\MySQLi\Connection->connect(false)
+#2 D:\Jess\Code\WebsiteJemaatLehari\system\Database\BaseConnection.php(792): CodeIgniter\Database\BaseConnection->initialize()
+#3 D:\Jess\Code\WebsiteJemaatLehari\system\Database\BaseConnection.php(1709): CodeIgniter\Database\BaseConnection->query('SHOW TABLES FRO...')
+#4 D:\Jess\Code\WebsiteJemaatLehari\system\Database\BaseConnection.php(1729): CodeIgniter\Database\BaseConnection->listTables()
+#5 D:\Jess\Code\WebsiteJemaatLehari\system\Database\MigrationRunner.php(831): CodeIgniter\Database\BaseConnection->tableExists('migrations')
+#6 D:\Jess\Code\WebsiteJemaatLehari\system\Database\MigrationRunner.php(173): CodeIgniter\Database\MigrationRunner->ensureTable()
+#7 D:\Jess\Code\WebsiteJemaatLehari\system\Commands\Database\Migrate.php(89): CodeIgniter\Database\MigrationRunner->latest(NULL)
+#8 D:\Jess\Code\WebsiteJemaatLehari\system\CLI\SignalTrait.php(243): CodeIgniter\Commands\Database\Migrate::CodeIgniter\Commands\Database\{closure}()
+#9 D:\Jess\Code\WebsiteJemaatLehari\system\Commands\Database\Migrate.php(88): CodeIgniter\Commands\Database\Migrate->withSignalsBlocked(Object(Closure))
+#10 D:\Jess\Code\WebsiteJemaatLehari\system\CLI\Commands.php(72): CodeIgniter\Commands\Database\Migrate->run(Array)
+#11 D:\Jess\Code\WebsiteJemaatLehari\system\CLI\Console.php(47): CodeIgniter\CLI\Commands->run('migrate', Array)
+#12 D:\Jess\Code\WebsiteJemaatLehari\system\Boot.php(444): CodeIgniter\CLI\Console->run()
+#13 D:\Jess\Code\WebsiteJemaatLehari\system\Boot.php(166): CodeIgniter\Boot::runCommand(Object(CodeIgniter\CLI\Console))
+#14 D:\Jess\Code\WebsiteJemaatLehari\spark(87): CodeIgniter\Boot::bootSpark(Object(Config\Paths))
+#15 {main}
+
+Next CodeIgniter\Database\Exceptions\DatabaseException: Access denied for user '****'@'localhost' (using password: YES) in D:\Jess\Code\WebsiteJemaatLehari\system\Database\MySQLi\Connection.php:230
+Stack trace:
+#0 D:\Jess\Code\WebsiteJemaatLehari\system\Database\BaseConnection.php(550): CodeIgniter\Database\MySQLi\Connection->connect(false)
+#1 D:\Jess\Code\WebsiteJemaatLehari\system\Database\BaseConnection.php(792): CodeIgniter\Database\BaseConnection->initialize()
+#2 D:\Jess\Code\WebsiteJemaatLehari\system\Database\BaseConnection.php(1709): CodeIgniter\Database\BaseConnection->query('SHOW TABLES FRO...')
+#3 D:\Jess\Code\WebsiteJemaatLehari\system\Database\BaseConnection.php(1729): CodeIgniter\Database\BaseConnection->listTables()
+#4 D:\Jess\Code\WebsiteJemaatLehari\system\Database\MigrationRunner.php(831): CodeIgniter\Database\BaseConnection->tableExists('migrations')
+#5 D:\Jess\Code\WebsiteJemaatLehari\system\Database\MigrationRunner.php(173): CodeIgniter\Database\MigrationRunner->ensureTable()
+#6 D:\Jess\Code\WebsiteJemaatLehari\system\Commands\Database\Migrate.php(89): CodeIgniter\Database\MigrationRunner->latest(NULL)
+#7 D:\Jess\Code\WebsiteJemaatLehari\system\CLI\SignalTrait.php(243): CodeIgniter\Commands\Database\Migrate::CodeIgniter\Commands\Database\{closure}()
+#8 D:\Jess\Code\WebsiteJemaatLehari\system\Commands\Database\Migrate.php(88): CodeIgniter\Commands\Database\Migrate->withSignalsBlocked(Object(Closure))
+#9 D:\Jess\Code\WebsiteJemaatLehari\system\CLI\Commands.php(72): CodeIgniter\Commands\Database\Migrate->run(Array)
+#10 D:\Jess\Code\WebsiteJemaatLehari\system\CLI\Console.php(47): CodeIgniter\CLI\Commands->run('migrate', Array)
+#11 D:\Jess\Code\WebsiteJemaatLehari\system\Boot.php(444): CodeIgniter\CLI\Console->run()
+#12 D:\Jess\Code\WebsiteJemaatLehari\system\Boot.php(166): CodeIgniter\Boot::runCommand(Object(CodeIgniter\CLI\Console))
+#13 D:\Jess\Code\WebsiteJemaatLehari\spark(87): CodeIgniter\Boot::bootSpark(Object(Config\Paths))
+#14 {main}
+ERROR - 2026-11-03 08:06:45 --> Error connecting to the database: mysqli_sql_exception: Unknown database 'jemaat_lehari' in D:\Jess\Code\WebsiteJemaatLehari\system\Database\MySQLi\Connection.php:200
+Stack trace:
+#0 D:\Jess\Code\WebsiteJemaatLehari\system\Database\MySQLi\Connection.php(200): mysqli->real_connect('localhost', 'root', Object(SensitiveParameterValue), 'jemaat_lehari', 3306, '', 0)
+#1 D:\Jess\Code\WebsiteJemaatLehari\system\Database\BaseConnection.php(550): CodeIgniter\Database\MySQLi\Connection->connect(false)
+#2 D:\Jess\Code\WebsiteJemaatLehari\system\Database\BaseConnection.php(792): CodeIgniter\Database\BaseConnection->initialize()
+#3 D:\Jess\Code\WebsiteJemaatLehari\system\Database\BaseConnection.php(1709): CodeIgniter\Database\BaseConnection->query('SHOW TABLES FRO...')
+#4 D:\Jess\Code\WebsiteJemaatLehari\system\Database\BaseConnection.php(1729): CodeIgniter\Database\BaseConnection->listTables()
+#5 D:\Jess\Code\WebsiteJemaatLehari\system\Database\MigrationRunner.php(831): CodeIgniter\Database\BaseConnection->tableExists('migrations')
+#6 D:\Jess\Code\WebsiteJemaatLehari\system\Database\MigrationRunner.php(173): CodeIgniter\Database\MigrationRunner->ensureTable()
+#7 D:\Jess\Code\WebsiteJemaatLehari\system\Commands\Database\Migrate.php(89): CodeIgniter\Database\MigrationRunner->latest(NULL)
+#8 D:\Jess\Code\WebsiteJemaatLehari\system\CLI\SignalTrait.php(243): CodeIgniter\Commands\Database\Migrate::CodeIgniter\Commands\Database\{closure}()
+#9 D:\Jess\Code\WebsiteJemaatLehari\system\Commands\Database\Migrate.php(88): CodeIgniter\Commands\Database\Migrate->withSignalsBlocked(Object(Closure))
+#10 D:\Jess\Code\WebsiteJemaatLehari\system\CLI\Commands.php(72): CodeIgniter\Commands\Database\Migrate->run(Array)
+#11 D:\Jess\Code\WebsiteJemaatLehari\system\CLI\Console.php(47): CodeIgniter\CLI\Commands->run('migrate', Array)
+#12 D:\Jess\Code\WebsiteJemaatLehari\system\Boot.php(444): CodeIgniter\CLI\Console->run()
+#13 D:\Jess\Code\WebsiteJemaatLehari\system\Boot.php(166): CodeIgniter\Boot::runCommand(Object(CodeIgniter\CLI\Console))
+#14 D:\Jess\Code\WebsiteJemaatLehari\spark(87): CodeIgniter\Boot::bootSpark(Object(Config\Paths))
+#15 {main}
+
+Next CodeIgniter\Database\Exceptions\DatabaseException: Unknown database 'jemaat_lehari' in D:\Jess\Code\WebsiteJemaatLehari\system\Database\MySQLi\Connection.php:230
+Stack trace:
+#0 D:\Jess\Code\WebsiteJemaatLehari\system\Database\BaseConnection.php(550): CodeIgniter\Database\MySQLi\Connection->connect(false)
+#1 D:\Jess\Code\WebsiteJemaatLehari\system\Database\BaseConnection.php(792): CodeIgniter\Database\BaseConnection->initialize()
+#2 D:\Jess\Code\WebsiteJemaatLehari\system\Database\BaseConnection.php(1709): CodeIgniter\Database\BaseConnection->query('SHOW TABLES FRO...')
+#3 D:\Jess\Code\WebsiteJemaatLehari\system\Database\BaseConnection.php(1729): CodeIgniter\Database\BaseConnection->listTables()
+#4 D:\Jess\Code\WebsiteJemaatLehari\system\Database\MigrationRunner.php(831): CodeIgniter\Database\BaseConnection->tableExists('migrations')
+#5 D:\Jess\Code\WebsiteJemaatLehari\system\Database\MigrationRunner.php(173): CodeIgniter\Database\MigrationRunner->ensureTable()
+#6 D:\Jess\Code\WebsiteJemaatLehari\system\Commands\Database\Migrate.php(89): CodeIgniter\Database\MigrationRunner->latest(NULL)
+#7 D:\Jess\Code\WebsiteJemaatLehari\system\CLI\SignalTrait.php(243): CodeIgniter\Commands\Database\Migrate::CodeIgniter\Commands\Database\{closure}()
+#8 D:\Jess\Code\WebsiteJemaatLehari\system\Commands\Database\Migrate.php(88): CodeIgniter\Commands\Database\Migrate->withSignalsBlocked(Object(Closure))
+#9 D:\Jess\Code\WebsiteJemaatLehari\system\CLI\Commands.php(72): CodeIgniter\Commands\Database\Migrate->run(Array)
+#10 D:\Jess\Code\WebsiteJemaatLehari\system\CLI\Console.php(47): CodeIgniter\CLI\Commands->run('migrate', Array)
+#11 D:\Jess\Code\WebsiteJemaatLehari\system\Boot.php(444): CodeIgniter\CLI\Console->run()
+#12 D:\Jess\Code\WebsiteJemaatLehari\system\Boot.php(166): CodeIgniter\Boot::runCommand(Object(CodeIgniter\CLI\Console))
+#13 D:\Jess\Code\WebsiteJemaatLehari\spark(87): CodeIgniter\Boot::bootSpark(Object(Config\Paths))
+#14 {main}
+ERROR - 2026-11-03 08:06:52 --> Error connecting to the database: mysqli_sql_exception: Unknown database 'jemaat_lehari' in D:\Jess\Code\WebsiteJemaatLehari\system\Database\MySQLi\Connection.php:200
+Stack trace:
+#0 D:\Jess\Code\WebsiteJemaatLehari\system\Database\MySQLi\Connection.php(200): mysqli->real_connect('localhost', 'root', Object(SensitiveParameterValue), 'jemaat_lehari', 3306, '', 0)
+#1 D:\Jess\Code\WebsiteJemaatLehari\system\Database\BaseConnection.php(550): CodeIgniter\Database\MySQLi\Connection->connect(false)
+#2 D:\Jess\Code\WebsiteJemaatLehari\system\Database\BaseConnection.php(792): CodeIgniter\Database\BaseConnection->initialize()
+#3 D:\Jess\Code\WebsiteJemaatLehari\system\Database\BaseConnection.php(1709): CodeIgniter\Database\BaseConnection->query('SHOW TABLES FRO...')
+#4 D:\Jess\Code\WebsiteJemaatLehari\system\Database\BaseConnection.php(1729): CodeIgniter\Database\BaseConnection->listTables()
+#5 D:\Jess\Code\WebsiteJemaatLehari\system\Database\MigrationRunner.php(831): CodeIgniter\Database\BaseConnection->tableExists('migrations')
+#6 D:\Jess\Code\WebsiteJemaatLehari\system\Database\MigrationRunner.php(173): CodeIgniter\Database\MigrationRunner->ensureTable()
+#7 D:\Jess\Code\WebsiteJemaatLehari\system\Commands\Database\Migrate.php(89): CodeIgniter\Database\MigrationRunner->latest(NULL)
+#8 D:\Jess\Code\WebsiteJemaatLehari\system\CLI\SignalTrait.php(243): CodeIgniter\Commands\Database\Migrate::CodeIgniter\Commands\Database\{closure}()
+#9 D:\Jess\Code\WebsiteJemaatLehari\system\Commands\Database\Migrate.php(88): CodeIgniter\Commands\Database\Migrate->withSignalsBlocked(Object(Closure))
+#10 D:\Jess\Code\WebsiteJemaatLehari\system\CLI\Commands.php(72): CodeIgniter\Commands\Database\Migrate->run(Array)
+#11 D:\Jess\Code\WebsiteJemaatLehari\system\CLI\Console.php(47): CodeIgniter\CLI\Commands->run('migrate', Array)
+#12 D:\Jess\Code\WebsiteJemaatLehari\system\Boot.php(444): CodeIgniter\CLI\Console->run()
+#13 D:\Jess\Code\WebsiteJemaatLehari\system\Boot.php(166): CodeIgniter\Boot::runCommand(Object(CodeIgniter\CLI\Console))
+#14 D:\Jess\Code\WebsiteJemaatLehari\spark(87): CodeIgniter\Boot::bootSpark(Object(Config\Paths))
+#15 {main}
+
+Next CodeIgniter\Database\Exceptions\DatabaseException: Unknown database 'jemaat_lehari' in D:\Jess\Code\WebsiteJemaatLehari\system\Database\MySQLi\Connection.php:230
+Stack trace:
+#0 D:\Jess\Code\WebsiteJemaatLehari\system\Database\BaseConnection.php(550): CodeIgniter\Database\MySQLi\Connection->connect(false)
+#1 D:\Jess\Code\WebsiteJemaatLehari\system\Database\BaseConnection.php(792): CodeIgniter\Database\BaseConnection->initialize()
+#2 D:\Jess\Code\WebsiteJemaatLehari\system\Database\BaseConnection.php(1709): CodeIgniter\Database\BaseConnection->query('SHOW TABLES FRO...')
+#3 D:\Jess\Code\WebsiteJemaatLehari\system\Database\BaseConnection.php(1729): CodeIgniter\Database\BaseConnection->listTables()
+#4 D:\Jess\Code\WebsiteJemaatLehari\system\Database\MigrationRunner.php(831): CodeIgniter\Database\BaseConnection->tableExists('migrations')
+#5 D:\Jess\Code\WebsiteJemaatLehari\system\Database\MigrationRunner.php(173): CodeIgniter\Database\MigrationRunner->ensureTable()
+#6 D:\Jess\Code\WebsiteJemaatLehari\system\Commands\Database\Migrate.php(89): CodeIgniter\Database\MigrationRunner->latest(NULL)
+#7 D:\Jess\Code\WebsiteJemaatLehari\system\CLI\SignalTrait.php(243): CodeIgniter\Commands\Database\Migrate::CodeIgniter\Commands\Database\{closure}()
+#8 D:\Jess\Code\WebsiteJemaatLehari\system\Commands\Database\Migrate.php(88): CodeIgniter\Commands\Database\Migrate->withSignalsBlocked(Object(Closure))
+#9 D:\Jess\Code\WebsiteJemaatLehari\system\CLI\Commands.php(72): CodeIgniter\Commands\Database\Migrate->run(Array)
+#10 D:\Jess\Code\WebsiteJemaatLehari\system\CLI\Console.php(47): CodeIgniter\CLI\Commands->run('migrate', Array)
+#11 D:\Jess\Code\WebsiteJemaatLehari\system\Boot.php(444): CodeIgniter\CLI\Console->run()
+#12 D:\Jess\Code\WebsiteJemaatLehari\system\Boot.php(166): CodeIgniter\Boot::runCommand(Object(CodeIgniter\CLI\Console))
+#13 D:\Jess\Code\WebsiteJemaatLehari\spark(87): CodeIgniter\Boot::bootSpark(Object(Config\Paths))
+#14 {main}
+ERROR - 2026-11-03 08:07:11 --> Duplicate column name 'is_active'
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 294.
+ 1 SYSTEMPATH\Database\MySQLi\Connection.php(294): mysqli->query('ALTER TABLE `admin_users`
+	ADD `is_active` TINYINT(1) DEFAULT 1', 0)
+ 2 SYSTEMPATH\Database\BaseConnection.php(905): CodeIgniter\Database\MySQLi\Connection->execute('ALTER TABLE `admin_users`
+	ADD `is_active` TINYINT(1) DEFAULT 1')
+ 3 SYSTEMPATH\Database\BaseConnection.php(822): CodeIgniter\Database\BaseConnection->simpleQuery('ALTER TABLE `admin_users`
+	ADD `is_active` TINYINT(1) DEFAULT 1')
+ 4 SYSTEMPATH\Database\Forge.php(779): CodeIgniter\Database\BaseConnection->query('ALTER TABLE `admin_users`
+	ADD `is_active` TINYINT(1) DEFAULT 1')
+ 5 APPPATH\Database\Migrations\2026-11-01-000001_AddAdminUserRoles.php(29): CodeIgniter\Database\Forge->addColumn('admin_users', [...])
+ 6 SYSTEMPATH\Database\MigrationRunner.php(1024): App\Database\Migrations\AddAdminUserRoles->up()
+ 7 SYSTEMPATH\Database\MigrationRunner.php(202): CodeIgniter\Database\MigrationRunner->migrate('up', Object(stdClass))
+ 8 SYSTEMPATH\Commands\Database\Migrate.php(89): CodeIgniter\Database\MigrationRunner->latest(null)
+ 9 SYSTEMPATH\CLI\SignalTrait.php(243): CodeIgniter\Commands\Database\Migrate::CodeIgniter\Commands\Database\{closure}()
+10 SYSTEMPATH\Commands\Database\Migrate.php(88): CodeIgniter\Commands\Database\Migrate->withSignalsBlocked(Object(Closure))
+11 SYSTEMPATH\CLI\Commands.php(72): CodeIgniter\Commands\Database\Migrate->run([])
+12 SYSTEMPATH\CLI\Console.php(47): CodeIgniter\CLI\Commands->run('migrate', [])
+13 SYSTEMPATH\Boot.php(444): CodeIgniter\CLI\Console->run()
+14 SYSTEMPATH\Boot.php(166): CodeIgniter\Boot::runCommand(Object(CodeIgniter\CLI\Console))
+15 ROOTPATH\spark(87): CodeIgniter\Boot::bootSpark(Object(Config\Paths))
