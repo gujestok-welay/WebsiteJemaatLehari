@@ -16,25 +16,73 @@ class AdminJadwal extends BaseController
     public function index(): string
     {
         $term = trim((string) $this->request->getGet('q'));
-        $cancelled = $this->request->getGet('cancelled');
-        $cancelledValue = $cancelled === '' ? null : (int) $cancelled;
-        $items = $this->model->findByTerm($term, $cancelledValue);
+        $cancelled = (string) $this->request->getGet('cancelled');
+        $cancelledValue = in_array($cancelled, ['0', '1'], true) ? (int) $cancelled : null;
+        $hari = [
+            'minggu' => ['label' => 'Minggu', 'index' => 0],
+            'senin' => ['label' => 'Senin', 'index' => 1],
+            'selasa' => ['label' => 'Selasa', 'index' => 2],
+            'rabu' => ['label' => 'Rabu', 'index' => 3],
+            'kamis' => ['label' => 'Kamis', 'index' => 4],
+            'jumat' => ['label' => 'Jumat', 'index' => 5],
+            'sabtu' => ['label' => 'Sabtu', 'index' => 6],
+        ];
+        $hariDipilih = (string) $this->request->getGet('hari');
+        $hariDipilih = isset($hari[$hariDipilih]) ? $hariDipilih : 'semua';
+        $zonaWaktu = new \DateTimeZone('Asia/Jayapura');
+        $hariIni = new \DateTimeImmutable('today', $zonaWaktu);
+        $bulan = [
+            1 => 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+            'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember',
+        ];
+        $hariDenganIndeks = array_column($hari, 'index');
+        $hariDenganIndeks = array_combine($hariDenganIndeks, array_keys($hari));
+        $semuaJadwal = $this->model->findByTerm($term);
+        $hitung = ['semua' => count($semuaJadwal), 'aktif' => 0, 'dibatalkan' => 0];
 
-        return view('admin/jadwal/index', [
-            'items' => $items,
+        foreach ($semuaJadwal as &$item) {
+            $tanggal = new \DateTimeImmutable((string) $item['tanggal'], $zonaWaktu);
+            $indeksHari = (int) $tanggal->format('w');
+            $item['hari_key'] = $hariDenganIndeks[$indeksHari];
+            $item['tanggal_fmt'] = $tanggal->format('j') . ' ' . $bulan[(int) $tanggal->format('n')] . ' ' . $tanggal->format('Y');
+            $item['waktu_fmt'] = substr((string) $item['waktu'], 0, 5);
+            $hitung[! empty($item['is_cancelled']) ? 'dibatalkan' : 'aktif']++;
+        }
+        unset($item);
+
+        $jadwalDenganStatus = array_values(array_filter($semuaJadwal, static function (array $item) use ($cancelledValue): bool {
+            return $cancelledValue === null || (int) $item['is_cancelled'] === $cancelledValue;
+        }));
+        $hitungHari = array_fill_keys(array_keys($hari), 0);
+        foreach ($jadwalDenganStatus as $item) {
+            $hitungHari[$item['hari_key']]++;
+        }
+        $jadwal = array_values(array_filter($jadwalDenganStatus, static function (array $item) use ($hariDipilih): bool {
+            return $hariDipilih === 'semua' || $item['hari_key'] === $hariDipilih;
+        }));
+
+        return $this->renderAdminPage('admin/jadwal/index', [
+            'items' => $jadwal,
             'term' => $term,
             'cancelled' => $cancelledValue,
+            'hari' => $hari,
+            'hitung' => $hitung,
+            'hitungHari' => $hitungHari,
+            'hariDipilih' => $hariDipilih,
+            'hariIni' => $hariDenganIndeks[(int) $hariIni->format('w')],
+            'jumlahHasil' => count($jadwal),
             'success' => session()->getFlashdata('success'),
             'error' => session()->getFlashdata('error'),
-        ]);
+            'scheduleError' => session()->getFlashdata('schedule_error') ?? '',
+        ], 'Jadwal Ibadah');
     }
 
     public function create(): string
     {
-        return view('admin/jadwal/form', [
+        return $this->renderAdminPage('admin/jadwal/form', [
             'item' => null,
-            'error' => session()->getFlashdata('error'),
-        ]);
+            'error' => session()->getFlashdata('schedule_error') ?? session()->getFlashdata('error'),
+        ], 'Tambah Jadwal');
     }
 
     public function edit(int $id): string
@@ -44,10 +92,10 @@ class AdminJadwal extends BaseController
             return redirect()->to(site_url('admin/jadwal'))->with('error', 'Jadwal tidak ditemukan.');
         }
 
-        return view('admin/jadwal/form', [
+        return $this->renderAdminPage('admin/jadwal/form', [
             'item' => $item,
-            'error' => session()->getFlashdata('error'),
-        ]);
+            'error' => session()->getFlashdata('schedule_error') ?? session()->getFlashdata('error'),
+        ], 'Ubah Jadwal');
     }
 
     public function save(): \CodeIgniter\HTTP\RedirectResponse
@@ -61,7 +109,13 @@ class AdminJadwal extends BaseController
         $cancelled = (int) $this->request->getPost('is_cancelled');
 
         if ($jenis === '' || $tanggal === '' || $waktu === '' || $lokasi === '') {
-            return redirect()->back()->withInput()->with('error', 'Jenis ibadah, tanggal, waktu, dan lokasi wajib diisi.');
+            $message = 'Jenis ibadah, tanggal, waktu, dan lokasi wajib diisi.';
+            $returnTo = (string) $this->request->getPost('return_to');
+            if (in_array($returnTo, ['admin/dashboard', 'admin/jadwal'], true)) {
+                return redirect()->to(site_url($returnTo))->withInput()->with('schedule_error', $message);
+            }
+
+            return redirect()->back()->withInput()->with('error', $message);
         }
 
         $data = [

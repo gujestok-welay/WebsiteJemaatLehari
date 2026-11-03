@@ -7,7 +7,7 @@
         <p>Kelola berita, jadwal ibadah, profil, dan statistik jemaat dari satu tempat.</p>
         <div class="welcome-actions">
             <a class="button button-light" href="<?= site_url('admin/berita/create') ?>">Tulis berita</a>
-            <a class="button button-outline-light" href="<?= site_url('admin/jadwal/create') ?>">Tambah jadwal</a>
+            <a class="button button-outline-light" href="<?= site_url('admin/jadwal/create') ?>" data-rm-open="#schedule-create-modal">Tambah jadwal</a>
         </div>
     </div>
     <p class="welcome-date"><?= esc($todayLabel) ?> <span>· WIT</span></p>
@@ -78,7 +78,7 @@
                 <svg viewBox="0 0 48 48" aria-hidden="true"><rect x="8" y="11" width="32" height="29" rx="4"/><path d="M16 7v8M32 7v8M8 19h32M17 27h5M17 33h14"/></svg>
                 <h3>Belum ada jadwal mendatang</h3>
                 <p>Tambahkan jadwal jika informasi resminya sudah tersedia.</p>
-                <a class="text-link" href="<?= site_url('admin/jadwal/create') ?>">Tambah jadwal</a>
+                <a class="text-link" href="<?= site_url('admin/jadwal/create') ?>" data-rm-open="#schedule-create-modal">Tambah jadwal</a>
             </div>
         <?php else: ?>
             <div class="next-event">
@@ -93,4 +93,8 @@
         <?php endif; ?>
     </section>
 </div>
+<?= $this->include('components/ui/schedule-create-modal', [
+    'scheduleError' => $scheduleError ?? '',
+    'returnTo' => 'admin/dashboard',
+]) ?>
 <?= $this->endSection() ?>

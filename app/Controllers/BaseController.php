@@ -46,4 +46,23 @@ abstract class BaseController extends Controller
         // Preload any models, libraries, etc, here.
         // $this->session = service('session');
     }
+
+    protected function renderAdminPage(string $view, array $data, string $title): string
+    {
+        $partial = $this->request->getHeaderLine('X-Partial') === '1';
+
+        $data['title'] = $title;
+        $data['name'] = $data['name'] ?? (session()->get('admin_name') ?? 'Admin');
+        $data['partial'] = $partial;
+        $this->response->setHeader('Vary', 'X-Partial');
+
+        if ($partial) {
+            $this->response
+                ->setHeader('X-Partial-Response', '1')
+                ->setHeader('X-Page-Title', rawurlencode($title))
+                ->setHeader('Cache-Control', 'no-store');
+        }
+
+        return view($view, $data);
+    }
 }

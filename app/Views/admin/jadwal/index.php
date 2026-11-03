@@ -1,127 +1,167 @@
-<!doctype html>
-<html lang="id">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="robots" content="noindex, nofollow">
-    <title>Jadwal Ibadah · Media Center</title>
-    <style>
-        :root {
-            --bg:#edf3ef; --panel:#fff; --line:#dfe8e1; --ink:#1d2a25; --muted:#586b62; --accent:#214f41; --focus:#1a73e8; --danger:#9a2d2b; --font:"DM Sans","Segoe UI",Arial,sans-serif;
-        }
-        * { box-sizing: border-box; }
-        body { margin:0; font-family:var(--font); background:var(--bg); color:var(--ink); }
-        a,button,input,select,textarea { outline-offset:5px; }
-        a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible { outline:3px solid var(--focus); outline-offset:5px; }
-        .topbar { background:var(--panel); border-bottom:1px solid var(--line); }
-        .brand { display:flex; gap:12px; align-items:center; text-decoration:none; color:var(--ink); font-weight:700; }
-        .brand-mark { display:grid; place-items:center; width:38px; height:38px; background:var(--accent); color:#fff; border-radius:8px; }
-        .container { max-width:1200px; margin:0 auto; padding:32px 20px 64px; }
-        .page-head { display:flex; justify-content:space-between; align-items:flex-end; gap:16px; margin-bottom:24px; }
-        .page-title { margin:0; font-size:clamp(1.8rem,3vw,2.7rem); font-weight:700; }
-        .toolbar { display:flex; gap:12px; align-items:center; justify-content:space-between; flex-wrap:wrap; margin-bottom:20px; }
-        .search-form { display:flex; gap:12px; flex-wrap:wrap; }
-        .field { min-height:44px; border:1px solid var(--line); border-radius:8px; padding:10px 12px; font:inherit; background:#fff; }
-        .btn { display:inline-flex; align-items:center; justify-content:center; min-height:44px; border-radius:8px; padding:10px 16px; font-weight:600; text-decoration:none; border:1px solid var(--line); background:#fff; color:var(--ink); cursor:pointer; }
-        .btn-primary { background:var(--accent); border-color:var(--accent); color:#fff; }
-        .alert { border-radius:10px; padding:12px 14px; margin-bottom:16px; border:1px solid transparent; }
-        .alert-success { background:#eaf7ee; border-color:#bfe0c8; color:#1d5d3d; }
-        .alert-error { background:#fff1f0; border-color:#f0c6bf; color:#8f2f2d; }
-        .card { background:var(--panel); border:1px solid var(--line); border-radius:12px; }
-        .table-wrap { padding:18px; overflow-x:auto; }
-        table { width:100%; border-collapse:collapse; min-width:750px; }
-        th, td { padding:12px 10px; border-bottom:1px solid var(--line); text-align:left; vertical-align:top; }
-        thead th { background:#f7faf8; font-size:0.8rem; letter-spacing:0.06em; text-transform:uppercase; color:var(--muted); }
-        .cancel-pill { display:inline-flex; padding:6px 10px; border-radius:999px; background:#f9f2d9; color:#865a10; font-size:0.74rem; font-weight:700; }
-        .actions { display:flex; gap:8px; flex-wrap:wrap; }
-        .small-btn { padding:8px 10px; min-height:36px; }
-        .danger { color:var(--danger); }
-        @media (max-width:720px){ .page-head{display:block;} .toolbar{display:block;} .search-form { margin-top:12px; } }
-    </style>
-</head>
-<body>
-<header class="topbar">
-    <div class="container d-flex justify-content-between align-items-center" style="padding-top:12px;padding-bottom:12px;">
-        <a class="brand" href="<?= site_url('admin/dashboard') ?>">
-            <span class="brand-mark" aria-hidden="true">L</span>
-            <span>Media Center<br>Jemaat Leahari</span>
-        </a>
-        <form method="post" action="<?= site_url('admin/logout') ?>"><?= csrf_field() ?><button class="btn" type="submit">Keluar</button></form>
-    </div>
-</header>
-<main class="container">
-    <div class="page-head">
-        <div>
-            <p style="margin:0 0 8px;color:var(--muted);">Agenda</p>
-            <h1 class="page-title">Jadwal Ibadah</h1>
+<?= $this->extend('layouts/admin') ?>
+
+<?= $this->section('content') ?>
+<?php
+$adaFilter = $term !== '' || $hariDipilih !== 'semua' || $cancelled !== null;
+$parameterDasar = [
+    'q' => $term,
+    'cancelled' => $cancelled,
+];
+$urlFilter = static function (array $perubahan) use ($parameterDasar): string {
+    $parameter = array_merge($parameterDasar, $perubahan);
+    $parameter = array_filter($parameter, static fn ($nilai): bool => $nilai !== null && $nilai !== '');
+
+    return site_url('admin/jadwal') . ($parameter ? '?' . http_build_query($parameter) : '');
+};
+$tabStatus = [
+    'semua' => ['label' => 'Semua', 'value' => null, 'count' => $hitung['semua']],
+    'aktif' => ['label' => 'Aktif', 'value' => 0, 'count' => $hitung['aktif']],
+    'dibatalkan' => ['label' => 'Dibatalkan', 'value' => 1, 'count' => $hitung['dibatalkan']],
+];
+$statusTerpilih = $cancelled === null ? 'semua' : ($cancelled === 1 ? 'dibatalkan' : 'aktif');
+?>
+
+<section class="schedule-page" aria-labelledby="schedule-page-title">
+    <header class="schedule-page-heading">
+        <h1 id="schedule-page-title">Jadwal Ibadah</h1>
+        <div class="schedule-page-actions">
+            <a class="button" href="<?= site_url('jadwal-ibadah') ?>" target="_blank" rel="noopener">Lihat di situs</a>
+            <a class="button button-primary" href="<?= site_url('admin/jadwal/create') ?>" data-rm-open="#schedule-create-modal">Tambah jadwal</a>
         </div>
-        <a class="btn btn-primary" href="<?= site_url('admin/jadwal/create') ?>">+ Tambah jadwal</a>
-    </div>
+    </header>
 
     <?php if (! empty($success)): ?>
-        <div class="alert alert-success" role="alert"><?= esc($success) ?></div>
+        <div class="news-alert news-alert-success" role="status"><?= esc($success) ?></div>
     <?php endif; ?>
     <?php if (! empty($error)): ?>
-        <div class="alert alert-error" role="alert"><?= esc($error) ?></div>
+        <div class="news-alert news-alert-error" role="alert"><?= esc($error) ?></div>
     <?php endif; ?>
 
-    <div class="toolbar">
-        <form class="search-form" method="get" action="<?= site_url('admin/jadwal') ?>">
-            <input class="field" type="search" name="q" value="<?= esc($term ?? '') ?>" placeholder="Cari jenis, lokasi, pelayan" aria-label="Cari jadwal">
-            <select class="field" name="cancelled" aria-label="Filter status jadwal">
-                <option value="">Semua jadwal</option>
-                <option value="0" <?= ($cancelled ?? '') === 0 ? 'selected' : '' ?>>Aktif</option>
-                <option value="1" <?= ($cancelled ?? '') === 1 ? 'selected' : '' ?>>Dibatalkan</option>
-            </select>
-            <button class="btn" type="submit">Cari</button>
-        </form>
-        <a class="btn" href="<?= site_url('admin/dashboard') ?>">Dashboard</a>
-    </div>
+    <section class="metrics schedule-metrics" aria-label="Ringkasan jadwal">
+        <div class="metric">
+            <span class="metric-label">Semua jadwal</span>
+            <strong class="metric-value"><?= number_format($hitung['semua'], 0, ',', '.') ?></strong>
+            <span class="schedule-metric-note">tersimpan</span>
+        </div>
+        <div class="metric">
+            <span class="metric-label">Jadwal aktif</span>
+            <strong class="metric-value"><?= number_format($hitung['aktif'], 0, ',', '.') ?></strong>
+            <span class="schedule-metric-note">belum dibatalkan</span>
+        </div>
+        <div class="metric">
+            <span class="metric-label">Dibatalkan</span>
+            <strong class="metric-value"><?= number_format($hitung['dibatalkan'], 0, ',', '.') ?></strong>
+            <span class="schedule-metric-note">ditandai di daftar</span>
+        </div>
+    </section>
 
-    <section class="card">
-        <div class="table-wrap">
-            <table>
-                <thead>
-                <tr>
-                    <th>Jenis</th>
-                    <th>Tanggal</th>
-                    <th>Waktu</th>
-                    <th>Lokasi</th>
-                    <th>Pelayan</th>
-                    <th>Status</th>
-                    <th>Action</th>
-                </tr>
-                </thead>
-                <tbody>
-                <?php if (empty($items)): ?>
+    <section class="schedule-day-section" aria-labelledby="schedule-day-title">
+        <div class="schedule-section-heading">
+            <h2 id="schedule-day-title">Jadwal menurut hari</h2>
+            <p>Pengelompokan mengikuti hari pada tanggal setiap entri.</p>
+        </div>
+        <nav class="schedule-days" aria-label="Filter hari">
+            <?php foreach ($hari as $kunci => $dataHari): ?>
+                <a class="schedule-day <?= $hariDipilih === $kunci ? 'is-selected' : '' ?> <?= $hariIni === $kunci ? 'is-today' : '' ?>"
+                   href="<?= esc($urlFilter(['hari' => $kunci]), 'attr') ?>"
+                   <?= $hariDipilih === $kunci ? 'aria-current="page"' : '' ?>>
+                    <span class="schedule-day-name">
+                        <?= esc($dataHari['label']) ?>
+                        <?php if ($hariIni === $kunci): ?><span class="schedule-today-dot" aria-label="Hari ini"></span><?php endif; ?>
+                    </span>
+                    <strong><?= number_format($hitungHari[$kunci], 0, ',', '.') ?></strong>
+                    <span class="schedule-day-unit">entri</span>
+                </a>
+            <?php endforeach; ?>
+        </nav>
+    </section>
+
+    <section class="schedule-panel" aria-label="Daftar jadwal ibadah">
+        <div class="schedule-toolbar">
+            <nav class="schedule-status-tabs" aria-label="Filter status jadwal">
+                <?php foreach ($tabStatus as $kunci => $tab): ?>
+                    <a href="<?= esc($urlFilter(['cancelled' => $tab['value']]), 'attr') ?>"
+                       class="<?= $statusTerpilih === $kunci ? 'is-active' : '' ?>"
+                       <?= $statusTerpilih === $kunci ? 'aria-current="page"' : '' ?>>
+                        <?= esc($tab['label']) ?><span><?= number_format($tab['count'], 0, ',', '.') ?></span>
+                    </a>
+                <?php endforeach; ?>
+            </nav>
+
+            <form class="schedule-search" action="<?= site_url('admin/jadwal') ?>" method="get" role="search">
+                <?php if ($cancelled !== null): ?><input type="hidden" name="cancelled" value="<?= (int) $cancelled ?>"><?php endif; ?>
+                <?php if ($hariDipilih !== 'semua'): ?><input type="hidden" name="hari" value="<?= esc($hariDipilih, 'attr') ?>"><?php endif; ?>
+                <label class="visually-hidden" for="schedule-search-input">Cari jenis ibadah, lokasi, atau pelayan</label>
+                <input id="schedule-search-input" type="search" name="q" value="<?= esc($term, 'attr') ?>" placeholder="Cari jadwal...">
+                <button class="button" type="submit">Cari</button>
+                <?php if ($adaFilter): ?>
+                    <a class="schedule-reset" href="<?= site_url('admin/jadwal') ?>">Hapus filter</a>
+                <?php endif; ?>
+            </form>
+        </div>
+
+        <div class="schedule-result-count" aria-live="polite">
+            <?= number_format($jumlahHasil, 0, ',', '.') ?> jadwal ditampilkan
+        </div>
+
+        <?php if ($items): ?>
+            <div class="schedule-table-wrap">
+                <table class="schedule-table">
+                    <thead>
                     <tr>
-                        <td colspan="7" style="color:var(--muted);padding:24px 10px;">Belum ada jadwal yang cocok dengan filter saat ini.</td>
+                        <th scope="col">Ibadah</th>
+                        <th scope="col">Tanggal &amp; waktu</th>
+                        <th scope="col">Lokasi</th>
+                        <th scope="col">Pelayan</th>
+                        <th scope="col">Status</th>
+                        <th scope="col"><span class="visually-hidden">Tindakan</span></th>
                     </tr>
-                <?php else: ?>
+                    </thead>
+                    <tbody>
                     <?php foreach ($items as $item): ?>
+                        <?php $dibatalkan = ! empty($item['is_cancelled']); ?>
                         <tr>
-                            <td><?= esc($item['jenis_ibadah'] ?? '') ?></td>
-                            <td><?= esc($item['tanggal'] ?? '') ?></td>
-                            <td><?= esc($item['waktu'] ?? '') ?></td>
-                            <td><?= esc($item['lokasi'] ?? '') ?></td>
-                            <td><?= esc($item['pelayan'] ?? '-') ?></td>
-                            <td><?= ! empty($item['is_cancelled']) ? '<span class="cancel-pill">Dibatalkan</span>' : 'Aktif' ?></td>
+                            <td class="schedule-service-name"><?= esc($item['jenis_ibadah']) ?></td>
+                            <td class="schedule-date">
+                                <span><?= esc($item['tanggal_fmt']) ?></span>
+                                <span><?= esc($item['waktu_fmt']) ?> WIT</span>
+                            </td>
+                            <td><?= esc($item['lokasi']) ?></td>
+                            <td><?= esc($item['pelayan'] ?: 'Belum ditentukan') ?></td>
+                            <td><span class="schedule-status <?= $dibatalkan ? 'is-cancelled' : 'is-active' ?>"><?= $dibatalkan ? 'Dibatalkan' : 'Aktif' ?></span></td>
                             <td>
-                                <div class="actions">
-                                    <a class="btn small-btn" href="<?= site_url('admin/jadwal/edit/' . ($item['id'] ?? 0)) ?>">Edit</a>
-                                    <form method="post" action="<?= site_url('admin/jadwal/delete/' . ($item['id'] ?? 0)) ?>" onsubmit="return confirm('Batalkan jadwal ini?');">
+                                <div class="schedule-row-actions">
+                                    <a class="schedule-action-link" href="<?= site_url('admin/jadwal/edit/' . (int) $item['id']) ?>">Ubah</a>
+                                    <form method="post" action="<?= site_url('admin/jadwal/delete/' . (int) $item['id']) ?>" onsubmit="return confirm('Arsipkan jadwal ini dari daftar aktif?');">
                                         <?= csrf_field() ?>
-                                        <button class="btn small-btn danger" type="submit">Batalkan</button>
+                                        <button class="schedule-action-link is-archive" type="submit">Arsipkan</button>
                                     </form>
                                 </div>
                             </td>
                         </tr>
                     <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+        <?php else: ?>
+            <div class="schedule-empty">
+                <svg viewBox="0 0 48 48" aria-hidden="true"><rect x="7" y="10" width="34" height="31" rx="4"/><path d="M15 6v8M33 6v8M7 19h34M15 27h7M15 34h17"/></svg>
+                <h2><?= $adaFilter ? 'Tidak ada jadwal yang cocok' : 'Belum ada jadwal ibadah' ?></h2>
+                <p><?= $adaFilter ? 'Coba ubah pencarian atau filter untuk melihat jadwal lain.' : 'Jadwal yang sudah disimpan akan muncul di sini.' ?></p>
+                <?php if ($adaFilter): ?>
+                    <a class="text-link" href="<?= site_url('admin/jadwal') ?>">Tampilkan semua jadwal</a>
+                <?php else: ?>
+                    <a class="text-link" href="<?= site_url('admin/jadwal/create') ?>" data-rm-open="#schedule-create-modal">Tambah jadwal pertama</a>
                 <?php endif; ?>
-                </tbody>
-            </table>
-        </div>
+            </div>
+        <?php endif; ?>
     </section>
-</main>
-</body>
-</html>
+
+    <p class="schedule-time-note">Waktu ditampilkan dalam Waktu Indonesia Timur (WIT). Entri yang dibatalkan tetap ditandai pada daftar.</p>
+</section>
+
+<?= $this->include('components/ui/schedule-create-modal', [
+    'scheduleError' => $scheduleError ?? '',
+    'returnTo' => 'admin/jadwal',
+]) ?>
+<?= $this->endSection() ?>

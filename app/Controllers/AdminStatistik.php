@@ -16,12 +16,20 @@ class AdminStatistik extends BaseController
     public function index(): string
     {
         $items = $this->model->orderBy('updated_at', 'DESC')->findAll();
+        $editId = (int) $this->request->getGet('edit');
+        $editItem = $editId > 0 ? $this->model->find($editId) : null;
+        $error = session()->getFlashdata('error');
 
-        return view('admin/statistik/index', [
+        if ($editId > 0 && $editItem === null) {
+            $error = 'Data statistik tidak ditemukan.';
+        }
+
+        return $this->renderAdminPage('admin/statistik/index', [
             'items' => $items,
+            'editItem' => $editItem,
             'success' => session()->getFlashdata('success'),
-            'error' => session()->getFlashdata('error'),
-        ]);
+            'error' => $error,
+        ], 'Statistik');
     }
 
     public function save(): \CodeIgniter\HTTP\RedirectResponse

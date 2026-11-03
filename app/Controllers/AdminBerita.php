@@ -20,14 +20,14 @@ class AdminBerita extends BaseController
         $status = (string) $this->request->getGet('status');
         $items = $this->model->findByTerm($term, $status ?: null);
 
-        return view('admin/berita/index', [
+        return $this->renderAdminPage('admin/berita/index', [
             'items' => $items,
             'term' => $term,
             'status' => $status,
             'statusOptions' => BeritaModel::statusOptions(),
             'success' => session()->getFlashdata('success'),
             'error' => session()->getFlashdata('error'),
-        ]);
+        ], 'Berita');
     }
 
     public function create(): string
