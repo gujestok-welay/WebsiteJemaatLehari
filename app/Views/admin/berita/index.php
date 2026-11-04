@@ -65,7 +65,21 @@
                             <td class="news-updated-column"><?= esc($item['updated_at'] ?? $item['created_at'] ?? '-') ?></td>
                             <td>
                                 <div class="news-actions">
-                                    <a class="news-action-link" href="<?= site_url('admin/berita/edit/' . (int) ($item['id'] ?? 0)) ?>">Ubah</a>
+                                    <button
+                                        class="news-action-link"
+                                        type="button"
+                                        aria-label="Ubah berita: <?= esc($item['title'] ?? '', 'attr') ?>"
+                                        data-rm-open="#news-create-modal"
+                                        data-news-edit="<?= esc(json_encode([
+                                            'id' => (int) ($item['id'] ?? 0),
+                                            'title' => (string) ($item['title'] ?? ''),
+                                            'slug' => (string) ($item['slug'] ?? ''),
+                                            'summary' => (string) ($item['summary'] ?? ''),
+                                            'content' => (string) ($item['content'] ?? ''),
+                                            'status' => (string) ($item['status'] ?? ''),
+                                            'cover_image' => (string) ($item['cover_image'] ?? ''),
+                                        ], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_THROW_ON_ERROR), 'attr') ?>"
+                                    >Ubah</button>
                                     <form method="post" action="<?= site_url('admin/berita/delete/' . (int) ($item['id'] ?? 0)) ?>" onsubmit="return confirm('Arsipkan berita ini?');">
                                         <?= csrf_field() ?>
                                         <button class="news-action-link news-action-archive" type="submit">Arsipkan</button>

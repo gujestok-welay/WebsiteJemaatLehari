@@ -3,18 +3,20 @@
 namespace App\Controllers;
 
 use App\Libraries\PublicSampleContent;
+use App\Models\BeritaModel;
 
 class Home extends BaseController
 {
     public function index(): string
     {
         $schedules = $this->normalizeSchedules(PublicSampleContent::schedules());
+        $news = $this->publicNews();
 
         return view('publik/beranda', [
             'title' => 'Beranda',
             'activePage' => 'beranda',
-            'isSample' => true, // jadi false saat data database dipakai (Langkah 7)
-            'news' => $this->normalizeNews(array_slice(PublicSampleContent::news(), 0, 2)),
+            'isSample' => $this->usesSampleNews(),
+            'news' => $this->normalizeNews(array_slice($news, 0, 2)),
             'schedules' => array_slice($schedules, 0, 4),
             'nextService' => $schedules[0] ?? null,
             'majelis' => [],
@@ -98,7 +100,13 @@ class Home extends BaseController
 
     public function berita(): string
     {
-        return $this->page('berita', 'Berita');
+        return view('publik/berita', [
+            'title' => 'Berita',
+            'activePage' => 'berita',
+            'news' => $this->publicNews(),
+            'isSample' => $this->usesSampleNews(),
+            'schedules' => PublicSampleContent::schedules(),
+        ]);
     }
 
     public function jadwal(): string
@@ -116,15 +124,68 @@ class Home extends BaseController
         ]);
     }
 
+    private function publicNews(): array
+    {
+        if ($this->usesSampleNews()) {
+            return PublicSampleContent::news();
+        }
+
+        $model = new BeritaModel();
+        $rows = $model->findPublishedByTerm();
+
+        return array_map(fn (array $row): array => [
+            'id' => $row['id'],
+            'title' => $row['title'],
+            'category' => null,
+            'date' => $this->formatNewsDate($row['created_at'] ?? null),
+            'summary' => (string) ($row['summary'] ?? ''),
+            'url' => site_url('berita') . '#berita-' . $row['id'],
+        ], $rows);
+    }
+
+    private function usesSampleNews(): bool
+    {
+        $database = config('Database');
+        $connection = $database->{$database->defaultGroup};
+
+        return empty($connection['database']);
+    }
+
+    private function formatNewsDate(?string $date): string
+    {
+        if ($date === null || trim($date) === '') {
+            return 'Tanggal belum tersedia';
+        }
+
+        $value = new \DateTimeImmutable($date);
+        $months = [
+            1 => 'Januari',
+            2 => 'Februari',
+            3 => 'Maret',
+            4 => 'April',
+            5 => 'Mei',
+            6 => 'Juni',
+            7 => 'Juli',
+            8 => 'Agustus',
+            9 => 'September',
+            10 => 'Oktober',
+            11 => 'November',
+            12 => 'Desember',
+        ];
+
+        return $value->format('j') . ' ' . $months[(int) $value->format('n')] . ' ' . $value->format('Y');
+    }
+
     /** Bentuk seragam untuk kartu berita di Beranda. */
     private function normalizeNews(array $rows): array
     {
         return array_map(static fn(array $row): array => [
+            'id' => $row['id'],
             'title' => $row['title'],
             'summary' => $row['summary'],
             'date' => $row['date'],
             'category' => $row['category'] ?? null,
-            'url' => site_url('berita') . '#' . $row['id'],
+            'url' => $row['url'] ?? site_url('berita') . '#berita-' . $row['id'],
             'image' => null,
         ], $rows);
     }

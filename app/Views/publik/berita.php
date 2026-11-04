@@ -14,52 +14,64 @@
         <?php
         $categories = [];
         foreach ($news as $item) {
-            $categories[(string) $item['category']] = true;
+            $category = trim((string) ($item['category'] ?? ''));
+            if ($category !== '') {
+                $categories[$category] = true;
+            }
         }
         ?>
 
-        <div class="d-flex flex-wrap gap-2 mb-4" id="filter-kategori">
-            <button type="button" class="btn btn-sm rounded-pill btn-primary" data-kategori="all">Semua</button>
-            <?php foreach (array_keys($categories) as $nama): ?>
-                <button type="button" class="btn btn-sm rounded-pill btn-outline-secondary" data-kategori="<?= esc($nama, 'attr') ?>"><?= esc($nama) ?></button>
-            <?php endforeach; ?>
-        </div>
-
-        <div class="row g-4" id="daftar-berita">
-            <?php foreach ($news as $index => $item):
-                $categoryName = (string) ($item['category'] ?? 'Umum');
-                $bgImage = base_url('assets/images/kegiatan/berita' . (($index % 3) + 1) . '.jpeg');
-            ?>
-                <div class="col-md-6 col-lg-4 item-berita" data-kategori="<?= esc($categoryName, 'attr') ?>">
-                    <article class="card berita-card border-0 shadow-sm rounded-4 h-100 overflow-hidden">
-                        <a href="<?= site_url('berita') . '#' . esc($item['id'], 'attr') ?>" class="berita-thumb d-block" aria-label="Buka <?= esc($item['title'], 'attr') ?>">
-                            <span class="berita-thumb-bg" style="background-image:url('<?= $bgImage ?>');"></span>
-                            <span class="berita-chip"><?= esc($categoryName) ?></span>
-                        </a>
-
-                        <div class="card-body p-4 d-flex flex-column">
-                            <div class="berita-meta small text-body-secondary d-flex flex-wrap gap-3 mb-3">
-                                <span><i class="bi bi-calendar3 me-1"></i><?= esc($item['date']) ?></span>
-                                <span><i class="bi bi-person-fill me-1"></i>Admin</span>
-                            </div>
-
-                            <h2 class="berita-judul h4 fw-bold mb-3">
-                                <?= view('components/css-link', [
-                                    'url' => site_url('berita') . '#' . (string) $item['id'],
-                                    'label' => $item['title'],
-                                    'className' => 'stretched-link text-decoration-none',
-                                    'icon' => '',
-                                ]) ?>
-                            </h2>
-
-                            <p class="text-body-secondary mb-0 berita-ringkas"><?= esc($item['summary']) ?></p>
-                        </div>
-                    </article>
+        <?php if (empty($news)): ?>
+            <p class="text-center text-body-secondary py-5">Belum ada berita yang diterbitkan.</p>
+        <?php else: ?>
+            <?php if (! empty($categories)): ?>
+                <div class="d-flex flex-wrap gap-2 mb-4" id="filter-kategori">
+                    <button type="button" class="btn btn-sm rounded-pill btn-primary" data-kategori="all">Semua</button>
+                    <?php foreach (array_keys($categories) as $nama): ?>
+                        <button type="button" class="btn btn-sm rounded-pill btn-outline-secondary" data-kategori="<?= esc($nama, 'attr') ?>"><?= esc($nama) ?></button>
+                    <?php endforeach; ?>
                 </div>
-            <?php endforeach; ?>
-        </div>
+            <?php endif; ?>
 
-        <p id="berita-kosong" class="text-center text-body-secondary py-5 d-none">Belum ada berita pada kategori ini.</p>
+            <div class="row g-4" id="daftar-berita">
+                <?php foreach ($news as $index => $item):
+                    $categoryName = (string) ($item['category'] ?? 'Berita');
+                    $bgImage = base_url('assets/images/kegiatan/berita' . (($index % 3) + 1) . '.jpeg');
+                    $articleId = 'berita-' . (string) $item['id'];
+                ?>
+                    <div class="col-md-6 col-lg-4 item-berita" data-kategori="<?= esc($categoryName, 'attr') ?>">
+                        <article id="<?= esc($articleId, 'attr') ?>" class="card berita-card border-0 shadow-sm rounded-4 h-100 overflow-hidden">
+                            <a href="<?= esc(site_url('berita') . '#' . $articleId, 'attr') ?>" class="berita-thumb d-block" aria-label="Buka <?= esc($item['title'], 'attr') ?>">
+                                <span class="berita-thumb-bg" style="background-image:url('<?= $bgImage ?>');"></span>
+                                <span class="berita-chip"><?= esc($categoryName) ?></span>
+                            </a>
+
+                            <div class="card-body p-4 d-flex flex-column">
+                                <div class="berita-meta small text-body-secondary d-flex flex-wrap gap-3 mb-3">
+                                    <span><i class="bi bi-calendar3 me-1"></i><?= esc($item['date']) ?></span>
+                                    <span>Admin</span>
+                                </div>
+
+                                <h2 class="berita-judul h4 fw-bold mb-3">
+                                    <?= view('components/css-link', [
+                                        'url' => site_url('berita') . '#' . $articleId,
+                                        'label' => $item['title'],
+                                        'className' => 'stretched-link text-decoration-none',
+                                        'icon' => '',
+                                    ]) ?>
+                                </h2>
+
+                                <p class="text-body-secondary mb-0 berita-ringkas"><?= esc($item['summary']) ?></p>
+                            </div>
+                        </article>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+
+            <?php if (! empty($categories)): ?>
+                <p id="berita-kosong" class="text-center text-body-secondary py-5 d-none">Belum ada berita pada kategori ini.</p>
+            <?php endif; ?>
+        <?php endif; ?>
     </section>
 </div>
 

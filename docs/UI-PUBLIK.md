@@ -1,6 +1,6 @@
 # Fondasi UI publik Jemaat Leahari
 
-Implementasi berdasarkan `docs/PRD.md` (draft), dengan lingkup mengikuti permintaan empat halaman publik. Framework bawaan terverifikasi CodeIgniter **4.7.5**. Menggunakan PHP Views dan Bootstrap **5.3.8** lokal; tanpa database, admin, login, atau build frontend.
+Implementasi mengikuti lingkup empat halaman publik. Framework bawaan terverifikasi CodeIgniter **4.7.5**. Menggunakan PHP Views dan Bootstrap **5.3.8** lokal. Beranda dan halaman Berita menampilkan berita berstatus `Terbit` dari database jika koneksi database dikonfigurasi; konten contoh dipakai untuk berita saat database belum dikonfigurasi. Jadwal dan beberapa bagian profil masih menggunakan data contoh.
 
 ## Menjalankan
 
@@ -9,24 +9,24 @@ Implementasi berdasarkan `docs/PRD.md` (draft), dengan lingkup mengikuti permint
 3. Jalankan `php spark serve`.
 4. Buka `http://localhost:8080/`, `/profil`, `/berita`, dan `/jadwal-ibadah`.
 
-Untuk host/port berbeda, atur `app.baseURL` pada `.env` lokal mengikuti contoh `env`. Jangan commit kredensial. Produksi harus menggunakan document root `public/`. Tidak ada konfigurasi database yang diperlukan oleh halaman ini.
+Untuk host/port berbeda, atur `app.baseURL` pada `.env` lokal mengikuti contoh `env`. Jangan commit kredensial. Produksi harus menggunakan document root `public/`. Konfigurasikan database untuk menampilkan dan mengelola berita dinamis; jika belum dikonfigurasi, berita contoh tetap diberi penanda contoh.
 
 ## File implementasi
 
 - `app/Config/Routes.php`: empat route GET eksplisit.
-- `app/Controllers/Home.php`: menyiapkan data dan merender halaman.
-- `app/Libraries/PublicSampleContent.php`: sumber tunggal tiga berita dan tiga jadwal dummy; tidak melakukan persistence.
+- `app/Controllers/Home.php`: menyiapkan data dan merender halaman; mengambil berita publik dari `BeritaModel` saat database dikonfigurasi.
+- `app/Libraries/PublicSampleContent.php`: sumber berita contoh bila database belum dikonfigurasi dan tiga jadwal contoh; tidak melakukan persistence.
 - `app/Views/layouts/publik.php`: dokumen HTML, aset lokal, skip link, pemberitahuan dummy, slot konten.
 - `app/Views/partials/navbar.php`: navigasi responsif dan penanda halaman aktif.
 - `app/Views/partials/footer.php`: penutup dan navigasi kembali.
-- `app/Views/publik/beranda.php`: pengantar, berita, jadwal contoh, akses profil.
+- `app/Views/publik/beranda.php`: pengantar, berita terbit terbaru, jadwal contoh, akses profil.
 - `app/Views/publik/profil.php`: ruang deskripsi, sejarah, Majelis, serta kontak tanpa fakta rekaan.
-- `app/Views/publik/berita.php`: daftar berita dengan isi yang dapat dibuka melalui elemen HTML `details`.
+- `app/Views/publik/berita.php`: daftar berita terbit dari database atau fallback contoh; filter kategori hanya tersedia pada konten contoh yang memiliki kategori.
 - `app/Views/publik/jadwal.php`: daftar lengkap jadwal dan filter jenis ibadah.
 - `public/assets/css/publik.css`: token palet, tipografi, responsivitas, fokus keyboard, reduced motion, dan cetak.
 - `public/assets/js/publik.js`: progressive enhancement filter jadwal dengan status untuk pembaca layar.
 - `public/assets/vendor/bootstrap/bootstrap.min.css` dan `bootstrap.bundle.min.js`: distribusi Bootstrap 5.3.8, lisensi MIT pada header aset.
-- `tests/unit/PublicPagesTest.php`: regresi respons halaman, pemberitahuan dummy, struktur navigasi, fallback jadwal, dan profil tanpa data resmi rekaan.
+- `tests/unit/PublicPagesTest.php`: regresi respons halaman, berita terbit dan pembaruan konten, larangan kebocoran draft/arsip, pemberitahuan dummy, fallback jadwal, serta profil tanpa data resmi rekaan.
 - `composer.lock`: hasil instalasi dependensi untuk versi yang dapat direproduksi; `composer.json` dan framework tidak diubah.
 - `.gitignore`: mencegah dependensi, pengaturan rahasia, dan hasil pemeriksaan lokal ikut ter-commit.
 

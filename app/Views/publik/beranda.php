@@ -131,7 +131,7 @@ $latestNews = array_slice($news, 0, 2);
                                 <article class="news-card card rounded-4 shadow-sm overflow-hidden">
                                     <div class="news-card-thumb" aria-hidden="true">Warta</div>
                                     <div class="news-card-copy card-body">
-                                        <p class="meta small text-body-secondary">Contoh · <?= esc($item['category'] ?? 'Umum') ?> ·
+                                        <p class="meta small text-body-secondary"><?= ! empty($isSample) ? 'Contoh · ' : '' ?><?= esc($item['category'] ?? 'Berita') ?> ·
                                             <?= esc($item['date'] ?? '') ?>
                                         </p>
                                         <h3><?= view('components/css-link', [

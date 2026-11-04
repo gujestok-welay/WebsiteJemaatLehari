@@ -20,7 +20,7 @@
             <?php endif; ?>
         </div>
         <div>
-            <?= $item['content'] ?>
+            <?= nl2br(esc((string) ($item['content'] ?? ''))) ?>
         </div>
     </div>
 
