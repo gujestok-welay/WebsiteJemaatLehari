@@ -1,0 +1,526 @@
+{
+  "javaScript": false,
+  "reducedMotion": true,
+  "contrast": [
+    14.685236214523554,
+    5.462235466941986
+  ],
+  "results": [
+    {
+      "state": "no-period",
+      "width": 320,
+      "overflow": false,
+      "columns": 0,
+      "count": 0,
+      "ratios": [],
+      "brokenImages": 0,
+      "empty": true,
+      "colors": [],
+      "clip": {
+        "x": 0,
+        "y": 9110.265625,
+        "width": 305,
+        "height": 238.359375
+      }
+    },
+    {
+      "state": "no-period",
+      "width": 360,
+      "overflow": false,
+      "columns": 0,
+      "count": 0,
+      "ratios": [],
+      "brokenImages": 0,
+      "empty": true,
+      "colors": [],
+      "clip": {
+        "x": 0,
+        "y": 8377.515625,
+        "width": 345,
+        "height": 238.609375
+      }
+    },
+    {
+      "state": "no-period",
+      "width": 390,
+      "overflow": false,
+      "columns": 0,
+      "count": 0,
+      "ratios": [],
+      "brokenImages": 0,
+      "empty": true,
+      "colors": [],
+      "clip": {
+        "x": 0,
+        "y": 8127.5625,
+        "width": 375,
+        "height": 209.140625
+      }
+    },
+    {
+      "state": "no-period",
+      "width": 430,
+      "overflow": false,
+      "columns": 0,
+      "count": 0,
+      "ratios": [],
+      "brokenImages": 0,
+      "empty": true,
+      "colors": [],
+      "clip": {
+        "x": 0,
+        "y": 7917.953125,
+        "width": 415,
+        "height": 209.390625
+      }
+    },
+    {
+      "state": "no-period",
+      "width": 768,
+      "overflow": false,
+      "columns": 0,
+      "count": 0,
+      "ratios": [],
+      "brokenImages": 0,
+      "empty": true,
+      "colors": [],
+      "clip": {
+        "x": 0,
+        "y": 5146.296875,
+        "width": 753,
+        "height": 211.625
+      }
+    },
+    {
+      "state": "no-period",
+      "width": 1440,
+      "overflow": false,
+      "columns": 0,
+      "count": 0,
+      "ratios": [],
+      "brokenImages": 0,
+      "empty": true,
+      "colors": [],
+      "clip": {
+        "x": 0,
+        "y": 4209.9375,
+        "width": 1425,
+        "height": 214.484375
+      }
+    },
+    {
+      "state": "zero-members",
+      "width": 320,
+      "overflow": false,
+      "columns": 0,
+      "count": 0,
+      "ratios": [],
+      "brokenImages": 0,
+      "empty": true,
+      "colors": [],
+      "clip": {
+        "x": 0,
+        "y": 9110.265625,
+        "width": 305,
+        "height": 292.046875
+      }
+    },
+    {
+      "state": "zero-members",
+      "width": 360,
+      "overflow": false,
+      "columns": 0,
+      "count": 0,
+      "ratios": [],
+      "brokenImages": 0,
+      "empty": true,
+      "colors": [],
+      "clip": {
+        "x": 0,
+        "y": 8377.515625,
+        "width": 345,
+        "height": 292.296875
+      }
+    },
+    {
+      "state": "zero-members",
+      "width": 390,
+      "overflow": false,
+      "columns": 0,
+      "count": 0,
+      "ratios": [],
+      "brokenImages": 0,
+      "empty": true,
+      "colors": [],
+      "clip": {
+        "x": 0,
+        "y": 8127.5625,
+        "width": 375,
+        "height": 262.828125
+      }
+    },
+    {
+      "state": "zero-members",
+      "width": 430,
+      "overflow": false,
+      "columns": 0,
+      "count": 0,
+      "ratios": [],
+      "brokenImages": 0,
+      "empty": true,
+      "colors": [],
+      "clip": {
+        "x": 0,
+        "y": 7917.953125,
+        "width": 415,
+        "height": 263.078125
+      }
+    },
+    {
+      "state": "zero-members",
+      "width": 768,
+      "overflow": false,
+      "columns": 0,
+      "count": 0,
+      "ratios": [],
+      "brokenImages": 0,
+      "empty": true,
+      "colors": [],
+      "clip": {
+        "x": 0,
+        "y": 5146.296875,
+        "width": 753,
+        "height": 265.3125
+      }
+    },
+    {
+      "state": "zero-members",
+      "width": 1440,
+      "overflow": false,
+      "columns": 0,
+      "count": 0,
+      "ratios": [],
+      "brokenImages": 0,
+      "empty": true,
+      "colors": [],
+      "clip": {
+        "x": 0,
+        "y": 4209.9375,
+        "width": 1425,
+        "height": 268.171875
+      }
+    },
+    {
+      "state": "members",
+      "width": 320,
+      "overflow": false,
+      "columns": 2,
+      "count": 4,
+      "ratios": [
+        0.7543859649122807,
+        0.7543859649122807,
+        0.7543859649122807,
+        0.7543859649122807
+      ],
+      "brokenImages": 0,
+      "empty": false,
+      "colors": [
+        "rgb(46, 26, 69)",
+        "rgb(107, 98, 117)",
+        "rgb(251, 248, 243)"
+      ],
+      "clip": {
+        "x": 0,
+        "y": 9110.265625,
+        "width": 305,
+        "height": 881.296875
+      }
+    },
+    {
+      "state": "members",
+      "width": 360,
+      "overflow": false,
+      "columns": 2,
+      "count": 4,
+      "ratios": [
+        0.7525252525252525,
+        0.7525252525252525,
+        0.7525252525252525,
+        0.7525252525252525
+      ],
+      "brokenImages": 0,
+      "empty": false,
+      "colors": [
+        "rgb(46, 26, 69)",
+        "rgb(107, 98, 117)",
+        "rgb(251, 248, 243)"
+      ],
+      "clip": {
+        "x": 0,
+        "y": 8377.515625,
+        "width": 345,
+        "height": 910.890625
+      }
+    },
+    {
+      "state": "members",
+      "width": 390,
+      "overflow": false,
+      "columns": 2,
+      "count": 4,
+      "ratios": [
+        0.7522935779816514,
+        0.7522935779816514,
+        0.7522935779816514,
+        0.7522935779816514
+      ],
+      "brokenImages": 0,
+      "empty": false,
+      "colors": [
+        "rgb(46, 26, 69)",
+        "rgb(107, 98, 117)",
+        "rgb(251, 248, 243)"
+      ],
+      "clip": {
+        "x": 0,
+        "y": 8127.5625,
+        "width": 375,
+        "height": 951.109375
+      }
+    },
+    {
+      "state": "members",
+      "width": 430,
+      "overflow": false,
+      "columns": 2,
+      "count": 4,
+      "ratios": [
+        0.7510204081632653,
+        0.7510204081632653,
+        0.7510204081632653,
+        0.7510204081632653
+      ],
+      "brokenImages": 0,
+      "empty": false,
+      "colors": [
+        "rgb(46, 26, 69)",
+        "rgb(107, 98, 117)",
+        "rgb(251, 248, 243)"
+      ],
+      "clip": {
+        "x": 0,
+        "y": 7917.953125,
+        "width": 415,
+        "height": 980.671875
+      }
+    },
+    {
+      "state": "members",
+      "width": 768,
+      "overflow": false,
+      "columns": 3,
+      "count": 4,
+      "ratios": [
+        0.75,
+        0.75,
+        0.75,
+        0.75
+      ],
+      "brokenImages": 0,
+      "empty": false,
+      "colors": [
+        "rgb(46, 26, 69)",
+        "rgb(107, 98, 117)",
+        "rgb(251, 248, 243)"
+      ],
+      "clip": {
+        "x": 0,
+        "y": 5146.296875,
+        "width": 753,
+        "height": 1045.59375
+      }
+    },
+    {
+      "state": "members",
+      "width": 1440,
+      "overflow": false,
+      "columns": 4,
+      "count": 4,
+      "ratios": [
+        0.75,
+        0.75,
+        0.75,
+        0.75
+      ],
+      "brokenImages": 0,
+      "empty": false,
+      "colors": [
+        "rgb(46, 26, 69)",
+        "rgb(107, 98, 117)",
+        "rgb(251, 248, 243)"
+      ],
+      "clip": {
+        "x": 0,
+        "y": 4209.9375,
+        "width": 1425,
+        "height": 714.46875
+      }
+    },
+    {
+      "state": "mixed-photos",
+      "width": 320,
+      "overflow": false,
+      "columns": 2,
+      "count": 4,
+      "ratios": [
+        0.7543859649122807,
+        0.7543859649122807,
+        0.7543859649122807,
+        0.7543859649122807
+      ],
+      "brokenImages": 0,
+      "empty": false,
+      "colors": [
+        "rgb(46, 26, 69)",
+        "rgb(107, 98, 117)",
+        "rgb(251, 248, 243)"
+      ],
+      "clip": {
+        "x": 0,
+        "y": 9110.265625,
+        "width": 305,
+        "height": 869.296875
+      }
+    },
+    {
+      "state": "mixed-photos",
+      "width": 360,
+      "overflow": false,
+      "columns": 2,
+      "count": 4,
+      "ratios": [
+        0.7525252525252525,
+        0.7525252525252525,
+        0.7525252525252525,
+        0.7525252525252525
+      ],
+      "brokenImages": 0,
+      "empty": false,
+      "colors": [
+        "rgb(46, 26, 69)",
+        "rgb(107, 98, 117)",
+        "rgb(251, 248, 243)"
+      ],
+      "clip": {
+        "x": 0,
+        "y": 8377.515625,
+        "width": 345,
+        "height": 898.890625
+      }
+    },
+    {
+      "state": "mixed-photos",
+      "width": 390,
+      "overflow": false,
+      "columns": 2,
+      "count": 4,
+      "ratios": [
+        0.7522935779816514,
+        0.7522935779816514,
+        0.7522935779816514,
+        0.7522935779816514
+      ],
+      "brokenImages": 0,
+      "empty": false,
+      "colors": [
+        "rgb(46, 26, 69)",
+        "rgb(107, 98, 117)",
+        "rgb(251, 248, 243)"
+      ],
+      "clip": {
+        "x": 0,
+        "y": 8127.5625,
+        "width": 375,
+        "height": 939.109375
+      }
+    },
+    {
+      "state": "mixed-photos",
+      "width": 430,
+      "overflow": false,
+      "columns": 2,
+      "count": 4,
+      "ratios": [
+        0.7510204081632653,
+        0.7510204081632653,
+        0.7510204081632653,
+        0.7510204081632653
+      ],
+      "brokenImages": 0,
+      "empty": false,
+      "colors": [
+        "rgb(46, 26, 69)",
+        "rgb(107, 98, 117)",
+        "rgb(251, 248, 243)"
+      ],
+      "clip": {
+        "x": 0,
+        "y": 7917.953125,
+        "width": 415,
+        "height": 968.671875
+      }
+    },
+    {
+      "state": "mixed-photos",
+      "width": 768,
+      "overflow": false,
+      "columns": 3,
+      "count": 4,
+      "ratios": [
+        0.75,
+        0.75,
+        0.75,
+        0.75
+      ],
+      "brokenImages": 0,
+      "empty": false,
+      "colors": [
+        "rgb(46, 26, 69)",
+        "rgb(107, 98, 117)",
+        "rgb(251, 248, 243)"
+      ],
+      "clip": {
+        "x": 0,
+        "y": 5146.296875,
+        "width": 753,
+        "height": 1033.59375
+      }
+    },
+    {
+      "state": "mixed-photos",
+      "width": 1440,
+      "overflow": false,
+      "columns": 4,
+      "count": 4,
+      "ratios": [
+        0.75,
+        0.75,
+        0.75,
+        0.75
+      ],
+      "brokenImages": 0,
+      "empty": false,
+      "colors": [
+        "rgb(46, 26, 69)",
+        "rgb(107, 98, 117)",
+        "rgb(251, 248, 243)"
+      ],
+      "clip": {
+        "x": 0,
+        "y": 4209.9375,
+        "width": 1425,
+        "height": 702.46875
+      }
+    }
+  ]
+}

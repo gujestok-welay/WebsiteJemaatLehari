@@ -1,0 +1,779 @@
+<!-- DEBUG-VIEW START 20 APPPATH\Views\publik\profil.php -->
+<!-- DEBUG-VIEW START 19 APPPATH\Views\layouts\publik.php -->
+<!doctype html>
+<html lang="id">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Profil | Jemaat Leahari</title>
+    <meta name="description"
+        content="Pratinjau website informasi Jemaat Leahari: profil, berita, dan jadwal ibadah. Seluruh konten masih berupa contoh.">
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="preload" href="http://localhost:8799/assets/fonts/cormorant-garamond/latin-600-normal.woff2" as="font"
+        type="font/woff2" crossorigin>
+    <link rel="preload" href="http://localhost:8799/assets/fonts/dm-sans/latin-400-normal.woff2" as="font"
+        type="font/woff2" crossorigin>
+    <link rel="stylesheet" href="http://localhost:8799/assets/vendor/bootstrap/bootstrap.min.css">
+    <link rel="stylesheet" href="http://localhost:8799/assets/css/publik.css">
+    <link rel="stylesheet" href="http://localhost:8799/assets/css/css-link.css">
+            <link rel="stylesheet" href="http://localhost:8799/assets/css/profil.css">
+        <script defer src="http://localhost:8799/assets/vendor/bootstrap/bootstrap.bundle.min.js"></script>
+    <script defer src="http://localhost:8799/assets/js/publik.js"></script>
+</head>
+<body>
+    <a class="skip-link" href="#konten">Lewati ke konten</a>
+    <!-- DEBUG-VIEW START 17 APPPATH\Views\partials\navbar.php -->
+<header class="site-header">
+    <nav class="navbar navbar-expand-md container-fluid site-frame" aria-label="Navigasi utama">
+        <a class="navbar-brand" href="http://localhost:8799/" aria-label="Beranda utama Jemaat Leahari">
+            <img class="navbar-brand-logo" src="http://localhost:8799/assets/images/logo/LogoGPM.png" alt="Logo GPM" width="52" height="52">
+            <span class="navbar-brand-text">
+                <span class="navbar-brand-name">Jemaat Leahari</span>
+                <span class="navbar-brand-sub">Maluku</span>
+            </span>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navigasi" aria-controls="navigasi" aria-expanded="false" aria-label="Buka atau tutup navigasi">Menu</button>
+        <div class="collapse navbar-collapse" id="navigasi">
+            <ul class="navbar-nav ms-auto">
+                                    <li class="nav-item"><a class="nav-link"  href="http://localhost:8799/">Beranda</a></li>
+                                    <li class="nav-item"><a class="nav-link active" aria-current="page" href="http://localhost:8799/profil">Profil</a></li>
+                                    <li class="nav-item"><a class="nav-link"  href="http://localhost:8799/berita">Berita</a></li>
+                                    <li class="nav-item"><a class="nav-link"  href="http://localhost:8799/jadwal-ibadah">Jadwal Ibadah</a></li>
+                            </ul>
+        </div>
+    </nav>
+</header>
+<noscript><style>.navbar-toggler{display:none}.navbar-collapse.collapse{display:block}</style></noscript>
+
+<!-- DEBUG-VIEW ENDED 17 APPPATH\Views\partials\navbar.php -->
+
+    <main id="konten" tabindex="-1">
+        
+<div class="profil-page">
+<section class="profil-hero text-white">
+    <div class="container py-5 position-relative">
+        <span class="badge rounded-pill badge-soft mb-3">Profil Jemaat</span>
+        <h1 class="display-5 fw-bold mb-3">Jemaat GPM Leahari</h1>
+        <p class="lead col-lg-7 mb-4">
+            Ibukota Kecamatan Leitimur Selatan, di pegunungan Kakusang, menghadap langsung ke Laut Banda,
+            sebuah jemaat pesisir di sisi timur Pulau Ambon.
+        </p>
+        <div class="d-flex flex-wrap gap-2">
+            <a href="#wilayah" class="btn btn-light rounded-pill px-4">Wilayah</a>
+            <a href="#jemaat" class="btn btn-outline-light rounded-pill px-4">Data Jemaat</a>
+            <a href="#ibadah" class="btn btn-outline-light rounded-pill px-4">Peribadahan</a>
+        </div>
+    </div>
+</section>
+
+<section class="container stat-strip">
+    <div class="row g-3">
+                    <div class="col-6 col-lg-3">
+                <div class="card card-lift border-0 shadow h-100 rounded-4">
+                    <div class="card-body text-center py-4">
+                        <i class="bi bi-people fs-2 text-primary"></i>
+                        <div class="fs-4 fw-bold mt-2">624</div>
+                        <div class="text-body-secondary small">Jiwa</div>
+                    </div>
+                </div>
+            </div>
+                    <div class="col-6 col-lg-3">
+                <div class="card card-lift border-0 shadow h-100 rounded-4">
+                    <div class="card-body text-center py-4">
+                        <i class="bi bi-house-heart fs-2 text-primary"></i>
+                        <div class="fs-4 fw-bold mt-2">199</div>
+                        <div class="text-body-secondary small">Kepala Keluarga</div>
+                    </div>
+                </div>
+            </div>
+                    <div class="col-6 col-lg-3">
+                <div class="card card-lift border-0 shadow h-100 rounded-4">
+                    <div class="card-body text-center py-4">
+                        <i class="bi bi-diagram-3 fs-2 text-primary"></i>
+                        <div class="fs-4 fw-bold mt-2">3 Sektor · 9 Unit</div>
+                        <div class="text-body-secondary small">Wilayah Pelayanan</div>
+                    </div>
+                </div>
+            </div>
+                    <div class="col-6 col-lg-3">
+                <div class="card card-lift border-0 shadow h-100 rounded-4">
+                    <div class="card-body text-center py-4">
+                        <i class="bi bi-map fs-2 text-primary"></i>
+                        <div class="fs-4 fw-bold mt-2">53.12 Ha</div>
+                        <div class="text-body-secondary small">Luas Wilayah</div>
+                    </div>
+                </div>
+            </div>
+            </div>
+</section>
+
+<section id="wilayah" class="container py-5">
+    <div class="mb-4">
+        <span class="badge rounded-pill badge-soft">2.1</span>
+        <h2 class="fw-bold mt-2">Gambaran Umum Wilayah Pelayanan</h2>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-7">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-body p-4">
+                    <h3 class="h5 fw-bold">Status Administrasi</h3>
+                    <p class="text-body-secondary">
+                        Secara administratif pemerintahan, Jemaat GPM Leahari berada di pusat wilayah Kecamatan
+                        Leitimur Selatan dan menjadi ibukota kecamatan tersebut, masuk dalam wilayah Negeri Leahari,
+                        Kota Ambon.
+                    </p>
+                    <h3 class="h5 fw-bold mt-4">Topografi</h3>
+                    <p class="text-body-secondary">
+                        Jemaat berada di wilayah pegunungan Kakusang, di sebelah timur Pulau Ambon, pada posisi
+                        lintang 128°16′0″ dan bujur 3°42′48″, dengan kondisi wilayah yang relatif datar.
+                        Leahari merupakan salah satu jemaat di pinggiran Kota Ambon.
+                    </p>
+                    <p class="text-body-secondary mb-0">
+                        Selain warga GPM, terdapat pula warga gereja denominasi lain. Meski demikian, komunikasi dan
+                        relasi antaranggota tetap sangat baik, terlihat dari keterlibatan mereka dalam kegiatan jemaat.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-5">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-body p-4">
+                    <h3 class="h5 fw-bold mb-3">Batas Wilayah</h3>
+                    <div class="row g-2">
+                                                    <div class="col-6">
+                                <div class="batas-item rounded-3 p-3 h-100">
+                                    <i class="bi bi-arrow-up-circle text-primary fs-4"></i>
+                                    <div class="small text-body-secondary mt-1">Sebelah Utara</div>
+                                    <div class="fw-semibold">Jemaat GPM Soya</div>
+                                </div>
+                            </div>
+                                                    <div class="col-6">
+                                <div class="batas-item rounded-3 p-3 h-100">
+                                    <i class="bi bi-arrow-right-circle text-primary fs-4"></i>
+                                    <div class="small text-body-secondary mt-1">Sebelah Timur</div>
+                                    <div class="fw-semibold">Jemaat GPM Rutong</div>
+                                </div>
+                            </div>
+                                                    <div class="col-6">
+                                <div class="batas-item rounded-3 p-3 h-100">
+                                    <i class="bi bi-arrow-down-circle text-primary fs-4"></i>
+                                    <div class="small text-body-secondary mt-1">Sebelah Selatan</div>
+                                    <div class="fw-semibold">Laut Banda</div>
+                                </div>
+                            </div>
+                                                    <div class="col-6">
+                                <div class="batas-item rounded-3 p-3 h-100">
+                                    <i class="bi bi-arrow-left-circle text-primary fs-4"></i>
+                                    <div class="small text-body-secondary mt-1">Sebelah Barat</div>
+                                    <div class="fw-semibold">Jemaat GPM Hukurila</div>
+                                </div>
+                            </div>
+                                            </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mt-1">
+                    <div class="col-md-4">
+                <div class="card card-lift border-0 shadow-sm rounded-4 h-100">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <h3 class="h5 fw-bold mb-0">Sektor Koinonia</h3>
+                            <span class="badge rounded-pill badge-soft">3 unit</span>
+                        </div>
+                        <div class="display-6 fw-bold mt-3">34.15 <small
+                                class="fs-6 text-body-secondary">Ha</small></div>
+                        <div class="progress mt-3" style="height:8px" role="progressbar" aria-valuenow="64"
+                            aria-valuemin="0" aria-valuemax="100">
+                            <div class="progress-bar" style="width: 64%"></div>
+                        </div>
+                        <div class="small text-body-secondary mt-2">64% dari total wilayah</div>
+                    </div>
+                </div>
+            </div>
+                    <div class="col-md-4">
+                <div class="card card-lift border-0 shadow-sm rounded-4 h-100">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <h3 class="h5 fw-bold mb-0">Sektor Diakonia</h3>
+                            <span class="badge rounded-pill badge-soft">3 unit</span>
+                        </div>
+                        <div class="display-6 fw-bold mt-3">12.19 <small
+                                class="fs-6 text-body-secondary">Ha</small></div>
+                        <div class="progress mt-3" style="height:8px" role="progressbar" aria-valuenow="23"
+                            aria-valuemin="0" aria-valuemax="100">
+                            <div class="progress-bar" style="width: 23%"></div>
+                        </div>
+                        <div class="small text-body-secondary mt-2">23% dari total wilayah</div>
+                    </div>
+                </div>
+            </div>
+                    <div class="col-md-4">
+                <div class="card card-lift border-0 shadow-sm rounded-4 h-100">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <h3 class="h5 fw-bold mb-0">Sektor Marturia</h3>
+                            <span class="badge rounded-pill badge-soft">3 unit</span>
+                        </div>
+                        <div class="display-6 fw-bold mt-3">6.78 <small
+                                class="fs-6 text-body-secondary">Ha</small></div>
+                        <div class="progress mt-3" style="height:8px" role="progressbar" aria-valuenow="13"
+                            aria-valuemin="0" aria-valuemax="100">
+                            <div class="progress-bar" style="width: 13%"></div>
+                        </div>
+                        <div class="small text-body-secondary mt-2">13% dari total wilayah</div>
+                    </div>
+                </div>
+            </div>
+            </div>
+
+    <div class="card border-0 shadow-sm rounded-4 mt-4">
+        <div class="card-body p-4">
+            <h3 class="h5 fw-bold mb-3">Orbitasi</h3>
+            <div class="row g-3">
+                                    <div class="col-6 col-md-3">
+                        <div class="small text-body-secondary">Pusat Kecamatan</div>
+                        <div class="fw-bold fs-5">200 M</div>
+                    </div>
+                                    <div class="col-6 col-md-3">
+                        <div class="small text-body-secondary">Pusat Kota</div>
+                        <div class="fw-bold fs-5">24 Km</div>
+                    </div>
+                                    <div class="col-6 col-md-3">
+                        <div class="small text-body-secondary">Ibu Kota Provinsi</div>
+                        <div class="fw-bold fs-5">24 Km</div>
+                    </div>
+                                    <div class="col-6 col-md-3">
+                        <div class="small text-body-secondary">RSUD Haulussy</div>
+                        <div class="fw-bold fs-5">29 Km</div>
+                    </div>
+                                    <div class="col-6 col-md-3">
+                        <div class="small text-body-secondary">Pasar Passo</div>
+                        <div class="fw-bold fs-5">13 Km</div>
+                    </div>
+                                    <div class="col-6 col-md-3">
+                        <div class="small text-body-secondary">Pantai Wisata Natsepa</div>
+                        <div class="fw-bold fs-5">19 Km</div>
+                    </div>
+                                    <div class="col-6 col-md-3">
+                        <div class="small text-body-secondary">Pusat Perbelanjaan Mall</div>
+                        <div class="fw-bold fs-5">13 Km</div>
+                    </div>
+                                    <div class="col-6 col-md-3">
+                        <div class="small text-body-secondary">Angkutan Umum (roda 4)</div>
+                        <div class="fw-bold fs-5">4 buah</div>
+                    </div>
+                            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mt-1">
+        <div class="col-md-6">
+            <div class="card border-0 rounded-4 h-100 musim musim-timur">
+                <div class="card-body p-4">
+                    <span class="badge rounded-pill text-bg-light mb-2">April – Agustus</span>
+                    <h3 class="h5 fw-bold">Musim Timur</h3>
+                    <p class="mb-0">
+                        Angin Timur Tenggara bertiup kuat disertai curah hujan tinggi dan gelombang laut yang besar
+                        karena Leahari berhadapan langsung dengan Laut Banda. Pada musim ini jemaat rentan terhadap
+                        bencana alam dan pola hidup warga ikut terpengaruh.
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card border-0 rounded-4 h-100 musim musim-barat">
+                <div class="card-body p-4">
+                    <span class="badge rounded-pill text-bg-light mb-2">Oktober – Februari</span>
+                    <h3 class="h5 fw-bold">Musim Barat</h3>
+                    <p class="mb-0">
+                        Angin Barat Laut bertiup, kadang hujan lebat dengan angin kencang, namun tidak sebesar Musim
+                        Timur.
+                        Warga dapat bekerja lebih leluasa di laut, yang berdampak pada pendapatan keluarga.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="jemaat" class="bg-body-tertiary py-5">
+    <div class="container">
+        <div class="mb-4">
+            <span class="badge rounded-pill badge-soft">2.2.1</span>
+            <h2 class="fw-bold mt-2">Jumlah Kepala Keluarga dan Jiwa</h2>
+            <p class="text-body-secondary col-lg-8">
+                Rekapitulasi anggota jemaat berdasarkan kategori usia: 199 KK dan
+                624 jiwa. Kelompok usia produktif (16–45 tahun) menjadi yang terbesar.
+            </p>
+        </div>
+
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-body p-4">
+                <div class="d-flex flex-wrap gap-3 small mb-3">
+                    <span><span class="legend-dot bg-primary"></span> Laki-laki</span>
+                    <span><span class="legend-dot bg-warning"></span> Perempuan</span>
+                </div>
+
+                                    <div class="row align-items-center g-2 mb-2">
+                        <div class="col-3 col-md-2 small fw-semibold">0-3 th</div>
+                        <div class="col-7 col-md-8 age-range-chart">
+                            <div class="progress rounded-pill age-range-progress" style="height:18px" role="img" tabindex="0"
+                                aria-label="Jemaat usia 0-3 tahun: 12 laki-laki, 7 perempuan, total 19 orang">
+                                                                <div class="progress-bar bg-primary" style="width: 3.7894736842105%"></div>
+                                <div class="progress-bar bg-warning" style="width: 2.2105263157895%"></div>
+                            </div>
+                            <div class="age-range-counts" aria-hidden="true">
+                                <span class="age-range-count age-range-count-men">Laki-laki: 12</span>
+                                <span class="age-range-count age-range-count-women">Perempuan: 7</span>
+                            </div>
+                        </div>
+                        <div class="col-2 text-end small fw-bold">19</div>
+                    </div>
+                                    <div class="row align-items-center g-2 mb-2">
+                        <div class="col-3 col-md-2 small fw-semibold">4-6 th</div>
+                        <div class="col-7 col-md-8 age-range-chart">
+                            <div class="progress rounded-pill age-range-progress" style="height:18px" role="img" tabindex="0"
+                                aria-label="Jemaat usia 4-6 tahun: 11 laki-laki, 6 perempuan, total 17 orang">
+                                                                <div class="progress-bar bg-primary" style="width: 3.2352941176471%"></div>
+                                <div class="progress-bar bg-warning" style="width: 1.7647058823529%"></div>
+                            </div>
+                            <div class="age-range-counts" aria-hidden="true">
+                                <span class="age-range-count age-range-count-men">Laki-laki: 11</span>
+                                <span class="age-range-count age-range-count-women">Perempuan: 6</span>
+                            </div>
+                        </div>
+                        <div class="col-2 text-end small fw-bold">17</div>
+                    </div>
+                                    <div class="row align-items-center g-2 mb-2">
+                        <div class="col-3 col-md-2 small fw-semibold">7-9 th</div>
+                        <div class="col-7 col-md-8 age-range-chart">
+                            <div class="progress rounded-pill age-range-progress" style="height:18px" role="img" tabindex="0"
+                                aria-label="Jemaat usia 7-9 tahun: 8 laki-laki, 4 perempuan, total 12 orang">
+                                                                <div class="progress-bar bg-primary" style="width: 2.6666666666667%"></div>
+                                <div class="progress-bar bg-warning" style="width: 1.3333333333333%"></div>
+                            </div>
+                            <div class="age-range-counts" aria-hidden="true">
+                                <span class="age-range-count age-range-count-men">Laki-laki: 8</span>
+                                <span class="age-range-count age-range-count-women">Perempuan: 4</span>
+                            </div>
+                        </div>
+                        <div class="col-2 text-end small fw-bold">12</div>
+                    </div>
+                                    <div class="row align-items-center g-2 mb-2">
+                        <div class="col-3 col-md-2 small fw-semibold">10-12 th</div>
+                        <div class="col-7 col-md-8 age-range-chart">
+                            <div class="progress rounded-pill age-range-progress" style="height:18px" role="img" tabindex="0"
+                                aria-label="Jemaat usia 10-12 tahun: 13 laki-laki, 17 perempuan, total 30 orang">
+                                                                <div class="progress-bar bg-primary" style="width: 4.3333333333333%"></div>
+                                <div class="progress-bar bg-warning" style="width: 5.6666666666667%"></div>
+                            </div>
+                            <div class="age-range-counts" aria-hidden="true">
+                                <span class="age-range-count age-range-count-men">Laki-laki: 13</span>
+                                <span class="age-range-count age-range-count-women">Perempuan: 17</span>
+                            </div>
+                        </div>
+                        <div class="col-2 text-end small fw-bold">30</div>
+                    </div>
+                                    <div class="row align-items-center g-2 mb-2">
+                        <div class="col-3 col-md-2 small fw-semibold">13-15 th</div>
+                        <div class="col-7 col-md-8 age-range-chart">
+                            <div class="progress rounded-pill age-range-progress" style="height:18px" role="img" tabindex="0"
+                                aria-label="Jemaat usia 13-15 tahun: 12 laki-laki, 19 perempuan, total 31 orang">
+                                                                <div class="progress-bar bg-primary" style="width: 3.8709677419355%"></div>
+                                <div class="progress-bar bg-warning" style="width: 6.1290322580645%"></div>
+                            </div>
+                            <div class="age-range-counts" aria-hidden="true">
+                                <span class="age-range-count age-range-count-men">Laki-laki: 12</span>
+                                <span class="age-range-count age-range-count-women">Perempuan: 19</span>
+                            </div>
+                        </div>
+                        <div class="col-2 text-end small fw-bold">31</div>
+                    </div>
+                                    <div class="row align-items-center g-2 mb-2">
+                        <div class="col-3 col-md-2 small fw-semibold">16-45 th</div>
+                        <div class="col-7 col-md-8 age-range-chart">
+                            <div class="progress rounded-pill age-range-progress" style="height:18px" role="img" tabindex="0"
+                                aria-label="Jemaat usia 16-45 tahun: 171 laki-laki, 143 perempuan, total 314 orang">
+                                                                <div class="progress-bar bg-primary" style="width: 54.458598726115%"></div>
+                                <div class="progress-bar bg-warning" style="width: 45.541401273885%"></div>
+                            </div>
+                            <div class="age-range-counts" aria-hidden="true">
+                                <span class="age-range-count age-range-count-men">Laki-laki: 171</span>
+                                <span class="age-range-count age-range-count-women">Perempuan: 143</span>
+                            </div>
+                        </div>
+                        <div class="col-2 text-end small fw-bold">314</div>
+                    </div>
+                                    <div class="row align-items-center g-2 mb-2">
+                        <div class="col-3 col-md-2 small fw-semibold">46-59 th</div>
+                        <div class="col-7 col-md-8 age-range-chart">
+                            <div class="progress rounded-pill age-range-progress" style="height:18px" role="img" tabindex="0"
+                                aria-label="Jemaat usia 46-59 tahun: 61 laki-laki, 64 perempuan, total 125 orang">
+                                                                <div class="progress-bar bg-primary" style="width: 19.52%"></div>
+                                <div class="progress-bar bg-warning" style="width: 20.48%"></div>
+                            </div>
+                            <div class="age-range-counts" aria-hidden="true">
+                                <span class="age-range-count age-range-count-men">Laki-laki: 61</span>
+                                <span class="age-range-count age-range-count-women">Perempuan: 64</span>
+                            </div>
+                        </div>
+                        <div class="col-2 text-end small fw-bold">125</div>
+                    </div>
+                                    <div class="row align-items-center g-2 mb-2">
+                        <div class="col-3 col-md-2 small fw-semibold">60-85 th</div>
+                        <div class="col-7 col-md-8 age-range-chart">
+                            <div class="progress rounded-pill age-range-progress" style="height:18px" role="img" tabindex="0"
+                                aria-label="Jemaat usia 60-85 tahun: 35 laki-laki, 39 perempuan, total 74 orang">
+                                                                <div class="progress-bar bg-primary" style="width: 11.351351351351%"></div>
+                                <div class="progress-bar bg-warning" style="width: 12.648648648649%"></div>
+                            </div>
+                            <div class="age-range-counts" aria-hidden="true">
+                                <span class="age-range-count age-range-count-men">Laki-laki: 35</span>
+                                <span class="age-range-count age-range-count-women">Perempuan: 39</span>
+                            </div>
+                        </div>
+                        <div class="col-2 text-end small fw-bold">74</div>
+                    </div>
+                                    <div class="row align-items-center g-2 mb-2">
+                        <div class="col-3 col-md-2 small fw-semibold">&gt; 86 th</div>
+                        <div class="col-7 col-md-8 age-range-chart">
+                            <div class="progress rounded-pill age-range-progress" style="height:18px" role="img" tabindex="0"
+                                aria-label="Jemaat usia &gt; 86 tahun: 2 laki-laki, 0 perempuan, total 2 orang">
+                                                                <div class="progress-bar bg-primary" style="width: 1%"></div>
+                                <div class="progress-bar bg-warning" style="width: 0%"></div>
+                            </div>
+                            <div class="age-range-counts" aria-hidden="true">
+                                <span class="age-range-count age-range-count-men">Laki-laki: 2</span>
+                                <span class="age-range-count age-range-count-women">Perempuan: 0</span>
+                            </div>
+                        </div>
+                        <div class="col-2 text-end small fw-bold">2</div>
+                    </div>
+                
+                <div class="table-responsive mt-4">
+                    <table class="table table-sm align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Usia (th)</th>
+                                <th class="text-end">Lk</th>
+                                <th class="text-end">Pr</th>
+                                <th class="text-end">Jumlah</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                                                            <tr>
+                                    <td>0-3</td>
+                                    <td class="text-end">12</td>
+                                    <td class="text-end">7</td>
+                                    <td class="text-end fw-semibold">19</td>
+                                </tr>
+                                                            <tr>
+                                    <td>4-6</td>
+                                    <td class="text-end">11</td>
+                                    <td class="text-end">6</td>
+                                    <td class="text-end fw-semibold">17</td>
+                                </tr>
+                                                            <tr>
+                                    <td>7-9</td>
+                                    <td class="text-end">8</td>
+                                    <td class="text-end">4</td>
+                                    <td class="text-end fw-semibold">12</td>
+                                </tr>
+                                                            <tr>
+                                    <td>10-12</td>
+                                    <td class="text-end">13</td>
+                                    <td class="text-end">17</td>
+                                    <td class="text-end fw-semibold">30</td>
+                                </tr>
+                                                            <tr>
+                                    <td>13-15</td>
+                                    <td class="text-end">12</td>
+                                    <td class="text-end">19</td>
+                                    <td class="text-end fw-semibold">31</td>
+                                </tr>
+                                                            <tr>
+                                    <td>16-45</td>
+                                    <td class="text-end">171</td>
+                                    <td class="text-end">143</td>
+                                    <td class="text-end fw-semibold">314</td>
+                                </tr>
+                                                            <tr>
+                                    <td>46-59</td>
+                                    <td class="text-end">61</td>
+                                    <td class="text-end">64</td>
+                                    <td class="text-end fw-semibold">125</td>
+                                </tr>
+                                                            <tr>
+                                    <td>60-85</td>
+                                    <td class="text-end">35</td>
+                                    <td class="text-end">39</td>
+                                    <td class="text-end fw-semibold">74</td>
+                                </tr>
+                                                            <tr>
+                                    <td>&gt; 86</td>
+                                    <td class="text-end">2</td>
+                                    <td class="text-end">0</td>
+                                    <td class="text-end fw-semibold">2</td>
+                                </tr>
+                                                    </tbody>
+                        <tfoot class="table-light fw-bold">
+                            <tr>
+                                <td colspan="3">Total jiwa</td>
+                                <td class="text-end">624</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="ibadah" class="container py-5">
+    <div class="mb-4">
+        <span class="badge rounded-pill badge-soft">2.2.2</span>
+        <h2 class="fw-bold mt-2">Pelayanan Peribadahan</h2>
+        <p class="text-body-secondary col-lg-8">
+            Beragam jenis ibadah sepanjang pekan menumbuhkan iman dan memperkuat persekutuan. Beberapa di antaranya
+            merupakan kekhasan Jemaat Leahari.
+        </p>
+    </div>
+
+    <div class="row g-3">
+                    <div class="col-md-6 col-lg-4">
+                <div class="card card-lift border-0 shadow-sm rounded-4 h-100">
+                    <div class="card-body p-4">
+                        <span class="badge rounded-pill badge-soft mb-2">Minggu</span>
+                        <h3 class="h6 fw-bold">Ibadah Minggu</h3>
+                        <div class="small text-body-secondary"><i class="bi bi-geo-alt me-1"></i>Gedung gereja                        </div>
+                        <div class="small mt-1">Dihadiri seluruh jemaat dari berbagai usia</div>
+                    </div>
+                </div>
+            </div>
+                    <div class="col-md-6 col-lg-4">
+                <div class="card card-lift border-0 shadow-sm rounded-4 h-100">
+                    <div class="card-body p-4">
+                        <span class="badge rounded-pill badge-soft mb-2">Minggu</span>
+                        <h3 class="h6 fw-bold">Sekolah Minggu</h3>
+                        <div class="small text-body-secondary"><i class="bi bi-geo-alt me-1"></i>Gedung gereja                        </div>
+                        <div class="small mt-1">Dihadiri pengasuh dan anak SMTPI</div>
+                    </div>
+                </div>
+            </div>
+                    <div class="col-md-6 col-lg-4">
+                <div class="card card-lift border-0 shadow-sm rounded-4 h-100">
+                    <div class="card-body p-4">
+                        <span class="badge rounded-pill badge-soft mb-2">Minggu</span>
+                        <h3 class="h6 fw-bold">Ibadah Pengasuh</h3>
+                        <div class="small text-body-secondary"><i class="bi bi-geo-alt me-1"></i>Rumah pengasuh                        </div>
+                        <div class="small mt-1">Sebulan 1x, sesuai jadwal</div>
+                    </div>
+                </div>
+            </div>
+                    <div class="col-md-6 col-lg-4">
+                <div class="card card-lift border-0 shadow-sm rounded-4 h-100">
+                    <div class="card-body p-4">
+                        <span class="badge rounded-pill badge-soft mb-2">Senin</span>
+                        <h3 class="h6 fw-bold">Tunas Pekabaran Injil</h3>
+                        <div class="small text-body-secondary"><i class="bi bi-geo-alt me-1"></i>Rumah jemaat                        </div>
+                        <div class="small mt-1">Tiap jenjang SMTPI, bergiliran</div>
+                    </div>
+                </div>
+            </div>
+                    <div class="col-md-6 col-lg-4">
+                <div class="card card-lift border-0 shadow-sm rounded-4 h-100">
+                    <div class="card-body p-4">
+                        <span class="badge rounded-pill badge-soft mb-2">Senin</span>
+                        <h3 class="h6 fw-bold">Batu Tungku</h3>
+                        <div class="small text-body-secondary"><i class="bi bi-geo-alt me-1"></i>Gereja, kantor negeri, sekolah                        </div>
+                        <div class="small mt-1">Sesuai jadwal</div>
+                    </div>
+                </div>
+            </div>
+                    <div class="col-md-6 col-lg-4">
+                <div class="card card-lift border-0 shadow-sm rounded-4 h-100">
+                    <div class="card-body p-4">
+                        <span class="badge rounded-pill badge-soft mb-2">Senin</span>
+                        <h3 class="h6 fw-bold">Warga Gereja Senior</h3>
+                        <div class="small text-body-secondary"><i class="bi bi-geo-alt me-1"></i>Rumah WGS                        </div>
+                        <div class="small mt-1">Sesuai jadwal</div>
+                    </div>
+                </div>
+            </div>
+                    <div class="col-md-6 col-lg-4">
+                <div class="card card-lift border-0 shadow-sm rounded-4 h-100">
+                    <div class="card-body p-4">
+                        <span class="badge rounded-pill badge-soft mb-2">Selasa</span>
+                        <h3 class="h6 fw-bold">Wadah Pelayanan Laki-laki</h3>
+                        <div class="small text-body-secondary"><i class="bi bi-geo-alt me-1"></i>Rumah anggota wadah                        </div>
+                        <div class="small mt-1">Dijadwalkan di tiap sektor</div>
+                    </div>
+                </div>
+            </div>
+                    <div class="col-md-6 col-lg-4">
+                <div class="card card-lift border-0 shadow-sm rounded-4 h-100">
+                    <div class="card-body p-4">
+                        <span class="badge rounded-pill badge-soft mb-2">Selasa</span>
+                        <h3 class="h6 fw-bold">HIPPMAL</h3>
+                        <div class="small text-body-secondary"><i class="bi bi-geo-alt me-1"></i>Rumah anggota HIPPMAL                        </div>
+                        <div class="small mt-1">Himpunan Pemuda Pelajar asal Leahari</div>
+                    </div>
+                </div>
+            </div>
+                    <div class="col-md-6 col-lg-4">
+                <div class="card card-lift border-0 shadow-sm rounded-4 h-100">
+                    <div class="card-body p-4">
+                        <span class="badge rounded-pill badge-soft mb-2">Selasa / Rabu</span>
+                        <h3 class="h6 fw-bold">Kemitraan</h3>
+                        <div class="small text-body-secondary"><i class="bi bi-geo-alt me-1"></i>Rumah jemaat                        </div>
+                        <div class="small mt-1">Dijadwalkan 2 bulan 1x</div>
+                    </div>
+                </div>
+            </div>
+                    <div class="col-md-6 col-lg-4">
+                <div class="card card-lift border-0 shadow-sm rounded-4 h-100">
+                    <div class="card-body p-4">
+                        <span class="badge rounded-pill badge-soft mb-2">Rabu</span>
+                        <h3 class="h6 fw-bold">Wadah Pelayanan Perempuan</h3>
+                        <div class="small text-body-secondary"><i class="bi bi-geo-alt me-1"></i>Rumah anggota wadah                        </div>
+                        <div class="small mt-1">Dijadwalkan di tiap sektor</div>
+                    </div>
+                </div>
+            </div>
+                    <div class="col-md-6 col-lg-4">
+                <div class="card card-lift border-0 shadow-sm rounded-4 h-100">
+                    <div class="card-body p-4">
+                        <span class="badge rounded-pill badge-soft mb-2">Kamis</span>
+                        <h3 class="h6 fw-bold">AMGPM</h3>
+                        <div class="small text-body-secondary"><i class="bi bi-geo-alt me-1"></i>Rumah anggota AMGPM                        </div>
+                        <div class="small mt-1">Sesuai jadwal</div>
+                    </div>
+                </div>
+            </div>
+                    <div class="col-md-6 col-lg-4">
+                <div class="card card-lift border-0 shadow-sm rounded-4 h-100">
+                    <div class="card-body p-4">
+                        <span class="badge rounded-pill badge-soft mb-2">Kamis</span>
+                        <h3 class="h6 fw-bold">Keluarga MJ dan Tuagama</h3>
+                        <div class="small text-body-secondary"><i class="bi bi-geo-alt me-1"></i>Rumah MJ dan tuagama                        </div>
+                        <div class="small mt-1">Setiap bulan, minggu I</div>
+                    </div>
+                </div>
+            </div>
+                    <div class="col-md-6 col-lg-4">
+                <div class="card card-lift border-0 shadow-sm rounded-4 h-100">
+                    <div class="card-body p-4">
+                        <span class="badge rounded-pill badge-soft mb-2">Jumat</span>
+                        <h3 class="h6 fw-bold">Ibadah Unit</h3>
+                        <div class="small text-body-secondary"><i class="bi bi-geo-alt me-1"></i>Rumah jemaat                        </div>
+                        <div class="small mt-1">Dilaksanakan di tiap sektor</div>
+                    </div>
+                </div>
+            </div>
+            </div>
+</section>
+<!-- DEBUG-VIEW START 16 APPPATH\Views\partials\_struktur_majelis.php -->
+<section class="py-5 struktur-majelis" aria-labelledby="struktur-majelis-heading">
+    <div class="container">
+        <h2 id="struktur-majelis-heading" class="h3 text-center">Struktur Majelis</h2>
+                    <p class="text-center text-body-secondary mx-auto mb-4">Periode uji &lt;2024-2028&gt;</p>
+                            <ul class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-4 list-unstyled mb-0">
+                                                        <li class="col">
+                        <article class="card border-0 shadow-sm h-100 majelis-card">
+                                                            <img class="card-img-top object-fit-cover majelis-photo" src="http&#x3A;&#x2F;&#x2F;localhost&#x3A;8799&#x2F;majelis&#x2F;foto&#x2F;1" alt="" width="300" height="400" loading="lazy" decoding="async">
+                                                        <div class="card-body">
+                                <h3 class="h6 fw-semibold mb-0">NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN</h3>
+                                <p class="small text-body-secondary mb-0">Jabatan &lt;uji&gt;</p>
+                            </div>
+                        </article>
+                    </li>
+                                                        <li class="col">
+                        <article class="card border-0 shadow-sm h-100 majelis-card">
+                                                            <div class="card-img-top majelis-photo majelis-initials" aria-hidden="true">AU</div>
+                                                        <div class="card-body">
+                                <h3 class="h6 fw-semibold mb-0">Anggota uji A</h3>
+                                <p class="small text-body-secondary mb-0">Jabatan &lt;uji&gt;</p>
+                            </div>
+                        </article>
+                    </li>
+                                                        <li class="col">
+                        <article class="card border-0 shadow-sm h-100 majelis-card">
+                                                            <div class="card-img-top majelis-photo majelis-initials" aria-hidden="true">AU</div>
+                                                        <div class="card-body">
+                                <h3 class="h6 fw-semibold mb-0">Anggota uji Z</h3>
+                                <p class="small text-body-secondary mb-0">Jabatan &lt;uji&gt;</p>
+                            </div>
+                        </article>
+                    </li>
+                                                        <li class="col">
+                        <article class="card border-0 shadow-sm h-100 majelis-card">
+                                                            <div class="card-img-top majelis-photo majelis-initials" aria-hidden="true">N&lt;</div>
+                                                        <div class="card-body">
+                                <h3 class="h6 fw-semibold mb-0">Nama &lt;script&gt;uji&lt;/script&gt;</h3>
+                                <p class="small text-body-secondary mb-0">Jabatan &lt;uji&gt;</p>
+                            </div>
+                        </article>
+                    </li>
+                            </ul>
+            </div>
+</section>
+
+<!-- DEBUG-VIEW ENDED 16 APPPATH\Views\partials\_struktur_majelis.php -->
+</div>
+
+    </main>
+    <!-- DEBUG-VIEW START 18 APPPATH\Views\partials\footer.php -->
+<footer class="site-footer">
+    <div class="container-xl py-5">
+        <div class="row g-4 g-lg-5">
+            <section class="col-12 col-md-6 col-lg-4" aria-labelledby="footer-brand">
+                <h2 class="footer-brand" id="footer-brand">Jemaat Leahari</h2>
+                <p class="footer-tagline">Informasi yang mendekatkan.</p>
+
+            </section>
+
+            <nav class="col-6 col-md-3 col-lg-2 footer-links" aria-labelledby="footer-links">
+                <h2 class="footer-heading" id="footer-links">Tautan cepat</h2>
+                <a href="http://localhost:8799/">Beranda</a>
+                <a href="http://localhost:8799/profil">Profil</a>
+                <a href="http://localhost:8799/berita">Berita</a>
+                <a href="http://localhost:8799/jadwal-ibadah">Jadwal ibadah</a>
+            </nav>
+
+            <section class="col-6 col-md-3 col-lg-3" aria-labelledby="footer-contact">
+                <h2 class="footer-heading" id="footer-contact">Kontak</h2>
+                <p class="footer-contact-note">Kontak dan alamat resmi menunggu konfirmasi.</p>
+            </section>
+
+            <section class="col-12 col-md-6 col-lg-3" aria-labelledby="footer-social">
+                <h2 class="footer-heading" id="footer-social">Ikuti kami</h2>
+                <a
+                    class="footer-social-link"
+                    href="https://www.facebook.com/profile.php?id=61574771007981"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Buka Facebook Jemaat Leahari di tab baru">
+                    Facebook <span aria-hidden="true">↗</span>
+                </a>
+            </section>
+        </div>
+
+        <div class="footer-bottom">
+            <p>Fondasi website publik <span aria-hidden="true">·</span> Konten dummy</p>
+            <a href="#konten">Kembali ke konten</a>
+        </div>
+    </div>
+</footer>
+<!-- DEBUG-VIEW ENDED 18 APPPATH\Views\partials\footer.php -->
+    </body>
+
+</html>
+
+<!-- DEBUG-VIEW ENDED 19 APPPATH\Views\layouts\publik.php -->
+
+<!-- DEBUG-VIEW ENDED 20 APPPATH\Views\publik\profil.php -->
