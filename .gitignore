@@ -7,6 +7,18 @@
 /.taste-skill/
 /resources/private/
 
+# CodeIgniter runtime data (preserve tracked placeholder files)
+/writable/cache/
+/writable/debugbar/
+/writable/logs/*.log
+/writable/session/ci_session*
+/writable/temp/
+/writable/tmp/
+/writable/**/*.tmp
+/writable/**/*.temp
+/writable/**/*.swp
+/writable/**/*~
+
 # Large dependency folders: install locally instead of committing them
 .pdf
 .doc
