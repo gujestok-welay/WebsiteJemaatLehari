@@ -1,6 +1,0 @@
-CRITICAL - 2026-11-04 07:12:55 --> ErrorException: Declaration of FakeBeritaModel::errors(): array must be compatible with CodeIgniter\BaseModel::errors(bool $forceDB = false)
-[Method: GET, Route: /]
-in ROOTPATH\tests\unit\AdminBeritaUploadTest.php on line 39.
- 1 [internal function]: CodeIgniter\Debug\Exceptions->shutdownHandler()
-ERROR - 2026-11-04 06:32:00 --> Gagal memindahkan gambar berita: Could not move file "temporary" to "D:\Jess\Code\WebsiteJemaatLehari\writable\uploads/berita". Reason: disk unavailable
-ERROR - 2026-11-04 06:32:49 --> Gagal memindahkan gambar berita: Could not move file "temporary" to "D:\Jess\Code\WebsiteJemaatLehari\writable\uploads/berita". Reason: disk unavailable
