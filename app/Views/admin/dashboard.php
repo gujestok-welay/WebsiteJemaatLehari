@@ -53,6 +53,13 @@ $todayLabelText = is_array($todayLabelValue)
     </script>
 </section>
 
+<?php if (! empty($success)): ?>
+    <div class="news-alert news-alert-success" role="status"><?= esc($success) ?></div>
+<?php endif; ?>
+<?php if (! empty($error)): ?>
+    <div class="news-alert news-alert-error" role="alert"><?= esc($error) ?></div>
+<?php endif; ?>
+
 <section class="metrics" aria-label="Ringkasan konten">
     <div class="metric">
         <span class="metric-label">Berita terbit</span>
@@ -97,7 +104,21 @@ $todayLabelText = is_array($todayLabelValue)
                     <?php $status = (string) ($item['status'] ?? ''); ?>
                     <li class="news-item">
                         <div class="news-item-copy">
-                            <a class="news-title" href="<?= site_url('admin/berita/edit/' . (int) $item['id']) ?>"><?= esc($item['title']) ?></a>
+                            <button
+                                class="news-title"
+                                type="button"
+                                data-rm-open="#news-create-modal"
+                                aria-label="Ubah berita: <?= esc($item['title'] ?? '', 'attr') ?>"
+                                data-news-edit="<?= esc(json_encode([
+                                    'id' => (int) ($item['id'] ?? 0),
+                                    'title' => (string) ($item['title'] ?? ''),
+                                    'slug' => (string) ($item['slug'] ?? ''),
+                                    'summary' => (string) ($item['summary'] ?? ''),
+                                    'content' => (string) ($item['content'] ?? ''),
+                                    'status' => (string) ($item['status'] ?? ''),
+                                    'cover_image' => (string) ($item['cover_image'] ?? ''),
+                                ], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_THROW_ON_ERROR), 'attr') ?>"
+                            ><?= esc($item['title']) ?></button>
                             <span class="news-date"><?= esc($item['date_label'] ?? 'Tanggal belum tersedia') ?></span>
                         </div>
                         <span class="status-badge status-<?= strtolower(esc($status, 'attr')) ?>"><?= esc($status) ?></span>

@@ -1,4 +1,147 @@
 (function () {
+    var modalSelector = '#news-create-modal';
+    var maxCoverBytes = 10 * 1024 * 1024;
+    var allowedCoverTypes = ['image/jpeg', 'image/png', 'image/webp'];
+
+    function getNewsForm() {
+        var modal = document.querySelector(modalSelector);
+        return modal ? modal.querySelector('[data-news-form]') : null;
+    }
+
+    function resetNewsForm() {
+        var form = getNewsForm();
+        if (!form) return;
+
+        form.reset();
+        form.querySelector('[name="id"]').value = '';
+        form.querySelector('[name="title"]').value = '';
+        form.querySelector('[name="slug"]').value = '';
+        form.querySelector('[name="summary"]').value = '';
+        form.querySelector('[name="content"]').value = '';
+        form.querySelector('[name="status"]').value = '';
+        var coverInput = form.querySelector('[name="cover_image"]');
+        coverInput.value = '';
+        coverInput.setCustomValidity('');
+        var fileError = form.querySelector('[data-news-file-error]');
+        fileError.textContent = '';
+        fileError.hidden = true;
+        form.querySelector('[data-news-current-cover]').hidden = true;
+
+        var title = document.getElementById('news-create-title');
+        var description = document.getElementById('news-create-description');
+        var submit = form.querySelector('[data-news-submit]');
+        var error = form.querySelector('[data-news-error]');
+
+        if (submit) submit.disabled = false;
+        if (title) title.textContent = 'Tambah Berita';
+        if (description) description.textContent = 'Lengkapi informasi berita.';
+        if (submit) submit.textContent = 'Simpan Berita';
+        if (error) error.remove();
+    }
+
+    function populateNewsForm(trigger) {
+        var form = getNewsForm();
+        if (!form) return;
+
+        var news;
+        try {
+            news = JSON.parse(trigger.getAttribute('data-news-edit') || '');
+        } catch (error) {
+            console.error('Data berita untuk modal edit tidak valid.', error);
+            resetNewsForm();
+            return;
+        }
+
+        form.querySelector('[name="id"]').value = String(news.id || '');
+        form.querySelector('[name="title"]').value = news.title || '';
+        form.querySelector('[name="slug"]').value = news.slug || '';
+        form.querySelector('[name="summary"]').value = news.summary || '';
+        form.querySelector('[name="content"]').value = news.content || '';
+        form.querySelector('[name="status"]').value = news.status || '';
+        var coverInput = form.querySelector('[name="cover_image"]');
+        coverInput.value = '';
+        coverInput.setCustomValidity('');
+        var fileError = form.querySelector('[data-news-file-error]');
+        fileError.textContent = '';
+        fileError.hidden = true;
+        form.querySelector('[data-news-current-cover]').hidden = !news.cover_image;
+
+        var title = document.getElementById('news-create-title');
+        var description = document.getElementById('news-create-description');
+        var submit = form.querySelector('[data-news-submit]');
+        var error = form.querySelector('[data-news-error]');
+
+        if (title) title.textContent = 'Edit Berita';
+        if (description) description.textContent = 'Perbarui informasi berita.';
+        if (submit) submit.textContent = 'Simpan Perubahan';
+        if (error) error.remove();
+    }
+
+    function validateCoverFile(form) {
+        var input = form.querySelector('[name="cover_image"]');
+        var error = form.querySelector('[data-news-file-error]');
+        var file = input.files && input.files[0];
+        var message = '';
+
+        if (file && file.size > maxCoverBytes) {
+            message = 'Ukuran gambar maksimal 10 MB.';
+        } else if (file && file.type && allowedCoverTypes.indexOf(file.type) === -1) {
+            message = 'Format gambar tidak diizinkan. Gunakan JPG, PNG, atau WEBP.';
+        }
+
+        input.setCustomValidity(message);
+        error.textContent = message;
+        error.hidden = message === '';
+
+        return message === '';
+    }
+
+    document.addEventListener('click', function (event) {
+        var target = event.target instanceof Element ? event.target : null;
+        if (!target) return;
+
+        var editTrigger = target.closest('[data-news-edit]');
+        if (editTrigger) {
+            populateNewsForm(editTrigger);
+            return;
+        }
+
+        var openTrigger = target.closest('[data-rm-open="' + modalSelector + '"]');
+        if (openTrigger) resetNewsForm();
+    }, true);
+
+    document.addEventListener('rm:openchange', function (event) {
+        if (event.target.id === 'news-create-modal' && !event.detail.open) {
+            resetNewsForm();
+        }
+    });
+
+    document.addEventListener('change', function (event) {
+        var input = event.target;
+        if (input instanceof HTMLInputElement && input.name === 'cover_image' && input.form.matches('[data-news-form]')) {
+            validateCoverFile(input.form);
+        }
+    });
+
+    document.addEventListener('submit', function (event) {
+        var form = event.target;
+        if (!(form instanceof HTMLFormElement) || !form.matches('[data-news-form]')) return;
+
+        if (!validateCoverFile(form)) {
+            event.preventDefault();
+            form.querySelector('[name="cover_image"]').reportValidity();
+            return;
+        }
+
+        var submit = form.querySelector('[data-news-submit]');
+        if (submit) {
+            submit.disabled = true;
+            submit.textContent = 'Menyimpan...';
+        }
+    });
+})();
+
+(function () {
     var sidebar = document.getElementById('adminSidebar');
     var toggle = document.getElementById('sidebarToggle');
     var backdrop = document.getElementById('sidebarBackdrop');

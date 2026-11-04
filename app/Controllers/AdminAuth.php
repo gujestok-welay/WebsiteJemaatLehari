@@ -80,7 +80,7 @@ class AdminAuth extends BaseController
             ->where('tanggal >=', $today->format('Y-m-d'))
             ->countAllResults();
         $latestNews = $db->table('berita')
-            ->select('id, title, status, created_at')
+            ->select('id, title, slug, summary, content, status, cover_image, created_at')
             ->where('deleted_at', null)
             ->orderBy('created_at', 'DESC')
             ->limit(5)
@@ -106,6 +106,8 @@ class AdminAuth extends BaseController
             $nextSchedule['time_label'] = substr((string) $nextSchedule['waktu'], 0, 5);
         }
 
+        $newsError = session()->getFlashdata('news_error') ?? '';
+
         return $this->renderAdminPage('admin/dashboard', [
             'name' => session()->get('admin_name'),
             'todayLabel' => $days[(int) $today->format('w')] . ', ' . $formatDate($today->format('Y-m-d')),
@@ -115,8 +117,11 @@ class AdminAuth extends BaseController
             'latestNews' => $latestNews,
             'nextSchedule' => $nextSchedule,
             'scheduleError' => session()->getFlashdata('schedule_error') ?? '',
-            'newsError' => session()->getFlashdata('news_error') ?? '',
-            'newsModalOpen' => $this->request->getGet('create') === '1',
+            'newsError' => $newsError,
+            'success' => session()->getFlashdata('success'),
+            'error' => session()->getFlashdata('error'),
+            'newsModalOpen' => $this->request->getGet('create') === '1'
+                || $newsError !== '',
             'statusOptions' => BeritaModel::statusOptions(),
         ], 'Ringkasan');
     }

@@ -18,7 +18,6 @@ $routes->group('admin', ['filter' => 'adminAuth'], static function ($routes): vo
 
     $routes->get('berita', 'AdminBerita::index');
     $routes->get('berita/create', 'AdminBerita::create');
-    $routes->get('berita/edit/(:num)', 'AdminBerita::edit/$1');
     $routes->post('berita/save', 'AdminBerita::save', ['filter' => 'csrf']);
     $routes->post('berita/delete/(:num)', 'AdminBerita::delete/$1', ['filter' => 'csrf']);
 

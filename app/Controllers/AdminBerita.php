@@ -3,10 +3,14 @@
 namespace App\Controllers;
 
 use App\Models\BeritaModel;
+use CodeIgniter\Database\Exceptions\DatabaseException;
+use CodeIgniter\HTTP\Exceptions\HTTPException;
 use CodeIgniter\HTTP\Files\UploadedFile;
 
 class AdminBerita extends BaseController
 {
+    private const MAX_COVER_IMAGE_BYTES = 10 * 1024 * 1024;
+
     protected BeritaModel $model;
 
     public function __construct()
@@ -18,6 +22,7 @@ class AdminBerita extends BaseController
     {
         $term = trim((string) $this->request->getGet('q'));
         $status = (string) $this->request->getGet('status');
+        $newsError = session()->getFlashdata('news_error') ?? '';
         $items = $this->model->findByTerm($term, $status ?: null);
 
         return $this->renderAdminPage('admin/berita/index', [
@@ -27,8 +32,9 @@ class AdminBerita extends BaseController
             'statusOptions' => BeritaModel::statusOptions(),
             'success' => session()->getFlashdata('success'),
             'error' => session()->getFlashdata('error'),
-            'newsError' => session()->getFlashdata('news_error') ?? '',
-            'newsModalOpen' => $this->request->getGet('create') === '1',
+            'newsError' => $newsError,
+            'newsModalOpen' => $this->request->getGet('create') === '1'
+                || $newsError !== '',
         ], 'Berita');
     }
 
@@ -37,31 +43,42 @@ class AdminBerita extends BaseController
         return redirect()->to(site_url('admin/berita?create=1'));
     }
 
-    public function edit(int $id): string
-    {
-        $item = $this->model->find($id);
-        if (! $item) {
-            return redirect()->to(site_url('admin/berita'))->with('error', 'Berita tidak ditemukan.');
-        }
-
-        return view('admin/berita/form', [
-            'item' => $item,
-            'statusOptions' => BeritaModel::statusOptions(),
-            'error' => session()->getFlashdata('error'),
-        ]);
-    }
-
     public function save(): \CodeIgniter\HTTP\RedirectResponse
     {
-        $id = (int) $this->request->getPost('id');
-        $title = trim((string) $this->request->getPost('title'));
-        $summary = trim((string) $this->request->getPost('summary'));
-        $content = trim((string) $this->request->getPost('content'));
-        $status = (string) $this->request->getPost('status');
-        $slug = trim((string) $this->request->getPost('slug'));
+        $idValue = $this->request->getPost('id');
+        if ($idValue !== null && ! is_string($idValue) && ! is_int($idValue)) {
+            return redirect()->to(site_url($this->getReturnTo()))->with('error', 'ID berita tidak valid.');
+        }
+
+        $rawId = trim((string) ($idValue ?? ''));
+        $returnTo = $this->getReturnTo();
+        if ($rawId !== '' && (! ctype_digit($rawId) || (int) $rawId < 1)) {
+            return redirect()->to(site_url($returnTo))->with('error', 'ID berita tidak valid.');
+        }
+
+        $id = $rawId === '' ? 0 : (int) $rawId;
+        $current = $id > 0 ? $this->model->find($id) : null;
+        if ($id > 0 && ! $current) {
+            return redirect()->to(site_url($returnTo))->with('error', 'Berita tidak ditemukan.');
+        }
+
+        $postedFields = [];
+        foreach (['title', 'summary', 'content', 'status', 'slug'] as $field) {
+            $value = $this->request->getPost($field);
+            if ($value !== null && ! is_string($value)) {
+                return $this->redirectWithSaveError('Data berita tidak valid. Periksa kembali isian formulir.', $id, $returnTo);
+            }
+            $postedFields[$field] = $value ?? '';
+        }
+
+        $title = trim($postedFields['title']);
+        $summary = trim($postedFields['summary']);
+        $content = trim($postedFields['content']);
+        $status = $postedFields['status'];
+        $slug = trim($postedFields['slug']);
 
         if ($title === '' || $summary === '' || $content === '' || ! in_array($status, BeritaModel::statusOptions(), true)) {
-            return $this->redirectWithSaveError('Judul, ringkasan, isi, dan status berita wajib diisi.', $id);
+            return $this->redirectWithSaveError('Judul, ringkasan, isi, dan status berita wajib diisi.', $id, $returnTo);
         }
 
         $slug = $slug !== '' ? $slug : BeritaModel::generateSlug($title);
@@ -78,38 +95,73 @@ class AdminBerita extends BaseController
         ];
 
         $uploadedFile = $this->request->getFile('cover_image');
+        $newCover = null;
         if ($uploadedFile instanceof UploadedFile && $uploadedFile->getError() !== UPLOAD_ERR_NO_FILE) {
-            $uploadResult = $this->handleCoverUpload($uploadedFile, $id ? $id : null);
+            $uploadResult = $this->handleCoverUpload($uploadedFile);
             if ($uploadResult['success'] === false) {
-                return $this->redirectWithSaveError($uploadResult['message'], $id);
+                return $this->redirectWithSaveError($uploadResult['message'], $id, $returnTo);
             }
-            $data['cover_image'] = $uploadResult['file'];
+            $newCover = $uploadResult['file'];
+            $data['cover_image'] = $newCover;
         }
 
-        if ($id > 0) {
-            $data['updated_by'] = (int) session()->get('admin_id');
-            $this->model->update($id, $data);
-            return redirect()->to(site_url('admin/berita'))->with('success', 'Berita berhasil diperbarui.');
+        try {
+            if ($id > 0) {
+                $saved = $this->model->update($id, $data);
+            } else {
+                $data['created_by'] = (int) session()->get('admin_id');
+                $saved = $this->model->insert($data);
+            }
+        } catch (DatabaseException $exception) {
+            if ($newCover !== null) {
+                $this->removeStoredCover($newCover);
+            }
+            log_message('error', 'Gagal menyimpan berita: {message}', ['message' => $exception->getMessage()]);
+
+            return $this->redirectWithSaveError('Berita gagal disimpan. Silakan coba lagi.', $id, $returnTo);
         }
 
-        $data['created_by'] = (int) session()->get('admin_id');
-        $this->model->insert($data);
+        if ($saved === false) {
+            if ($newCover !== null) {
+                $this->removeStoredCover($newCover);
+            }
 
-        return redirect()->to(site_url('admin/berita'))->with('success', 'Berita baru berhasil disimpan.');
+            $errors = array_filter($this->model->errors());
+            $message = $errors === []
+                ? 'Berita gagal disimpan. Silakan periksa kembali data dan coba lagi.'
+                : implode(' ', $errors);
+
+            return $this->redirectWithSaveError($message, $id, $returnTo);
+        }
+
+        if ($id > 0 && $newCover !== null && ! empty($current['cover_image'])) {
+            $this->removeStoredCover((string) $current['cover_image']);
+        }
+
+        $successMessage = $id > 0 ? 'Berita berhasil diperbarui.' : 'Berita baru berhasil disimpan.';
+
+        return redirect()->to(site_url($returnTo))->with('success', $successMessage);
     }
 
-    protected function redirectWithSaveError(string $message, int $id): \CodeIgniter\HTTP\RedirectResponse
+    protected function redirectWithSaveError(string $message, int $id, string $returnTo): \CodeIgniter\HTTP\RedirectResponse
     {
         if ($id > 0) {
-            return redirect()->back()->withInput()->with('error', $message);
-        }
-
-        $returnTo = (string) $this->request->getPost('return_to');
-        if (! in_array($returnTo, ['admin/berita', 'admin/dashboard'], true)) {
-            $returnTo = 'admin/berita';
+            return redirect()
+                ->to(site_url($returnTo) . '?edit=' . $id)
+                ->withInput()
+                ->with('news_error', $message);
         }
 
         return redirect()->to(site_url($returnTo) . '?create=1')->withInput()->with('news_error', $message);
+    }
+
+    protected function getReturnTo(): string
+    {
+        $returnTo = $this->request->getPost('return_to');
+
+        return is_string($returnTo) && in_array($returnTo, ['admin/berita', 'admin/dashboard'], true)
+            ? $returnTo
+            : 'admin/berita';
     }
 
     public function delete(int $id): \CodeIgniter\HTTP\RedirectResponse
@@ -123,8 +175,12 @@ class AdminBerita extends BaseController
         return redirect()->to(site_url('admin/berita'))->with('success', 'Berita diarsipkan atau dihapus dari daftar aktif.');
     }
 
-    protected function handleCoverUpload(UploadedFile $file, ?int $id = null): array
+    protected function handleCoverUpload(UploadedFile $file): array
     {
+        if (in_array($file->getError(), [UPLOAD_ERR_INI_SIZE, UPLOAD_ERR_FORM_SIZE], true)) {
+            return ['success' => false, 'message' => 'Ukuran gambar maksimal 10 MB.'];
+        }
+
         if (! $file->isValid()) {
             return ['success' => false, 'message' => 'File gambar tidak valid.'];
         }
@@ -137,8 +193,9 @@ class AdminBerita extends BaseController
             return ['success' => false, 'message' => 'Ekstensi gambar tidak diizinkan. Gunakan JPG, PNG, atau WEBP.'];
         }
 
-        if ((int) ceil($file->getSize() / 1024) > 2048) {
-            return ['success' => false, 'message' => 'Ukuran gambar maksimal 2MB.'];
+        $fileSize = $file->getSize();
+        if ($fileSize === false || $fileSize > self::MAX_COVER_IMAGE_BYTES) {
+            return ['success' => false, 'message' => 'Ukuran gambar maksimal 10 MB.'];
         }
 
         $targetDir = WRITEPATH . 'uploads/berita';
@@ -147,18 +204,32 @@ class AdminBerita extends BaseController
         }
 
         $safeName = $file->getRandomName();
-        if (! $file->move($targetDir, $safeName)) {
+        try {
+            $moved = $file->move($targetDir, $safeName);
+        } catch (HTTPException $exception) {
+            log_message('error', 'Gagal memindahkan gambar berita: {message}', ['message' => $exception->getMessage()]);
+
+            return ['success' => false, 'message' => 'Gambar gagal dipindahkan ke server. Silakan coba lagi.'];
+        }
+
+        if (! $moved) {
             return ['success' => false, 'message' => 'Gambar gagal dipindahkan ke server.'];
         }
 
         $storedPath = 'uploads/berita/' . basename($safeName);
-        if ($id) {
-            $current = $this->model->find($id);
-            if (! empty($current['cover_image']) && file_exists(FCPATH . $current['cover_image'])) {
-                @unlink(FCPATH . $current['cover_image']);
-            }
-        }
 
         return ['success' => true, 'file' => $storedPath];
+    }
+
+    protected function removeStoredCover(string $storedPath): void
+    {
+        if (! preg_match('~\Auploads/berita/([A-Za-z0-9._-]+)\z~', $storedPath, $matches)) {
+            return;
+        }
+
+        $filePath = WRITEPATH . 'uploads/berita/' . $matches[1];
+        if (is_file($filePath) && ! unlink($filePath)) {
+            log_message('warning', 'Gambar berita lama tidak dapat dihapus: {path}', ['path' => $filePath]);
+        }
     }
 }

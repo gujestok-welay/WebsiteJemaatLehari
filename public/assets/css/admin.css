@@ -313,6 +313,7 @@ a:focus-visible, button:focus-visible {
 .news-item-copy { display: grid; min-width: 0; gap: 4px; }
 .news-title { overflow: hidden; color: var(--admin-ink); font-size: .9rem; font-weight: 600; line-height: 1.45; text-decoration: none; text-overflow: ellipsis; }
 .news-title:hover { color: var(--admin-purple); text-decoration: underline; text-underline-offset: 3px; }
+button.news-title { border: 0; padding: 0; background: none; font-family: inherit; text-align: left; cursor: pointer; }
 .news-date { color: var(--admin-muted); font-size: .77rem; }
 
 .status-badge { flex: 0 0 auto; border-radius: 999px; padding: 5px 10px; font-size: .7rem; font-weight: 600; }

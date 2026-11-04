@@ -7,10 +7,10 @@ use CodeIgniter\Test\CIUnitTestCase;
 
 final class TestableAdminPageController extends BaseController
 {
-    public function showNews(): string
+    public function showNews(array $items = []): string
     {
         return $this->renderAdminPage('admin/berita/index', [
-            'items' => [],
+            'items' => $items,
             'term' => '',
             'status' => '',
             'statusOptions' => [],
@@ -121,6 +121,31 @@ final class AdminPartialNavigationTest extends CIUnitTestCase
         $this->assertSame('1', $response->getHeaderLine('X-Partial-Response'));
         $this->assertSame('Berita', rawurldecode($response->getHeaderLine('X-Page-Title')));
         $this->assertStringContainsString('no-store', $response->getHeaderLine('Cache-Control'));
+    }
+
+    public function testNewsEditTriggerUsesSharedModalAndCarriesSelectedNewsSafely(): void
+    {
+        $controller = new TestableAdminPageController();
+        $controller->initController(service('request'), service('response'), service('logger'));
+        $news = [
+            'id' => 12,
+            'title' => 'Berita "uji"',
+            'slug' => 'berita-uji',
+            'summary' => 'Ringkasan uji',
+            'content' => "Isi berita\nbaris kedua",
+            'status' => 'Draft',
+            'cover_image' => 'uploads/berita/cover.jpg',
+        ];
+
+        $body = $controller->showNews([$news]);
+
+        $this->assertStringContainsString('data-rm-open="#news-create-modal"', $body);
+        $this->assertStringContainsString('data-news-edit=', $body);
+        $this->assertStringContainsString('data-news-form', $body);
+        $this->assertStringNotContainsString('admin/berita/edit/', $body);
+        preg_match('/data-news-edit="([^"]+)"/', $body, $matches);
+        $payload = html_entity_decode($matches[1] ?? '', ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        $this->assertSame($news, json_decode($payload, true, 512, JSON_THROW_ON_ERROR));
     }
 
     public function testPartialSchedulePagesKeepTheSharedAdminShellOutOfTheResponse(): void
