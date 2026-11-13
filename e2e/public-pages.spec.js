@@ -318,13 +318,25 @@ test('kartu galeri memakai proporsi seragam dan membungkus poster di semua layar
   expect(singleCardAlignment, 'satu kartu berada di tengah area galeri').toBeLessThanOrEqual(1);
 });
 
+test('klik menu Profil membuka halaman profil', async ({ page }) => {
+  await page.goto('berita');
+
+  const profileLink = page.locator('.site-header #profil-menu-toggle');
+  await expect(profileLink).toHaveAttribute('href', /\/profil$/);
+  await profileLink.click();
+
+  await expect(page).toHaveURL(/\/profil$/);
+});
+
 test('menu Profil menavigasikan pengunjung ke bagian-bagian halaman profil', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('berita');
 
   const profileMenu = page.locator('#profil-menu');
-  const profileToggle = page.getByRole('button', { name: 'Profil' });
+  const profileToggle = page.locator('#profil-menu-toggle');
   await expect(profileToggle).toBeVisible();
-  await profileToggle.click();
+  await profileToggle.hover();
+  await expect(profileMenu).toBeVisible();
 
   const destinations = [
     ['Peta Pelayanan', '#peta-pelayanan'],
