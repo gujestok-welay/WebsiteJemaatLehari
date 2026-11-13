@@ -189,13 +189,9 @@
   padding: clamp(3rem, 7vw, 6rem) 0;
   background-color: var(--purple-dark);
   background-image:
-    linear-gradient(
-      180deg,
-      color-mix(in srgb, #482950 24%, transparent),
-      color-mix(in srgb, #482950 70%, transparent)
-    ),
+    linear-gradient(90deg, rgba(72, 41, 80, 0.94) 0%, rgba(72, 41, 80, 0.92) 75%, rgba(72, 41, 80, 0.62) 100%),
     url("../images/gereja/Gambar-MajelisJemaat.jpeg");
-  background-position: center, center 62%;
+  background-position: center 62%;
   background-repeat: no-repeat;
   background-size: cover;
   color: var(--paper);
@@ -218,15 +214,6 @@
   letter-spacing: -0.03em;
   line-height: 0.98;
   text-wrap: balance;
-}
-
-.gallery-page-heading h1,
-.gallery-page-heading p {
-  text-shadow:
-    0 2px 2px rgba(24, 15, 28, 0.95),
-    0 4px 6px rgba(24, 15, 28, 0.85),
-    0 8px 14px rgba(24, 15, 28, 0.72),
-    0 14px 24px rgba(24, 15, 28, 0.58);
 }
 
 .gallery-page-heading p {
@@ -371,21 +358,6 @@
   padding: clamp(2rem, 5vw, 4rem) var(--frame, 1.5rem) 0;
 }
 
-.gallery-detail-poster {
-  margin: 0 0 2.5rem;
-}
-
-.gallery-detail-poster img {
-  display: block;
-  width: 100%;
-  max-height: 52rem;
-  aspect-ratio: 4 / 5;
-  object-fit: contain;
-  border-radius: 1rem;
-  background: #eee8f0;
-}
-
-.gallery-detail-poster figcaption,
 .gallery-detail-image figcaption {
   margin-top: 0.65rem;
   color: var(--muted);
@@ -427,17 +399,36 @@
 }
 
 .gallery-detail-image {
+  align-self: start;
   min-width: 0;
   margin: 0;
 }
 
 .gallery-detail-image img {
   display: block;
-  width: 100%;
-  aspect-ratio: 4 / 3;
-  object-fit: cover;
+  width: auto;
+  max-width: 100%;
+  max-height: 34rem;
+  height: auto;
+  margin-inline: auto;
+  object-fit: contain;
   border-radius: 0.875rem;
   background: #eee8f0;
+}
+
+.gallery-detail-image-open {
+  display: block;
+  max-width: 100%;
+  margin-inline: auto;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: zoom-in;
+}
+
+.gallery-detail-image-open:focus-visible {
+  outline: 3px solid var(--purple);
+  outline-offset: 4px;
 }
 
 .gallery-detail-viewer-trigger {
@@ -504,12 +495,14 @@
   overflow: hidden;
   border: 0;
   border-radius: 1rem;
-  background: var(--purple-dark);
+  background: transparent;
   color: var(--paper);
 }
 
 .gallery-photo-viewer::backdrop {
-  background: rgb(20 14 24 / 88%);
+  background: rgb(16 16 16 / 58%);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
 }
 
 .gallery-photo-viewer-header {
@@ -567,6 +560,24 @@
   max-width: 100%;
   max-height: min(68vh, 52rem);
   object-fit: contain;
+}
+
+@keyframes gallery-photo-arrive {
+  from {
+    filter: blur(2px);
+    opacity: 0.82;
+    transform: scale(0.985);
+  }
+
+  to {
+    filter: blur(0);
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.gallery-photo-viewer[open] .gallery-photo-viewer-stage img {
+  animation: gallery-photo-arrive 280ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .gallery-photo-viewer-counter {
@@ -1207,6 +1218,10 @@
 }
 
 @media (max-width: 920px) {
+  .gallery-detail-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .gallery-admin-table-wrap {
     overflow: visible;
   }
@@ -1302,6 +1317,12 @@
   .gallery-admin-toolbar {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .gallery-photo-viewer[open] .gallery-photo-viewer-stage img {
+      animation: none;
+    }
   }
 
   .gallery-admin-heading > a {

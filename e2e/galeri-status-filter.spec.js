@@ -25,6 +25,7 @@ test.afterEach(async ({ page }) => {
     if (await archiveButton.count()) {
       page.once('dialog', (dialog) => dialog.accept());
       await archiveButton.click();
+      await expect(activityRow.locator('.gallery-admin-status')).toHaveText('Arsip');
     }
 
     for (const filename of filenames) {

@@ -31,6 +31,9 @@ final class PublicNewsDetailTest extends CIUnitTestCase
             'status' => ['type' => 'VARCHAR', 'constraint' => 20],
             'archived_from_status' => ['type' => 'VARCHAR', 'constraint' => 20, 'null' => true],
             'cover_image' => ['type' => 'VARCHAR', 'constraint' => 255, 'null' => true],
+            'article_type' => ['type' => 'VARCHAR', 'constraint' => 20, 'default' => 'internal'],
+            'source_url' => ['type' => 'VARCHAR', 'constraint' => 2048, 'null' => true],
+            'source_name' => ['type' => 'VARCHAR', 'constraint' => 255, 'null' => true],
             'created_by' => ['type' => 'INTEGER', 'null' => true],
             'updated_by' => ['type' => 'INTEGER', 'null' => true],
             'created_at' => ['type' => 'DATETIME', 'null' => true],
@@ -142,5 +145,30 @@ final class PublicNewsDetailTest extends CIUnitTestCase
         $response->assertSee('Berita tidak ditemukan');
         $response->assertSee('Lihat semua berita');
         $this->assertStringContainsString('href="http://example.com/index.php/berita"', $response->getBody());
+    }
+
+    public function testExternalArticleShowsItsAttributionAndOriginalLinkWithoutCopyingArticleBody(): void
+    {
+        db_connect('tests')->table('berita')->insert([
+            'title' => 'Pelayanan Kasih di Leahari',
+            'slug' => 'pelayanan-kasih-di-leahari',
+            'summary' => 'Ringkasan mandiri yang ditulis Media Center.',
+            'content' => 'Isi lengkap artikel sumber tidak boleh disalin ke halaman.',
+            'status' => 'Terbit',
+            'article_type' => 'external',
+            'source_url' => 'https://sinodegpm.org/berita/pelayanan',
+            'source_name' => 'Sinode GPM',
+            'created_at' => '2026-11-05 09:00:00',
+        ]);
+
+        $response = $this->get('/berita/pelayanan-kasih-di-leahari');
+        $body = $response->getBody();
+
+        $response->assertStatus(200);
+        $this->assertStringContainsString('Ringkasan mandiri yang ditulis Media Center.', $body);
+        $this->assertStringContainsString('Berita dari Sinode GPM', $body);
+        $this->assertStringContainsString('href="https://sinodegpm.org/berita/pelayanan"', $body);
+        $this->assertStringContainsString('Baca berita asli', $body);
+        $this->assertStringNotContainsString('Isi lengkap artikel sumber tidak boleh disalin ke halaman.', $body);
     }
 }

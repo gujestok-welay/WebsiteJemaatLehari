@@ -467,6 +467,11 @@ button:focus-visible {
   background: var(--admin-paper);
 }
 
+.metrics[aria-label="Ringkasan konten"] .metric {
+  align-items: center;
+  text-align: center;
+}
+
 .metrics:not(.schedule-metrics) .metric a {
   display: inline-flex;
   align-items: center;
@@ -1925,6 +1930,11 @@ button:focus-visible {
     min-height: 0;
     padding: 12px 16px;
   }
+  .metrics[aria-label="Ringkasan konten"] .metric {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: "label" "value";
+    justify-items: center;
+  }
   .metrics:not(.schedule-metrics) .metric-label {
     grid-area: label;
     min-height: 0;
@@ -2468,6 +2478,18 @@ button:focus-visible {
 .profile-content-list-items {
   display: grid;
 }
+#profile-worship-editor .profile-content-list-items {
+  gap: 12px;
+}
+#profile-worship-editor .profile-form-grid > .profile-content-list {
+  grid-column: 1 / -1;
+}
+#profile-worship-editor .profile-content-list-items > .profile-content-item {
+  padding: 14px;
+  border: 1px solid var(--admin-line);
+  border-radius: 16px;
+  background-color: var(--admin-paper);
+}
 .profile-content-item {
   min-width: 0;
   padding: 14px 0;
@@ -2479,12 +2501,23 @@ button:focus-visible {
 .profile-content-item-heading {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   gap: 12px;
   margin-bottom: 12px;
   color: var(--admin-muted);
   font-size: 0.8rem;
   font-weight: 600;
+}
+.profile-content-item-heading > span {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+#profile-territory-editor [data-territory-item-list] .profile-content-item-heading {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+}
+.profile-territory-item-editor[hidden] {
+  display: none;
 }
 .profile-content-item .profile-form-grid {
   gap: 12px 16px;
@@ -2944,9 +2977,39 @@ button:focus-visible {
   transform-origin: left center;
   transition: transform 280ms cubic-bezier(0.16, 1, 0.3, 1);
 }
-.profile-census-step-list li.is-complete::after,
-.profile-step-list li.is-complete::after {
+.profile-census-step-list li.is-complete::after {
   transform: scaleX(1);
+}
+.profile-step-list li.is-visited:not(.is-current) .profile-step-number {
+  border-color: var(--admin-purple);
+  color: var(--admin-purple);
+}
+.profile-content-settings-group + .profile-content-settings-group {
+  margin-top: 20px;
+  padding-top: 18px;
+  border-top: 1px solid var(--admin-line);
+}
+.profile-content-settings-group > summary {
+  width: fit-content;
+  margin-bottom: 12px;
+  font-size: 0.96rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.profile-content-settings-group:not([open]) > summary {
+  margin-bottom: 0;
+}
+.profile-content-settings-group[open] > summary {
+  margin-bottom: 16px;
+}
+.profile-content-settings-links {
+  margin-top: 16px;
+}
+.profile-content-settings-links > summary {
+  width: fit-content;
+  color: var(--admin-purple);
+  font-weight: 600;
+  cursor: pointer;
 }
 .profile-census-step-list li:last-child::before,
 .profile-census-step-list li:last-child::after,
@@ -3420,7 +3483,13 @@ button:focus-visible {
 }
 
 @media (max-width: 480px) {
-  .profile-census-step-link {
+  #profile-leadership-editor .profile-step-list {
+    width: 100%;
+    min-width: 0;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .profile-census-step-link,
+  .profile-step-link {
     width: calc(100% - 6px);
     min-height: 78px;
     flex-direction: column;
@@ -3431,10 +3500,13 @@ button:focus-visible {
     text-align: center;
   }
   .profile-census-step-list li::before,
-  .profile-census-step-list li::after {
+  .profile-census-step-list li::after,
+  .profile-step-list li::before,
+  .profile-step-list li::after {
     top: 21px;
   }
-  .profile-census-step-number {
+  .profile-census-step-number,
+  .profile-step-number {
     width: 28px;
     height: 28px;
   }
@@ -3451,6 +3523,22 @@ button:focus-visible {
     grid-row: 2;
   }
   .profile-census-step-next {
+    grid-column: 2;
+    grid-row: 2;
+  }
+  .profile-step-controls {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+  .profile-step-controls > span {
+    grid-column: 1 / -1;
+    grid-row: 1;
+  }
+  .profile-step-controls .profile-step-previous {
+    grid-column: 1;
+    grid-row: 2;
+  }
+  .profile-step-controls .profile-step-next {
     grid-column: 2;
     grid-row: 2;
   }
@@ -3472,7 +3560,11 @@ button:focus-visible {
   .profile-census-step-list li::after,
   .profile-census-step-link,
   .profile-census-step-previous,
-  .profile-census-step-next {
+  .profile-census-step-next,
+  .profile-step-list li::after,
+  .profile-step-link,
+  .profile-step-previous,
+  .profile-step-next {
     transition: none;
   }
   #profile-census-editor [data-census-step-panel]:not([hidden]) .profile-census-step-panel-body {

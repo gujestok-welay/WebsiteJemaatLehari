@@ -94,6 +94,9 @@
                                                     'content' => (string) ($item['content'] ?? ''),
                                                     'status' => (string) ($item['status'] ?? ''),
                                                     'cover_image' => (string) ($item['cover_image'] ?? ''),
+                                                    'article_type' => (string) ($item['article_type'] ?? 'internal'),
+                                                    'source_url' => (string) ($item['source_url'] ?? ''),
+                                                    'source_name' => (string) ($item['source_name'] ?? ''),
                                                 ], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_THROW_ON_ERROR), 'attr') ?>"
                                             >
                                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">

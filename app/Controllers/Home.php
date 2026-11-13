@@ -79,10 +79,6 @@ class Home extends BaseController
         return view('publik/profil', [
             'title' => $content['hero']['page_title'],
             'metaDescription' => $content['hero']['meta_description'],
-            'profilePreviewNotice' => [
-                'lead' => $content['hero']['preview_notice_lead'],
-                'body' => $content['hero']['preview_notice_body'],
-            ],
             'activePage' => 'profil',
             'content' => $content,
             'profile' => $profile,
@@ -292,6 +288,10 @@ class Home extends BaseController
             'title' => $item['title'],
             'activePage' => 'berita',
             'item' => $item,
+            'isExternal' => ($item['article_type'] ?? 'internal') === 'external',
+            'sourceUrl' => ($item['article_type'] ?? 'internal') === 'external'
+                ? $this->safeExternalUrl((string) ($item['source_url'] ?? ''))
+                : null,
             'dateLabel' => $this->formatNewsDate($date),
             'dateTime' => $date !== null ? substr((string) $date, 0, 10) : null,
             'coverImageUrl' => $coverImageUrl,
@@ -373,11 +373,12 @@ class Home extends BaseController
             'id' => $row['id'],
             'slug' => $row['slug'],
             'title' => $row['title'],
-            'category' => null,
+            'category' => ($row['article_type'] ?? 'internal') === 'external' ? 'Berita eksternal' : null,
             'date' => $this->formatNewsDate($row['updated_at'] ?? $row['created_at'] ?? null),
             'summary' => (string) ($row['summary'] ?? ''),
             'image' => $this->newsCoverImageUrl($row['cover_image'] ?? null),
             'url' => site_url('berita/' . $row['slug']),
+            'source_name' => (string) ($row['source_name'] ?? ''),
             'is_sample' => $this->containsPlaceholderCopy($row),
         ], $rows);
     }

@@ -25,6 +25,19 @@
         preview.hidden = true;
     }
 
+    function clearNewsSourceImagePreview(form) {
+        var imageUrl = form.querySelector('[data-news-source-image-url]');
+        var preview = form.querySelector('[data-news-source-image-preview]');
+        var imageFigure = form.querySelector('[data-news-source-image-figure]');
+        var useImage = form.querySelector('[data-news-use-source-image]');
+
+        imageUrl.value = '';
+        imageFigure.replaceChildren();
+        preview.hidden = true;
+        useImage.checked = false;
+        useImage.required = false;
+    }
+
     function renderNewsCoverPreview(form, isValid) {
         var input = form.querySelector('[name="cover_image"]');
         var preview = form.querySelector('[data-news-cover-preview]');
@@ -82,6 +95,13 @@
         form.querySelector('[name="summary"]').value = '';
         form.querySelector('[name="content"]').value = '';
         form.querySelector('[name="status"]').value = '';
+        form.querySelector('[name="article_type"]').value = 'internal';
+        form.querySelector('[name="source_url"]').value = '';
+        form.querySelector('[name="source_name"]').value = '';
+        form.querySelector('[data-news-metadata-status]').textContent = '';
+        form.querySelector('[data-news-summary-help]').hidden = true;
+        clearNewsSourceImagePreview(form);
+        syncNewsType(form);
         resizeNewsTitle(form.querySelector('[data-news-title]'));
         var coverInput = form.querySelector('[name="cover_image"]');
         coverInput.value = '';
@@ -104,6 +124,24 @@
         if (error) error.remove();
     }
 
+    function syncNewsType(form) {
+        var isExternal = form.querySelector('[name="article_type"]').value === 'external';
+        var contentField = form.querySelector('[data-news-content-field]');
+        var content = form.querySelector('[name="content"]');
+        var sourceUrl = form.querySelector('[name="source_url"]');
+        var sourceName = form.querySelector('[name="source_name"]');
+
+        contentField.hidden = isExternal;
+        content.required = !isExternal;
+        form.querySelector('[data-news-source-url-field]').hidden = !isExternal;
+        sourceUrl.required = isExternal;
+        form.querySelector('[data-news-source-name-field]').hidden = !isExternal;
+        sourceName.required = isExternal;
+    }
+
+    var initialNewsForm = getNewsForm();
+    if (initialNewsForm) syncNewsType(initialNewsForm);
+
     function populateNewsForm(trigger) {
         var form = getNewsForm();
         if (!form) return;
@@ -124,6 +162,13 @@
         form.querySelector('[name="summary"]').value = news.summary || '';
         form.querySelector('[name="content"]').value = news.content || '';
         form.querySelector('[name="status"]').value = news.status || '';
+        form.querySelector('[name="article_type"]').value = news.article_type || 'internal';
+        form.querySelector('[name="source_url"]').value = news.source_url || '';
+        form.querySelector('[name="source_name"]').value = news.source_name || '';
+        form.querySelector('[data-news-metadata-status]').textContent = '';
+        form.querySelector('[data-news-summary-help]').hidden = true;
+        clearNewsSourceImagePreview(form);
+        syncNewsType(form);
         var coverInput = form.querySelector('[name="cover_image"]');
         coverInput.value = '';
         coverInput.setCustomValidity('');
@@ -201,9 +246,99 @@
 
     document.addEventListener('change', function (event) {
         var input = event.target;
+        if (input instanceof HTMLSelectElement && input.name === 'article_type' && input.form.matches('[data-news-form]')) {
+            syncNewsType(input.form);
+            return;
+        }
         if (input instanceof HTMLInputElement && input.name === 'cover_image' && input.form.matches('[data-news-form]')) {
             var isValid = validateCoverFile(input.form);
             renderNewsCoverPreview(input.form, isValid);
+            var sourceImage = input.form.querySelector('[data-news-use-source-image]');
+            sourceImage.required = !isValid && input.form.querySelector('[data-news-source-image-url]').value !== '';
+        }
+    });
+
+    document.addEventListener('input', function (event) {
+        var input = event.target;
+        if (input instanceof HTMLInputElement && input.hasAttribute('data-news-source-url')) {
+            clearNewsSourceImagePreview(input.form);
+            input.form.querySelector('[data-news-summary-help]').hidden = true;
+        }
+    });
+
+    document.addEventListener('click', async function (event) {
+        var target = event.target instanceof Element ? event.target.closest('[data-news-fetch-metadata]') : null;
+        if (!target) return;
+
+        var form = getNewsForm();
+        if (!form) return;
+
+        var urlField = form.querySelector('[name="source_url"]');
+        var status = form.querySelector('[data-news-metadata-status]');
+        var button = target;
+        var typeField = form.querySelector('[name="article_type"]');
+        clearNewsSourceImagePreview(form);
+        form.querySelector('[data-news-summary-help]').hidden = true;
+        typeField.value = 'external';
+        typeField.dispatchEvent(new Event('change', { bubbles: true }));
+        syncNewsType(form);
+        if (!urlField.reportValidity()) return;
+
+        var payload = new URLSearchParams();
+        payload.set('url', urlField.value);
+        var csrf = form.querySelector('input[name^="csrf_"]');
+        if (csrf) payload.set(csrf.name, csrf.value);
+
+        button.disabled = true;
+        status.textContent = 'Mengambil metadata...';
+        try {
+            var response = await fetch(form.dataset.newsMetadataUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest' },
+                body: payload.toString(),
+                credentials: 'same-origin'
+            });
+            var result = await response.json();
+            var csrfInput = form.querySelector('input[name^="csrf_"]');
+            if (csrfInput && result.csrf_token && result.csrf_hash) {
+                csrfInput.name = result.csrf_token;
+                csrfInput.value = result.csrf_hash;
+            }
+            if (!response.ok) throw new Error(result.message || 'Metadata tidak dapat diambil.');
+
+            form.querySelector('[name="title"]').value = result.title || '';
+            form.querySelector('[name="source_name"]').value = result.source_name || '';
+            var summary = form.querySelector('[name="summary"]');
+            if (result.summary && !summary.value.trim()) {
+                summary.value = result.summary;
+                form.querySelector('[data-news-summary-help]').hidden = false;
+            }
+            if (result.image_url) {
+                form.querySelector('[data-news-source-image-url]').value = result.image_url;
+                var sourceImage = document.createElement('img');
+                sourceImage.className = 'news-source-image-thumbnail';
+                sourceImage.alt = 'Pratinjau gambar kover dari artikel sumber';
+                sourceImage.referrerPolicy = 'no-referrer';
+                sourceImage.src = result.image_url;
+                form.querySelector('[data-news-source-image-figure]').replaceChildren(sourceImage);
+                form.querySelector('[data-news-source-image-preview]').hidden = false;
+                form.querySelector('[data-news-use-source-image]').required =
+                    !form.querySelector('[name="cover_image"]').files.length;
+            }
+            resizeNewsTitle(form.querySelector('[data-news-title]'));
+            status.textContent = result.image_url
+                ? (result.summary
+                    ? 'Judul, ringkasan, dan gambar ditemukan. Tinjau ringkasan serta pastikan izin gambar sebelum menyimpan.'
+                    : 'Judul dan gambar ditemukan. Tulis ringkasan sendiri dan pastikan izin gambar sebelum menyimpan.')
+                : (result.summary
+                    ? 'Judul dan ringkasan terisi. Tinjau ringkasan sebelum diterbitkan.'
+                    : 'Judul terisi. Tulis ringkasan sendiri sebelum diterbitkan.');
+        } catch (error) {
+            status.textContent = error instanceof Error
+                ? error.message
+                : 'Metadata tidak dapat diambil. Isi judul dan sumber secara manual.';
+        } finally {
+            button.disabled = false;
         }
     });
 
@@ -270,6 +405,49 @@
         var target = event.target instanceof Element ? event.target : null;
         if (!target) return;
 
+        var territoryToggle = target.closest('[data-territory-item-toggle]');
+        if (territoryToggle) {
+            var territoryItem = territoryToggle.closest('[data-content-item]');
+            var territoryEditor = territoryItem && territoryItem.querySelector('[data-territory-item-editor]');
+            if (!territoryEditor) return;
+
+            var expanded = territoryEditor.hidden;
+            territoryEditor.hidden = !expanded;
+            territoryToggle.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+            territoryToggle.textContent = expanded ? 'Selesai mengubah' : 'Ubah';
+            if (expanded) {
+                var firstField = territoryEditor.querySelector('input:not([type="hidden"]), select, textarea');
+                if (firstField) firstField.focus();
+            } else {
+                territoryToggle.focus();
+            }
+            return;
+        }
+
+        var ageLabelToggle = target.closest('[data-age-label-toggle]');
+        if (ageLabelToggle) {
+            var ageItem = ageLabelToggle.closest('[data-content-item]');
+            var ageEditor = ageItem && ageItem.querySelector('[data-age-label-editor]');
+            var ageInput = ageEditor && ageEditor.querySelector('[data-age-label-input]');
+            if (!ageEditor || !ageInput) return;
+
+            if (ageEditor.hidden) {
+                ageInput.required = true;
+                ageEditor.hidden = false;
+                ageLabelToggle.setAttribute('aria-expanded', 'true');
+                ageLabelToggle.textContent = 'Selesai mengubah rentang usia';
+                ageInput.focus();
+            } else {
+                ageInput.setCustomValidity(ageInput.value.trim() ? '' : 'Isi rentang usia.');
+                if (!ageInput.reportValidity()) return;
+                ageInput.required = false;
+                ageEditor.hidden = true;
+                ageLabelToggle.setAttribute('aria-expanded', 'false');
+                ageLabelToggle.textContent = 'Ubah rentang usia';
+            }
+            return;
+        }
+
         var addButton = target.closest('[data-add-item]');
         if (addButton) {
             var list = addButton.closest('[data-content-list]');
@@ -295,8 +473,15 @@
                 field.selectedIndex = 0;
             });
 
+            var newAgeLabel = item.querySelector('[data-age-label-input]');
+            var newTerritoryEditor = item.querySelector('[data-territory-item-editor]');
             list.dataset.nextIndex = String(index + 1);
             list.querySelector('.profile-content-list-items').append(item);
+            if (newAgeLabel) newAgeLabel.focus();
+            else if (newTerritoryEditor) {
+                var firstTerritoryField = newTerritoryEditor.querySelector('input:not([type="hidden"]), select, textarea');
+                if (firstTerritoryField) firstTerritoryField.focus();
+            }
             return;
         }
 
@@ -305,6 +490,64 @@
             removeButton.closest('[data-content-item]').remove();
         }
     });
+
+    document.addEventListener('input', function (event) {
+        var input = event.target instanceof Element ? event.target.closest('[data-age-label-input]') : null;
+        if (input) {
+            input.setCustomValidity('');
+            var item = input.closest('[data-content-item]');
+            var display = item && item.querySelector('[data-age-label-display]');
+            if (display) display.textContent = input.value.trim() ? 'Usia ' + input.value.trim() : 'Rentang usia baru';
+        }
+
+        var territoryInput = event.target instanceof Element ? event.target.closest('[data-territory-item-editor] [name]') : null;
+        if (territoryInput) updateTerritoryItemSummary(territoryInput.closest('[data-content-item]'));
+    });
+
+    document.addEventListener('change', function (event) {
+        var territoryInput = event.target instanceof Element ? event.target.closest('[data-territory-item-editor] [name]') : null;
+        if (territoryInput) updateTerritoryItemSummary(territoryInput.closest('[data-content-item]'));
+    });
+
+    function updateTerritoryItemSummary(item) {
+        if (!item) return;
+        var list = item.closest('[data-territory-item-list]');
+        var summary = item.querySelector('[data-territory-item-summary]');
+        if (!list || !summary) return;
+
+        var valueFor = function (fieldName) {
+            var field = Array.prototype.find.call(
+                item.querySelectorAll('[data-territory-item-editor] [name]'),
+                function (input) { return input.name.endsWith('[' + fieldName + ']'); }
+            );
+            return field && 'value' in field ? field.value.trim() : '';
+        };
+        var parts;
+        var separator;
+        switch (list.dataset.territoryItemList) {
+            case 'boundaries':
+                parts = [valueFor('direction'), valueFor('name')];
+                separator = ' — ';
+                break;
+            case 'sectors':
+                parts = [valueFor('name')];
+                separator = '';
+                break;
+            case 'orbitations':
+                parts = [valueFor('label'), valueFor('value')];
+                separator = ' — ';
+                break;
+            case 'seasons':
+                parts = [valueFor('period'), valueFor('title')];
+                separator = ' · ';
+                break;
+            default:
+                return;
+        }
+
+        var text = parts.filter(Boolean).join(separator);
+        summary.textContent = text || 'Item baru';
+    }
 })();
 
 (function () {
@@ -790,6 +1033,16 @@
             if (panel && panels.indexOf(panel) !== -1) {
                 setProfileStep(form, panels.indexOf(panel));
                 firstInvalidField.focus();
+            } else {
+                var leadershipPanel = firstInvalidField.closest('[data-leadership-step-panel]');
+                var leadershipStepper = leadershipPanel && leadershipPanel.closest('[data-leadership-stepper]');
+                var leadershipPanels = leadershipStepper
+                    ? Array.prototype.slice.call(leadershipStepper.querySelectorAll('[data-leadership-step-panel]'))
+                    : [];
+                if (leadershipPanel && leadershipStepper && leadershipPanels.indexOf(leadershipPanel) !== -1) {
+                    setLeadershipStep(leadershipStepper, leadershipPanels.indexOf(leadershipPanel));
+                    firstInvalidField.focus();
+                }
             }
         }
     }
@@ -940,11 +1193,21 @@
         });
 
         var steps = Array.prototype.slice.call(form.querySelectorAll('[data-profile-step-target]'));
+        var visitedSteps = (form.dataset.profileVisitedSteps || '')
+            .split(',')
+            .filter(Boolean)
+            .map(Number);
+        if (visitedSteps.indexOf(activeIndex) === -1) visitedSteps.push(activeIndex);
+        form.dataset.profileVisitedSteps = visitedSteps.join(',');
         steps.forEach(function (step, index) {
             var item = step.closest('li');
             if (index === activeIndex) step.setAttribute('aria-current', 'step');
             else step.removeAttribute('aria-current');
-            if (item) item.classList.toggle('is-complete', index < activeIndex);
+            if (item) {
+                item.classList.toggle('is-current', index === activeIndex);
+                item.classList.remove('is-complete');
+                item.classList.toggle('is-visited', visitedSteps.indexOf(index) !== -1);
+            }
         });
 
         var previous = form.querySelector('[data-profile-step-previous]');
@@ -1014,6 +1277,47 @@
         form.dataset.censusCurrentStep = String(activeIndex);
     }
 
+    function setLeadershipStep(stepper, requestedIndex) {
+        var panels = Array.prototype.slice.call(stepper.querySelectorAll('[data-leadership-step-panel]'));
+        if (panels.length === 0) return;
+
+        var activeIndex = Math.max(0, Math.min(requestedIndex, panels.length - 1));
+        panels.forEach(function (panel, index) {
+            panel.hidden = index !== activeIndex;
+        });
+
+        var steps = Array.prototype.slice.call(stepper.querySelectorAll('[data-leadership-step-target]'));
+        steps.forEach(function (step, index) {
+            var item = step.closest('li');
+            if (index === activeIndex) step.setAttribute('aria-current', 'step');
+            else step.removeAttribute('aria-current');
+            if (item) item.classList.toggle('is-complete', index < activeIndex);
+        });
+
+        var previous = stepper.querySelector('[data-leadership-step-previous]');
+        var next = stepper.querySelector('[data-leadership-step-next]');
+        var count = stepper.querySelector('[data-leadership-step-count]');
+        var navigation = stepper.querySelector('[data-leadership-step-nav]');
+        var controls = stepper.querySelector('[data-leadership-step-controls]');
+        if (previous) previous.disabled = activeIndex === 0;
+        if (next) next.disabled = activeIndex === panels.length - 1;
+        if (count) count.textContent = 'Bagian ' + (activeIndex + 1) + ' dari ' + panels.length;
+        if (navigation) navigation.hidden = false;
+        if (controls) controls.hidden = false;
+
+        var activeStep = steps[activeIndex];
+        if (navigation && activeStep) {
+            var navigationBounds = navigation.getBoundingClientRect();
+            var activeStepBounds = activeStep.getBoundingClientRect();
+            if (activeStepBounds.right > navigationBounds.right) {
+                navigation.scrollLeft += activeStepBounds.right - navigationBounds.right + 4;
+            } else if (activeStepBounds.left < navigationBounds.left) {
+                navigation.scrollLeft -= navigationBounds.left - activeStepBounds.left + 4;
+            }
+        }
+        stepper.dataset.leadershipCurrentStep = String(activeIndex);
+    }
+
     function setBusy(form, busy) {
         form.setAttribute('aria-busy', busy ? 'true' : 'false');
         var submit = form.querySelector('[data-profile-submit]');
@@ -1036,6 +1340,9 @@
     document.querySelectorAll('form[data-profile-step-form]').forEach(function (form) {
         setProfileStep(form, 0);
         updateTerritoryPreview(form);
+    });
+    document.querySelectorAll('[data-leadership-stepper]').forEach(function (stepper) {
+        setLeadershipStep(stepper, 0);
     });
 
     document.addEventListener('input', function (event) {
@@ -1085,6 +1392,29 @@
     document.addEventListener('click', function (event) {
         var target = event.target instanceof Element ? event.target : null;
         if (!target) return;
+
+        var leadershipStepControl = target.closest('[data-leadership-step-target], [data-leadership-step-next], [data-leadership-step-previous]');
+        if (leadershipStepControl) {
+            var leadershipStepper = leadershipStepControl.closest('[data-leadership-stepper]');
+            if (leadershipStepper) {
+                var leadershipPanels = Array.prototype.slice.call(leadershipStepper.querySelectorAll('[data-leadership-step-panel]'));
+                var leadershipCurrentIndex = Number.parseInt(leadershipStepper.dataset.leadershipCurrentStep, 10) || 0;
+                var leadershipTargetIndex = leadershipCurrentIndex;
+
+                if (leadershipStepControl.hasAttribute('data-leadership-step-target')) {
+                    leadershipTargetIndex = leadershipPanels.findIndex(function (panel) {
+                        return panel.id === leadershipStepControl.dataset.leadershipStepTarget;
+                    });
+                } else if (leadershipStepControl.hasAttribute('data-leadership-step-next')) {
+                    leadershipTargetIndex += 1;
+                } else {
+                    leadershipTargetIndex -= 1;
+                }
+
+                if (leadershipTargetIndex >= 0) setLeadershipStep(leadershipStepper, leadershipTargetIndex);
+            }
+            return;
+        }
 
         var profileStepControl = target.closest('[data-profile-step-target], [data-profile-step-next], [data-profile-step-previous]');
         if (profileStepControl) {
@@ -1176,9 +1506,9 @@
         if (editMember) {
             var memberForm = document.getElementById('member-form');
             try {
-                if (!memberForm) throw new Error('Form anggota tidak ditemukan.');
-                var memberDetails = editMember.closest('details');
-                if (memberDetails) memberDetails.open = true;
+                var memberStepper = memberForm && memberForm.closest('[data-leadership-stepper]');
+                if (!memberForm || !memberStepper) throw new Error('Form anggota tidak ditemukan.');
+                setLeadershipStep(memberStepper, 1);
                 var member = JSON.parse(editMember.dataset.member || '');
                 memberForm.querySelector('[name="id"]').value = String(member.id || 0);
                 memberForm.querySelector('[name="periode_id"]').value = String(member.periode_id || 0);

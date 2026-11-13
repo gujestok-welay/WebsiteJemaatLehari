@@ -92,7 +92,7 @@ $leaders = ! empty($showMembers) && ! empty($members)
                     <div class="col-12">
                         <dt>Lokasi</dt>
                         <dd class="mb-0">
-                            <a href="<?= esc($mapsUrl, 'attr') ?>" target="_blank" rel="noopener noreferrer">Lihat lokasi di Google Maps</a>
+                            <a href="<?= esc($mapsUrl, 'attr') ?>" target="_blank" rel="noopener noreferrer">Lihat lokasi di <?= esc($hero['map_link_label']) ?></a>
                         </dd>
                     </div>
                 <?php endif; ?>

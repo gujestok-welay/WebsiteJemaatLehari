@@ -14,6 +14,9 @@
                 <?php else: ?>
                     <?= esc($dateLabel) ?>
                 <?php endif; ?>
+                <?php if (! empty($isExternal)): ?>
+                    <span>Berita dari <?= esc($item['source_name'] ?? 'Sumber eksternal') ?></span>
+                <?php endif; ?>
                 <?php if (! empty($isSample)): ?>
                     <span class="sample-content-badge">Contoh</span>
                 <?php endif; ?>
@@ -31,7 +34,17 @@
                 <p class="news-detail-summary"><?= esc($item['summary']) ?></p>
             <?php endif; ?>
 
-            <div class="news-detail-copy"><?= nl2br(esc((string) ($item['content'] ?? ''))) ?></div>
+            <?php if (! empty($isExternal)): ?>
+                <?php if (! empty($sourceUrl)): ?>
+                    <p class="news-detail-source">
+                        <a class="btn news-detail-source-link" href="<?= esc($sourceUrl, 'attr') ?>" target="_blank" rel="noopener noreferrer">
+                            Baca berita asli <span class="visually-hidden">(membuka tab baru)</span>
+                        </a>
+                    </p>
+                <?php endif; ?>
+            <?php else: ?>
+                <div class="news-detail-copy"><?= nl2br(esc((string) ($item['content'] ?? ''))) ?></div>
+            <?php endif; ?>
         </div>
     </article>
 </div>

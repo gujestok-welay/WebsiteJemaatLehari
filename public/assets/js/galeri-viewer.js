@@ -1,24 +1,27 @@
 (function () {
-  const openButton = document.querySelector('[data-photo-viewer-open]');
+  const openButtons = [...document.querySelectorAll('[data-photo-viewer-open]')];
   const dialog = document.querySelector('[data-photo-viewer]');
 
-  if (!openButton || !dialog) {
+  if (openButtons.length === 0 || !dialog) {
     return;
   }
 
   let photos;
   try {
-    photos = JSON.parse(openButton.dataset.photoViewerPhotos || '[]');
+    photos = JSON.parse(dialog.dataset.photoViewerPhotos || '[]');
   } catch (error) {
     console.error('Data dokumentasi foto galeri tidak valid.', error);
     return;
   }
 
-  if (!Array.isArray(photos) || photos.length <= 10 || photos.some((photo) => !photo.url || !photo.label)) {
+  if (!Array.isArray(photos) || photos.length === 0 || photos.some((photo) => (
+    !photo || typeof photo.url !== 'string' || !photo.url || typeof photo.label !== 'string' || !photo.label
+  ))) {
     console.error('Daftar dokumentasi untuk galeri foto tidak memenuhi format yang diperlukan.');
     return;
   }
 
+  const title = dialog.dataset.photoViewerTitle;
   const image = dialog.querySelector('[data-photo-viewer-image]');
   const counter = dialog.querySelector('[data-photo-viewer-counter]');
   const closeButton = dialog.querySelector('[data-photo-viewer-close]');
@@ -28,7 +31,7 @@
   let currentIndex = 0;
   let pointerStart = null;
 
-  if (!image || !counter || !closeButton || !previousButton || !nextButton || !stage) {
+  if (!title || !image || !counter || !closeButton || !previousButton || !nextButton || !stage) {
     console.error('Kontrol dokumentasi foto galeri tidak lengkap.');
     return;
   }
@@ -36,7 +39,7 @@
   function renderPhoto() {
     const photo = photos[currentIndex];
     image.src = photo.url;
-    image.alt = `${openButton.dataset.photoViewerTitle} — ${photo.label}`;
+    image.alt = `${title} — ${photo.label}`;
     counter.textContent = `${currentIndex + 1} / ${photos.length}`;
   }
 
@@ -45,12 +48,20 @@
     renderPhoto();
   }
 
-  openButton.hidden = false;
-  openButton.addEventListener('click', () => {
-    currentIndex = 0;
-    renderPhoto();
-    dialog.showModal();
-    closeButton.focus();
+  openButtons.forEach((openButton) => {
+    openButton.hidden = false;
+    openButton.addEventListener('click', () => {
+      const requestedIndex = Number(openButton.dataset.photoViewerIndex || '0');
+      if (!Number.isInteger(requestedIndex) || requestedIndex < 0 || requestedIndex >= photos.length) {
+        console.error('Indeks foto dokumentasi galeri tidak valid.');
+        return;
+      }
+
+      currentIndex = requestedIndex;
+      renderPhoto();
+      dialog.showModal();
+      closeButton.focus();
+    });
   });
 
   closeButton.addEventListener('click', () => dialog.close());

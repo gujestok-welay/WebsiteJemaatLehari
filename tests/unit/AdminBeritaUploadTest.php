@@ -99,6 +99,8 @@ final class FakeBeritaModel extends BeritaModel
 
 final class TestableAdminBeritaController extends AdminBerita
 {
+    public ?array $externalImageResponse = null;
+
     public function __construct()
     {
     }
@@ -106,6 +108,20 @@ final class TestableAdminBeritaController extends AdminBerita
     public function setModel(BeritaModel $model): void
     {
         $this->model = $model;
+    }
+
+    protected function downloadExternalImage(string $url): array
+    {
+        if ($this->externalImageResponse !== null) {
+            return $this->externalImageResponse;
+        }
+
+        return parent::downloadExternalImage($url);
+    }
+
+    public function cleanupCover(string $storedPath): void
+    {
+        $this->removeStoredCover($storedPath);
     }
 
     protected function removeStoredCover(string $storedPath): void
@@ -863,5 +879,90 @@ final class AdminBeritaUploadTest extends CIUnitTestCase
         $this->assertSame(9, $model->insertedData['created_by']);
         $this->assertSame(site_url('admin/berita'), $response->getHeaderLine('Location'));
         $this->assertSame('Berita baru berhasil disimpan.', session()->getFlashdata('success'));
+    }
+
+    public function testSavingExternalNewsKeepsItsSourceAttribution(): void
+    {
+        $model = new FakeBeritaModel();
+        $controller = $this->saveController($model, [
+            'id' => '',
+            'title' => 'Berita Sinode',
+            'slug' => '',
+            'summary' => 'Ringkasan yang ditulis Media Center.',
+            'content' => 'Ringkasan yang ditulis Media Center.',
+            'status' => 'Draft',
+            'article_type' => 'external',
+            'source_url' => 'https://sinodegpm.org/berita/pelayanan',
+            'source_name' => 'Sinode GPM',
+            'return_to' => 'admin/berita',
+        ]);
+        session()->set('admin_id', 9);
+
+        $controller->save();
+
+        $this->assertSame('external', $model->insertedData['article_type'] ?? null);
+        $this->assertSame('https://sinodegpm.org/berita/pelayanan', $model->insertedData['source_url'] ?? null);
+        $this->assertSame('Sinode GPM', $model->insertedData['source_name'] ?? null);
+    }
+
+    public function testSavingExternalNewsStoresTheSelectedSourceCoverLocally(): void
+    {
+        $model = new FakeBeritaModel();
+        $controller = $this->saveController($model, [
+            'id' => '',
+            'title' => 'Berita dari sumber lain',
+            'slug' => '',
+            'summary' => 'Ringkasan singkat dari metadata halaman.',
+            'content' => 'Ringkasan singkat dari metadata halaman.',
+            'status' => 'Draft',
+            'article_type' => 'external',
+            'source_url' => 'https://pelagandong.com/berita',
+            'source_name' => 'Pelagandong',
+            'source_image_url' => 'https://images.example.org/cover.png',
+            'use_source_image' => '1',
+            'return_to' => 'admin/berita',
+        ]);
+        $controller->externalImageResponse = [
+            'contents' => base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADUlEQVR4nGP4z8AAAAMBAQDJ/pLvAAAAAElFTkSuQmCC', true),
+            'mime' => 'image/png',
+        ];
+        session()->set('admin_id', 9);
+
+        $response = $controller->save();
+        $coverPath = $model->insertedData['cover_image'] ?? '';
+
+        $this->assertSame(site_url('admin/berita'), $response->getHeaderLine('Location'));
+        $this->assertMatchesRegularExpression('~\Auploads/berita/[A-Za-z0-9._-]+\.png\z~', $coverPath);
+        $this->assertFileExists(WRITEPATH . $coverPath);
+        $controller->cleanupCover($coverPath);
+    }
+
+    public function testCreatingNewsFormOffersExternalSourceAndMetadataLookup(): void
+    {
+        $html = view('components/ui/news-create-modal', [
+            'formStatusOptions' => BeritaModel::formStatusOptions(),
+        ]);
+
+        $this->assertStringContainsString('name="article_type"', $html);
+        $this->assertStringContainsString('name="source_url"', $html);
+        $this->assertStringContainsString('Ambil judul dan sumber dari tautan', $html);
+        $this->assertStringContainsString('name="source_name"', $html);
+    }
+
+    public function testMetadataLookupRejectsPrivateNetworkUrls(): void
+    {
+        $request = service('request');
+        $request->setGlobal('post', ['url' => 'http://127.0.0.1/admin']);
+        $controller = new TestableAdminBeritaController();
+        $controller->setModel(new FakeBeritaModel());
+        $controller->initController($request, service('response'), service('logger'));
+
+        $response = $controller->metadata();
+        $body = json_decode($response->getBody(), true, 512, JSON_THROW_ON_ERROR);
+
+        $this->assertSame(422, $response->getStatusCode());
+        $this->assertSame('Tautan harus menggunakan HTTP atau HTTPS dan domain publik.', $body['message']);
+        $this->assertSame('csrf_test_name', $body['csrf_token']);
+        $this->assertNotEmpty($body['csrf_hash']);
     }
 }

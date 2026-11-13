@@ -19,11 +19,10 @@
                     <?php foreach (['beranda' => ['/', 'Beranda'], 'profil' => ['profil', 'Profil'], 'berita' => ['berita', 'Berita'], 'galeri' => ['galeri', 'Galeri'], 'jadwal' => ['jadwal-ibadah', 'Jadwal Ibadah']] as $key => [$path, $label]): ?>
                         <?php if ($key === 'profil'): ?>
                             <li class="nav-item dropdown">
-                                <button
+                                <a
                                     class="nav-link dropdown-toggle profile-dropdown-toggle<?= $activePage === $key ? ' active' : '' ?>"
-                                    type="button"
+                                    href="<?= site_url($path) ?>"
                                     id="profil-menu-toggle"
-                                    data-bs-toggle="dropdown"
                                     <?= $activePage === $key ? 'aria-current="page"' : '' ?>
                                     aria-expanded="false"
                                     aria-controls="profil-menu">
@@ -31,7 +30,7 @@
                                     <svg class="profile-dropdown-chevron" viewBox="0 0 16 16" fill="none" aria-hidden="true">
                                         <path d="m4 6 4 4 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
                                     </svg>
-                                </button>
+                                </a>
                                 <ul class="dropdown-menu profile-dropdown-menu" id="profil-menu" aria-labelledby="profil-menu-toggle">
                                     <?php foreach ([
                                         'Peta Pelayanan' => 'peta-pelayanan',

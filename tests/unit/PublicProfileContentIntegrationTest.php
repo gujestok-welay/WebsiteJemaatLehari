@@ -42,6 +42,61 @@ final class PublicProfileContentIntegrationTest extends CIUnitTestCase
         ]);
     }
 
+    public function testCensusDisplayTextAndAgeRangesAreFixedWhileCountsRemainEditable(): void
+    {
+        $body = $this->renderProfileManagementPage('census');
+
+        $this->assertStringContainsString('Pratinjau jumlah di halaman Profil', $body);
+        $this->assertStringContainsString('199 KK dan 0 jiwa.', $body);
+        $this->assertSame(3, substr_count($body, 'data-census-step-target='));
+        $this->assertStringNotContainsString('Pengaturan untuk pembaca layar', $body);
+        $this->assertStringNotContainsString('<label for="profile-census-title"', $body);
+        $this->assertStringNotContainsString('<label for="profile-census-description"', $body);
+        $this->assertStringNotContainsString('id="profile-census-household_suffix"', $body);
+        $this->assertStringContainsString('data-age-label-editor hidden', $body);
+        $this->assertStringContainsString('id="profile-census-age_rows-0-label"', $body);
+        $this->assertStringContainsString('type="hidden" name="census&#x5B;title&#x5D;"', $body);
+        $this->assertStringContainsString('type="hidden" name="census&#x5B;description&#x5D;"', $body);
+        $this->assertStringContainsString('type="hidden" name="census&#x5B;household_suffix&#x5D;"', $body);
+        $this->assertStringContainsString('name="census&#x5B;age_rows&#x5D;&#x5B;0&#x5D;&#x5B;label&#x5D;"', $body);
+        $this->assertStringContainsString('id="profile-census-household_count"', $body);
+        $this->assertStringContainsString('id="profile-census-age_rows-0-male"', $body);
+        $this->assertStringContainsString('id="profile-census-age_rows-0-female"', $body);
+        $this->assertStringContainsString('name="census&#x5B;household_count&#x5D;"', $body);
+        $this->assertStringContainsString('name="census&#x5B;age_rows&#x5D;&#x5B;0&#x5D;&#x5B;male&#x5D;"', $body);
+        $this->assertStringContainsString('name="census&#x5B;age_rows&#x5D;&#x5B;0&#x5D;&#x5B;female&#x5D;"', $body);
+        $this->assertStringContainsString('data-census-age-list', $body);
+        $this->assertStringContainsString('data-age-label-toggle', $body);
+        $this->assertStringContainsString('aria-controls="profile-census-age_rows-0-label-editor"', $body);
+        $this->assertStringContainsString('data-age-label-input', $body);
+        $this->assertStringContainsString('data-list-template', $body);
+        $this->assertStringContainsString('data-add-item', $body);
+        $this->assertStringNotContainsString('data-remove-item', $body);
+    }
+
+    public function testContentEditorDoesNotOfferPreviewControls(): void
+    {
+        $body = $this->renderProfileManagementPage('content');
+
+        $this->assertStringNotContainsString('Pratinjau perubahan', $body);
+        $this->assertStringNotContainsString('preview-page-content', $body);
+        $this->assertStringNotContainsString('preview_notice', $body);
+        $this->assertStringContainsString('id="profile-content-settings"', $body);
+        $this->assertStringContainsString('Pengaturan judul dan label', $body);
+        $this->assertStringContainsString('Judul dan pengantar', $body);
+        $this->assertStringContainsString('Ringkasan angka', $body);
+        $this->assertStringContainsString('Majelis dan kontak', $body);
+    }
+
+    public function testTechnicalProfileContentSettingsAreHiddenButRemainInTheForm(): void
+    {
+        $body = $this->renderProfileManagementPage('content');
+
+        $this->assertStringNotContainsString('id="profile-content-settings-nav"', $body);
+        $this->assertMatchesRegularExpression('/<section\b(?=[^>]*id="profile-content-settings")(?=[^>]*\shidden(?:\s|>))[^>]*>/', $body);
+        $this->assertStringContainsString('name="content&#x5B;hero&#x5D;&#x5B;title&#x5D;"', $body);
+    }
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -473,14 +528,22 @@ final class PublicProfileContentIntegrationTest extends CIUnitTestCase
         $publicPage->assertSee('Ibadah Pelayanan Baru');
     }
 
-    public function testAdminEditorExposesCopyAndRepeatablePublicProfileFields(): void
+    public function testAdminEditorExposesPublicCopyAndRepeatableFieldsWithoutTechnicalSettings(): void
     {
         $html = '';
         foreach (['territory', 'census', 'worship', 'map', 'content', 'data', 'leadership'] as $module) {
             $html .= $this->renderProfileManagementPage($module);
         }
 
-        $this->assertStringContainsString('Judul tab browser', $html);
+        $this->assertStringNotContainsString('Judul tab browser', $html);
+        $this->assertStringNotContainsString('Deskripsi mesin pencari', $html);
+        $this->assertStringNotContainsString('Label kecil', $html);
+        foreach (['page_title', 'meta_description', 'badge'] as $field) {
+            $this->assertMatchesRegularExpression(
+                '/<input\b(?=[^>]*type="hidden")(?=[^>]*name="content&#x5B;hero&#x5D;&#x5B;' . $field . '&#x5D;")[^>]*>/',
+                $html,
+            );
+        }
         $this->assertStringContainsString('content&#x5B;hero&#x5D;&#x5B;title&#x5D;', $html);
         $this->assertStringContainsString('Batas wilayah', $html);
         $this->assertStringContainsString('Rentang usia', $html);
@@ -491,6 +554,10 @@ final class PublicProfileContentIntegrationTest extends CIUnitTestCase
         $this->assertStringContainsString('Pengelolaan Majelis', $html);
         $this->assertStringContainsString('id="member-form"', $html);
         $this->assertStringContainsString('id="profile-content-leadership"', $html);
+        foreach (['members_permission_note', 'address_fallback', 'contact_fallback'] as $field) {
+            $this->assertStringNotContainsString('content&#x5B;leadership&#x5D;&#x5B;' . $field . '&#x5D;', $html);
+        }
+        $this->assertStringNotContainsString('Aktifkan hanya setelah izin publikasi dipastikan', $html);
         $this->assertStringNotContainsString('data-rm', $html);
         $dataEditor = $this->renderProfileManagementPage('data');
         $this->assertStringNotContainsString('name="history" required', $dataEditor);
@@ -604,6 +671,7 @@ final class PublicProfileContentIntegrationTest extends CIUnitTestCase
     {
         $html = $this->renderProfileManagementPage('worship');
 
+        $this->assertStringNotContainsString('class="profile-content-notice"', $html);
         $this->assertStringContainsString('name="content&#x5B;worship&#x5D;&#x5B;items&#x5D;&#x5B;0&#x5D;&#x5B;day&#x5D;"', $html);
         $this->assertStringContainsString('name="content&#x5B;worship&#x5D;&#x5B;items&#x5D;&#x5B;0&#x5D;&#x5B;name&#x5D;"', $html);
         $this->assertStringContainsString('action="http://example.com/index.php/admin/profil/save-page-content"', $html);
@@ -639,6 +707,22 @@ final class PublicProfileContentIntegrationTest extends CIUnitTestCase
         $this->assertStringNotContainsString('Ikon yang sedang digunakan', $html);
         $this->assertFalse(str_contains($html, '<label for="profile-territory-boundaries-0-icon">Ikon Bootstrap</label>'), 'Technical icon settings should not be shown to content editors.');
         $this->assertFalse(str_contains($html, '<label for="profile-territory-section_badge">Label bagian</label>'), 'Internal section numbering should not be shown to content editors.');
+    }
+
+    public function testTerritoryListItemsShowSummariesAndKeepTheirFieldsInEditPanels(): void
+    {
+        $html = $this->renderProfileManagementPage('territory');
+
+        foreach (['boundaries', 'sectors', 'orbitations', 'seasons'] as $list) {
+            $this->assertStringContainsString('data-territory-item-list="' . $list . '"', $html);
+        }
+
+        $this->assertStringContainsString('data-territory-item-summary>Utara — Jemaat GPM Soya</span>', $html);
+        $this->assertStringContainsString('data-territory-item-summary>Koinonia</span>', $html);
+        $this->assertStringContainsString('data-territory-item-summary>Pusat Kecamatan — 200 M</span>', $html);
+        $this->assertStringContainsString('data-territory-item-summary>April – Agustus · Musim Timur</span>', $html);
+        $this->assertSame(21, substr_count($html, 'data-territory-item-toggle'));
+        $this->assertSame(17, substr_count($html, 'data-territory-item-editor hidden'));
     }
 
     public function testTerritoryEditorKeepsDisplayFormattingInItsOwnStepAndPreviewsSavedData(): void
@@ -685,8 +769,9 @@ final class PublicProfileContentIntegrationTest extends CIUnitTestCase
 
         $this->assertStringContainsString('data-profile-step-nav aria-label="Langkah pengisian"', $html);
         $this->assertStringContainsString('data-profile-step-target="profile-content-hero"', $html);
-        $this->assertSame(count(\App\Libraries\PublicProfileContent::defaults()) - 4, substr_count($html, 'data-profile-step-panel'));
+        $this->assertSame(substr_count($html, 'data-profile-step-target='), substr_count($html, 'data-profile-step-panel'));
         $this->assertStringContainsString('formnovalidate data-profile-submit', $html);
+        $this->assertStringContainsString('id="profile-content-settings"', $html);
     }
 
     public function testCensusEditorUsesSelectableWizardSteps(): void
@@ -699,11 +784,12 @@ final class PublicProfileContentIntegrationTest extends CIUnitTestCase
         $this->assertStringContainsString('data-census-step-target="census-step-ages"', $html);
         $this->assertStringContainsString('data-census-step-target="census-step-labels"', $html);
         $this->assertStringContainsString('Tampilan publik', $html);
-        $this->assertStringNotContainsString('Label &amp; aksesibilitas', $html);
+        $this->assertStringNotContainsString('Teks yang tampil di halaman Profil', $html);
         $this->assertSame(3, substr_count($html, 'data-census-step-panel'));
         $this->assertStringContainsString('data-census-step-controls hidden', $html);
         $this->assertSame(3, preg_match_all('/<section class="profile-census-step-panel"[^>]*data-census-step-panel/', $html));
         $this->assertSame(0, preg_match_all('/<summary\b/', $html));
+        $this->assertStringNotContainsString('Pengaturan untuk pembaca layar', $html);
         $this->assertStringContainsString('Jumlah kepala keluarga', $html);
         $this->assertStringContainsString('aria-labelledby="census-step-main-nav"', $html);
         $this->assertStringContainsString('aria-labelledby="census-step-ages-nav"', $html);
@@ -714,9 +800,9 @@ final class PublicProfileContentIntegrationTest extends CIUnitTestCase
         $this->assertArrayHasKey(1, $publicDisplayStep);
         $this->assertStringNotContainsString('census&#x5B;household_suffix&#x5D;', $mainStep[1]);
         $this->assertStringNotContainsString('census&#x5B;population_suffix&#x5D;', $mainStep[1]);
-        $this->assertStringContainsString('census&#x5B;household_suffix&#x5D;', $publicDisplayStep[1]);
-        $this->assertStringContainsString('census&#x5B;population_suffix&#x5D;', $publicDisplayStep[1]);
-        $this->assertStringContainsString('Pratinjau tampilan di halaman publik', $publicDisplayStep[1]);
+        $this->assertStringContainsString('type="hidden" name="census&#x5B;household_suffix&#x5D;"', $publicDisplayStep[1]);
+        $this->assertStringContainsString('type="hidden" name="census&#x5B;population_suffix&#x5D;"', $publicDisplayStep[1]);
+        $this->assertStringContainsString('Pratinjau jumlah di halaman Profil', $publicDisplayStep[1]);
         foreach (array_keys(\App\Libraries\PublicProfileContent::defaults()['census']) as $field) {
             if ($field !== 'age_rows') {
                 $this->assertStringContainsString(

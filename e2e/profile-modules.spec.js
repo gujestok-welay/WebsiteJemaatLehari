@@ -136,6 +136,7 @@ test('editor Konten Profil memakai langkah yang sama dan dapat kembali ke bagian
   await expect(steps).toHaveCount(await panels.count());
   await expect(panels.first()).toBeVisible();
   await expect(panels.nth(1)).toBeHidden();
+  await expect(editor.locator('#profile-content-settings')).toBeHidden();
 
   const lastStep = steps.last();
   await lastStep.click();
@@ -145,7 +146,145 @@ test('editor Konten Profil memakai langkah yang sama dan dapat kembali ke bagian
 
   await steps.first().click();
   await expect(panels.first()).toBeVisible();
-  await expect(editor.locator('[name="content[hero][title]"]')).toBeVisible();
+  await expect(editor.locator('#profile-content-hero [name="content[hero][description]"]')).toBeVisible();
+  await expect(editor.locator('#profile-content-settings [name="content[hero][title]"]')).toBeHidden();
+  await lastStep.click();
+  await expect(editor.locator('#profile-content-settings')).toBeHidden();
+});
+
+test('editor Konten Profil membedakan langkah yang pernah dibuka dari yang selesai', async ({ page }) => {
+  await openEditor(page, 'content');
+  const editor = page.locator('#profile-content-editor');
+  const steps = editor.locator('[data-profile-step-target]');
+
+  await steps.last().click();
+
+  await expect(steps.last()).toHaveAttribute('aria-current', 'step');
+  await expect(editor.locator('[data-profile-step-nav] .is-complete')).toHaveCount(0);
+  await expect(steps.last().locator('xpath=..')).toHaveClass(/is-visited/);
+  await expect(steps.first().locator('xpath=..')).toHaveClass(/is-visited/);
+  await expect(steps.nth(1).locator('xpath=..')).not.toHaveClass(/is-visited/);
+
+  await steps.first().click();
+  await expect(steps.first().locator('xpath=..')).toHaveClass(/is-visited/);
+});
+
+test('editor Konten Profil memisahkan isi dari pengaturan judul dan label', async ({ page }) => {
+  await openEditor(page, 'content');
+  const editor = page.locator('#profile-content-editor');
+  const settings = editor.locator('#profile-content-settings');
+
+  await expect(editor.locator('#profile-content-settings-nav')).toHaveCount(0);
+  await expect(settings).toBeHidden();
+  await expect(settings.locator('[name="content[hero][title]"]')).toHaveCount(1);
+  await expect(settings.locator('[name="content[hero][badge]"]')).toHaveCount(1);
+  await expect(settings.locator('[name="content[stats][0][label]"]')).toHaveCount(1);
+  await expect(settings.locator('[name="content[leadership][members_title]"]')).toHaveCount(1);
+  await expect(editor.locator('#profile-content-hero [name="content[hero][title]"]')).toHaveCount(0);
+  await expect(editor.locator('#profile-content-hero [name="content[hero][description]"]')).toHaveCount(1);
+  await expect(editor.locator('#profile-content-stats [name="content[stats][0][label]"]')).toHaveCount(0);
+  await expect(editor.locator('#profile-content-stats [name="content[stats][0][value]"]')).toHaveCount(1);
+  await expect(editor.locator('#profile-content-leadership [name="content[leadership][members_empty]"]')).toHaveCount(1);
+  await expect(editor.locator('#profile-content-leadership [name="content[leadership][members_title]"]')).toHaveCount(0);
+});
+
+test('editor Konten Profil memberi label kategori pada setiap ringkasan angka', async ({ page }) => {
+  await openEditor(page, 'content');
+
+  await expect(page.locator('#profile-content-stats fieldset.profile-content-object legend')).toHaveText([
+    'Jiwa',
+    'Kepala Keluarga',
+    'Wilayah Pelayanan',
+    'Luas Wilayah',
+  ]);
+});
+
+test('editor Konten Profil menyimpan pengaturan teknis tanpa menampilkannya', async ({ page }) => {
+  await openEditor(page, 'content');
+  const editor = page.locator('#profile-content-editor');
+
+  for (const [field, value] of [
+    ['page_title', 'Profil'],
+    ['meta_description', 'Pratinjau website informasi Jemaat Leahari. Sebagian informasi masih menunggu konfirmasi resmi.'],
+    ['badge', 'Profil Jemaat'],
+  ]) {
+    const name = `content[hero][${field}]`;
+    await expect(editor.locator(`input[type="hidden"][name="${name}"]`)).toHaveValue(value);
+    await expect(editor.locator(`[name="${name}"]:not([type="hidden"])`)).toHaveCount(0);
+    await expect(editor.locator(`#profile-content-hero-${field}`)).toHaveCount(0);
+    await expect(editor.locator(`#profile-content-hero-${field}-help`)).toHaveCount(0);
+  }
+
+  for (const [name, value] of [
+    ['content[hero][stats_aria_label]', 'Ringkasan profil Jemaat'],
+    ['content[hero][map_link_label]', 'Google Maps'],
+    ['content[hero][links][0][target]', 'wilayah'],
+    ['content[stats][0][icon]', 'bi-people'],
+  ]) {
+    await expect(editor.locator(`input[type="hidden"][name="${name}"]`)).toHaveValue(value);
+    await expect(editor.locator(`[name="${name}"]:not([type="hidden"])`)).toHaveCount(0);
+  }
+});
+
+test('pengaturan teknis Konten Profil disembunyikan tanpa menghapus nilai dari formulir', async ({ page }) => {
+  await openEditor(page, 'content');
+  const editor = page.locator('#profile-content-editor');
+  const settings = editor.locator('#profile-content-settings');
+
+  await expect(editor.locator('#profile-content-settings-nav')).toHaveCount(0);
+  await expect(settings).toBeHidden();
+  await expect(settings.locator('[name="content[hero][title]"]')).toHaveCount(1);
+  await expect(settings.locator('[name="content[stats][0][label]"]')).toHaveCount(1);
+  await expect(settings.locator('[name="content[leadership][members_title]"]')).toHaveCount(1);
+});
+
+test('editor Konten Profil menjelaskan pengaturan yang tersedia dan mengelompokkannya', async ({ page }) => {
+  await openEditor(page, 'content');
+  const editor = page.locator('#profile-content-editor');
+  const settings = editor.locator('#profile-content-settings');
+
+  await expect(editor.locator('#profile-content-settings-nav')).toHaveCount(0);
+  await expect(settings).toBeHidden();
+  await expect(settings.locator('[name="content[hero][page_title]"]')).toBeHidden();
+
+  const statsLabel = settings.locator('[name="content[hero][stats_aria_label]"]');
+  await expect(statsLabel).toHaveAttribute('type', 'hidden');
+
+  await editor.getByRole('button', { name: 'Majelis dan kontak' }).click();
+  const membersVisibility = editor.locator('[name="content[leadership][show_members]"][type="checkbox"]');
+  const visibilityHintId = await membersVisibility.getAttribute('aria-describedby');
+  await expect(editor.locator(`#${visibilityHintId}`)).toContainText('tampil pada halaman Profil');
+});
+
+test('editor Konten Profil hanya menyimpan perubahan tanpa menyediakan pratinjau', async ({ page }) => {
+  await openEditor(page, 'content');
+  const editor = page.locator('#profile-content-editor');
+  const descriptionField = editor.locator('#profile-content-hero [name="content[hero][description]"]');
+  const titleField = editor.locator('#profile-content-settings [name="content[hero][title]"]');
+  const originalDescription = await descriptionField.inputValue();
+  const originalTitle = await titleField.inputValue();
+  await expect(editor.getByRole('button', { name: 'Pratinjau perubahan' })).toHaveCount(0);
+  await expect(editor.locator('[name="content[hero][preview_notice_lead]"]')).toHaveCount(0);
+  await expect(editor.locator('[name="content[hero][preview_notice_body]"]')).toHaveCount(0);
+
+  const removedPreviewEndpoint = await page.request.post('admin/profil/preview-page-content');
+  expect(removedPreviewEndpoint.status()).toBe(404);
+
+  const updatedDescription = `${originalDescription} Perubahan tersimpan.`;
+  await descriptionField.fill(updatedDescription);
+  await submitProfileFormAndWaitForReload(page, editor.getByRole('button', { name: 'Simpan konten Profil' }));
+  await expect(page.locator('#profile-content-editor #profile-content-hero [name="content[hero][description]"]')).toHaveValue(updatedDescription);
+  await expect(page.locator('#profile-content-editor #profile-content-settings [name="content[hero][title]"]')).toHaveValue(originalTitle);
+
+  await page.goto('/profil');
+  await expect(page.locator('.profil-hero h1')).toHaveText(originalTitle);
+  await expect(page.locator('.profil-hero p')).toHaveText(updatedDescription);
+  await expect(page.locator('.profile-edit-preview-notice, .profile-public-notice')).toHaveCount(0);
+
+  await openEditor(page, 'content');
+  const restoredEditor = page.locator('#profile-content-editor');
+  await restoredEditor.locator('#profile-content-hero [name="content[hero][description]"]').fill(originalDescription);
+  await submitProfileFormAndWaitForReload(page, page.locator('#profile-content-editor').getByRole('button', { name: 'Simpan konten Profil' }));
 });
 
 test('navigasi meminta konfirmasi saat editor memiliki perubahan belum disimpan', async ({ page }) => {
@@ -306,6 +445,9 @@ test('pengaturan tampilan wilayah terpisah dan pratinjau ikut berubah', async ({
 
   await expect(editor.locator('#profile-territory-step-0 [name="territory[boundary_prefix]"], #profile-territory-step-0 [name="territory[sector_prefix]"], #profile-territory-step-0 [name="territory[unit_suffix]"], #profile-territory-step-0 [name="territory[area_share_suffix]"]')).toHaveCount(0);
   await editor.locator('[data-profile-step-target]').nth(1).click();
+  await expect(firstBoundaryName).toBeHidden();
+  await editor.locator('[data-territory-item-list="boundaries"] [data-territory-item-toggle]').first().click();
+  await expect(firstBoundaryName).toBeVisible();
   await expect(editor.locator('select[name$="[direction]"]')).toHaveCount(4);
   await expect(editor.getByLabel('Arah penunjuk')).toHaveCount(0);
   await editor.locator('[name="territory[boundaries][0][direction]"]').selectOption('Timur');
@@ -326,6 +468,73 @@ test('pengaturan tampilan wilayah terpisah dan pratinjau ikut berubah', async ({
   await submitProfileFormAndWaitForReload(page, editor.getByRole('button', { name: 'Simpan wilayah' }));
   await expect(page.locator('#profile-territory-editor [name="territory[boundaries][0][icon]"]')).toHaveValue('bi-arrow-right-circle');
   await expect(page.locator('#profile-territory-editor [name="territory[boundary_prefix]"]')).toHaveValue('Arah');
+});
+
+test('daftar wilayah diringkas dan tiap item dapat dibuka untuk diedit', async ({ page }) => {
+  await openEditor(page, 'territory');
+  const editor = page.locator('#profile-territory-editor');
+
+  await editor.locator('[data-profile-step-target]').nth(1).click();
+  const boundary = editor.locator('[data-territory-item-list="boundaries"] [data-content-item]').first();
+  await expect(boundary.locator('[data-territory-item-summary]')).toBeVisible();
+  await expect(boundary.locator('[data-territory-item-editor]')).toBeHidden();
+  await boundary.getByRole('button', { name: 'Ubah' }).click();
+  await expect(boundary.locator('[data-territory-item-editor]')).toBeVisible();
+  await expect(boundary.getByRole('button', { name: 'Selesai mengubah' })).toBeVisible();
+  await boundary.locator('[name$="[direction]"]').selectOption('Timur');
+  await boundary.locator('[name$="[name]"]').fill('Jemaat uji');
+  await expect(boundary.locator('[data-territory-item-summary]')).toHaveText('Timur — Jemaat uji');
+
+  await editor.locator('[data-profile-step-target]').nth(2).click();
+  const sector = editor.locator('[data-territory-item-list="sectors"] [data-content-item]').first();
+  await expect(sector.locator('[data-territory-item-summary]')).toBeVisible();
+  await sector.getByRole('button', { name: 'Ubah' }).click();
+  await sector.locator('[name$="[name]"]').fill('Sektor uji');
+  await expect(sector.locator('[data-territory-item-summary]')).toHaveText('Sektor uji');
+
+  await editor.locator('[data-profile-step-target]').nth(3).click();
+  const destination = editor.locator('[data-territory-item-list="orbitations"] [data-content-item]').first();
+  await expect(destination.locator('[data-territory-item-summary]')).toBeVisible();
+  await destination.getByRole('button', { name: 'Ubah' }).click();
+  await destination.locator('[name$="[label]"]').fill('Lokasi uji');
+  await destination.locator('[name$="[value]"]').fill('250 M');
+  await expect(destination.locator('[data-territory-item-summary]')).toHaveText('Lokasi uji — 250 M');
+
+  await editor.locator('[data-profile-step-target]').nth(4).click();
+  const season = editor.locator('[data-territory-item-list="seasons"] [data-content-item]').first();
+  await expect(season.locator('[data-territory-item-summary]')).toBeVisible();
+  await season.getByRole('button', { name: 'Ubah' }).click();
+  await season.locator('[name$="[period]"]').fill('Periode uji');
+  await season.locator('[name$="[title]"]').fill('Musim uji');
+  await expect(season.locator('[data-territory-item-summary]')).toHaveText('Periode uji · Musim uji');
+
+  for (const [stepIndex, listName] of [[1, 'boundaries'], [2, 'sectors'], [3, 'orbitations'], [4, 'seasons']]) {
+    await editor.locator('[data-profile-step-target]').nth(stepIndex).click();
+    const list = editor.locator(`[data-territory-item-list="${listName}"]`);
+    const initialCount = await list.locator('[data-content-item]').count();
+    await list.locator('[data-add-item]').click();
+    const newItem = list.locator('[data-content-item]').last();
+    await expect(list.locator('[data-content-item]')).toHaveCount(initialCount + 1);
+    await expect(newItem.locator('[data-territory-item-summary]')).toBeVisible();
+    await expect(newItem.locator('[data-territory-item-editor]')).toBeVisible();
+    await newItem.getByRole('button', { name: 'Hapus item' }).click();
+    await expect(list.locator('[data-content-item]')).toHaveCount(initialCount);
+  }
+});
+
+test('tombol Ubah pada daftar batas wilayah sejajar', async ({ page }) => {
+  await openEditor(page, 'territory');
+  const editor = page.locator('#profile-territory-editor');
+  await editor.locator('[data-profile-step-target]').nth(1).click();
+
+  const editButtons = editor.locator('[data-territory-item-list="boundaries"] [data-territory-item-toggle]');
+  for (const width of [1280, 390, 320]) {
+    await page.setViewportSize({ width, height: 844 });
+    const leftEdges = await editButtons.evaluateAll((buttons) =>
+      buttons.map((button) => button.getBoundingClientRect().left)
+    );
+    expect(Math.max(...leftEdges) - Math.min(...leftEdges)).toBeLessThanOrEqual(1);
+  }
 });
 
 test('form wilayah menjelaskan bahwa informasi yang disimpan tampil di halaman Profil', async ({ page }) => {
@@ -369,6 +578,34 @@ test('wilayah dapat menambah dan menghapus musim lalu menyimpan perubahan', asyn
   await expect(refreshedLastSeason.locator('[name$="[title]"]')).toHaveValue('Musim Playwright');
 });
 
+test('setiap pelayanan tampil sebagai kartu berbingkai termasuk setelah ditambahkan', async ({ page }) => {
+  await openEditor(page, 'worship');
+  const editor = page.locator('#profile-worship-editor');
+  const list = editor.locator('[data-content-list]').filter({ hasText: 'Daftar pelayanan' });
+  const items = list.locator('[data-content-item]');
+  const initialCount = await items.count();
+
+  expect(initialCount).toBeGreaterThan(0);
+  await expect(items.first()).toHaveCSS('border-top-width', '1px');
+  await expect(items.first()).toHaveCSS('border-radius', '16px');
+  await expect(items.first()).toHaveCSS('background-color', 'rgb(255, 255, 255)');
+  await expect(list.locator('.profile-content-list-items')).toHaveCSS('row-gap', '12px');
+
+  for (const width of [1280, 924, 390]) {
+    await page.setViewportSize({ width, height: 844 });
+    const layout = await editor.locator('.profile-form-grid').evaluate((grid) => ({
+      gridWidth: grid.getBoundingClientRect().width,
+      listWidth: grid.querySelector(':scope > [data-content-list]').getBoundingClientRect().width,
+    }));
+    expect(layout.listWidth).toBeGreaterThanOrEqual(layout.gridWidth - 2);
+  }
+
+  await editor.getByRole('button', { name: 'Tambah pelayanan' }).click();
+  await expect(items).toHaveCount(initialCount + 1);
+  await expect(items.last()).toHaveCSS('border-top-width', '1px');
+  await expect(items.last()).toHaveCSS('border-radius', '16px');
+});
+
 test('data KK dan jiwa dapat dihitung, dinavigasi, dan disimpan', async ({ page }) => {
   await openEditor(page, 'census');
   const editor = page.locator('#profile-census-editor');
@@ -377,8 +614,20 @@ test('data KK dan jiwa dapat dihitung, dinavigasi, dan disimpan', async ({ page 
 
   await editor.locator('[name="census[household_count]"]').fill('210');
   await editor.getByRole('button', { name: 'Kelompok usia' }).click();
+  const ageList = editor.locator('[data-census-age-list]');
+  await expect(ageList.locator('[data-age-label-input]').first()).toBeHidden();
+  await ageList.locator('[data-age-label-toggle]').first().click();
+  await expect(ageList.locator('[data-age-label-input]').first()).toBeVisible();
+  await ageList.locator('[data-age-label-input]').first().fill('0-4');
+  await expect(ageList.locator('[data-age-label-display]').first()).toHaveText('Usia 0-4');
+  await ageList.getByRole('button', { name: 'Tambah rentang usia' }).click();
+  const newAgeRange = ageList.locator('[data-content-item]').last();
+  await newAgeRange.locator('[data-age-label-input]').fill('86+');
+  await expect(newAgeRange.locator('[data-age-label-display]')).toHaveText('Usia 86+');
+  await newAgeRange.locator('[name$="[male]"]').fill('2');
+  await newAgeRange.locator('[name$="[female]"]').fill('3');
   await editor.locator('[name="census[age_rows][0][male]"]').fill('20');
-  await expect(editor.locator('[data-profile-census-total]')).toHaveText('632');
+  await expect(editor.locator('[data-profile-census-total]')).toHaveText('637');
 
   await expect(editor.locator('[data-census-step-count]')).toHaveText('Bagian 2 dari 3');
   await page.setViewportSize({ width: 390, height: 844 });
@@ -392,9 +641,7 @@ test('data KK dan jiwa dapat dihitung, dinavigasi, dan disimpan', async ({ page 
   });
   expect(activeStepVisible).toBe(true);
   await expect(editor.getByRole('button', { name: 'Tampilan publik' })).toBeVisible();
-  await expect(editor.locator('[data-census-public-preview]')).toHaveText('210 KK dan 632 jiwa.');
-  await editor.locator('[name="census[household_suffix]"]').fill('rumah tangga dan');
-  await expect(editor.locator('[data-census-public-preview]')).toHaveText('210 rumah tangga dan 632 jiwa.');
+  await expect(editor.locator('[data-census-public-preview]')).toHaveText('210 KK dan 637 jiwa.');
   await editor.getByRole('button', { name: 'Sebelumnya' }).click();
   await expect(editor.locator('[data-census-step-count]')).toHaveText('Bagian 2 dari 3');
 
@@ -403,8 +650,9 @@ test('data KK dan jiwa dapat dihitung, dinavigasi, dan disimpan', async ({ page 
   await page.reload();
 
   await expect(page.locator('#profile-census-editor [name="census[household_count]"]')).toHaveValue('210');
-  await expect(page.locator('#profile-census-editor [name="census[household_suffix]"]')).toHaveValue('rumah tangga dan');
-  await expect(page.locator('#profile-census-editor [data-profile-census-total]')).toHaveText('632');
+  await expect(page.locator('#profile-census-editor [data-profile-census-total]')).toHaveText('637');
+  await expect(page.locator('#profile-census-editor [name="census[age_rows][0][label]"]')).toHaveValue('0-4');
+  await expect(page.locator('#profile-census-editor [name="census[age_rows][9][label]"]')).toHaveValue('86+');
 });
 
 test('peta dapat memperbarui keterangan dan menolak file bukan gambar', async ({ page }) => {
@@ -430,17 +678,17 @@ test('peta dapat memperbarui keterangan dan menolak file bukan gambar', async ({
   await expect(reloadedEditor.locator('[data-profile-file-error]')).toContainText('Format peta tidak valid');
 });
 
-test('teks profil publik dapat diedit dan tersimpan', async ({ page }) => {
+test('isi profil publik dapat diedit dan tersimpan', async ({ page }) => {
   await openEditor(page, 'content');
   const editor = page.locator('#profile-content-editor');
   await expect(editor).toBeVisible();
 
-  const title = `Profil Playwright ${Date.now()}`;
-  await editor.locator('[name="content[hero][title]"]').fill(title);
+  const description = `Deskripsi Playwright ${Date.now()}`;
+  await editor.locator('#profile-content-hero [name="content[hero][description]"]').fill(description);
   await submitProfileFormAndWaitForReload(page, editor.getByRole('button', { name: 'Simpan konten Profil' }));
 
   await expect(page).toHaveURL(/admin\/profil\/kelola\/content/);
-  await expect(page.locator('#profile-content-editor [name="content[hero][title]"]')).toHaveValue(title);
+  await expect(page.locator('#profile-content-editor #profile-content-hero [name="content[hero][description]"]')).toHaveValue(description);
 });
 
 test('Konten Profil menampilkan judul langkah dan indikator langkah aktif', async ({ page }) => {
@@ -465,32 +713,64 @@ test('Konten Profil menampilkan judul langkah dan indikator langkah aktif', asyn
   await expect(section).toBeHidden();
 });
 
-test('ringkasan Periode dan Kartu Majelis menampilkan chevron kanan tanpa keterangan tambahan', async ({ page }) => {
+test('navigasi langkah Majelis jelas dan tetap terlihat pada layar ponsel', async ({ page }) => {
   await openEditor(page, 'leadership');
   const editor = page.locator('#profile-leadership-editor');
-  const period = editor.locator('#periode-panel');
-  const members = editor.locator('#anggota-panel');
-  const periodSummary = period.locator('summary');
-  const memberSummary = members.locator('summary');
-  const periodIndicator = await periodSummary.evaluate((element) => getComputedStyle(element, '::after'));
-  const memberIndicator = await memberSummary.evaluate((element) => getComputedStyle(element, '::after'));
-
-  expect(periodIndicator.content).not.toBe('none');
-  expect(periodIndicator.right).not.toBe('auto');
-  expect(memberIndicator.content).not.toBe('none');
-  expect(memberIndicator.right).not.toBe('auto');
-  await expect(periodSummary).toHaveText('Periode Majelis');
-  await expect(memberSummary).toHaveText('Kartu Majelis');
+  const steps = editor.locator('[data-leadership-step-target]');
+  await expect(steps).toHaveText(['1 Periode Majelis', '2 Data anggota', '3 Daftar anggota']);
+  await expect(steps.first()).toHaveAttribute('aria-current', 'step');
 
   await page.setViewportSize({ width: 390, height: 844 });
-  const mobileIndicator = await periodSummary.evaluate((element) => getComputedStyle(element, '::after'));
-  expect(mobileIndicator.right).not.toBe('auto');
+  const navigationLayout = await editor.locator('[data-leadership-step-nav]').evaluate((navigation) => {
+    const activeStep = navigation.querySelector('[aria-current="step"]');
+    const navigationBounds = navigation.getBoundingClientRect();
+    const activeStepBounds = activeStep.getBoundingClientRect();
+    return {
+      activeStepVisible: activeStepBounds.left >= navigationBounds.left && activeStepBounds.right <= navigationBounds.right,
+      hasHorizontalOverflow: navigation.scrollWidth > navigation.clientWidth,
+    };
+  });
+  expect(navigationLayout.activeStepVisible).toBe(true);
+  expect(navigationLayout.hasHorizontalOverflow).toBe(false);
 
-  const closedTransform = memberIndicator.transform;
-  await memberSummary.click();
-  await expect(members).toHaveAttribute('open', '');
-  await expect.poll(() => memberSummary.evaluate((element) => getComputedStyle(element, '::after').transform))
-    .not.toBe(closedTransform);
+  await steps.last().click();
+  await expect(steps.last()).toHaveAttribute('aria-current', 'step');
+  await expect(editor.locator('[data-leadership-step-count]')).toHaveText('Bagian 3 dari 3');
+  await expect(editor.locator('#anggota-panel')).toBeVisible();
+});
+
+test('pengelolaan Majelis menavigasi tiga langkah tanpa kehilangan isian anggota', async ({ page }) => {
+  await openEditor(page, 'leadership');
+  const editor = page.locator('#profile-leadership-editor');
+  const steps = editor.locator('[data-leadership-step-target]');
+  const panels = editor.locator('[data-leadership-step-panel]');
+
+  await expect(editor.getByRole('navigation', { name: 'Bagian pengelolaan Majelis' })).toBeVisible();
+  await expect(steps).toHaveCount(3);
+  await expect(panels).toHaveCount(3);
+  await expect(panels.nth(0)).toBeVisible();
+  await expect(panels.nth(1)).toBeHidden();
+  await expect(panels.nth(2)).toBeHidden();
+  await expect(editor.locator('[data-leadership-step-count]')).toHaveText('Bagian 1 dari 3');
+
+  await editor.locator('[name="period_name"]').fill(`Periode stepper ${Date.now()}`);
+  await editor.locator('[name="start_date"]').fill('2026-01-01');
+  await editor.locator('[name="is_active"]').selectOption('1');
+  await submitProfileFormAndWaitForReload(page, editor.getByRole('button', { name: 'Simpan periode' }));
+
+  await steps.nth(1).click();
+  await expect(steps.nth(1)).toHaveAttribute('aria-current', 'step');
+  await expect(panels.nth(1)).toBeVisible();
+  await expect(panels.nth(0)).toBeHidden();
+  await editor.locator('#member_name').fill('Nama sementara');
+
+  await editor.locator('[data-leadership-step-next]').click();
+  await expect(editor.locator('[data-leadership-step-count]')).toHaveText('Bagian 3 dari 3');
+  await expect(panels.nth(2)).toBeVisible();
+  await expect(panels.nth(1)).toBeHidden();
+
+  await editor.locator('[data-leadership-step-previous]').click();
+  await expect(editor.locator('#member_name')).toHaveValue('Nama sementara');
 });
 
 test('data profil jemaat dapat diubah dan disimpan', async ({ page }) => {
@@ -569,14 +849,14 @@ test('periode dan kartu Majelis dapat ditambah, diaktifkan, diedit, dan dihapus'
   const memberName = `Anggota E2E ${Date.now()}`;
   await openEditor(page, 'leadership');
   editor = page.locator('#profile-leadership-editor');
-  await editor.locator('#anggota-panel summary').click();
+  await editor.locator('[data-leadership-step-target="anggota-form-panel"]').click();
   await editor.locator('[name="name"]').fill(memberName);
   await editor.locator('[name="position"]').fill('Jabatan pengujian');
   await submitProfileFormAndWaitForReload(page, editor.getByRole('button', { name: 'Simpan anggota' }));
 
   await openEditor(page, 'leadership');
   editor = page.locator('#profile-leadership-editor');
-  await editor.locator('#anggota-panel summary').click();
+  await editor.locator('[data-leadership-step-target="anggota-panel"]').click();
   let memberRow = editor.getByRole('row').filter({ hasText: memberName });
   await expect(memberRow).toBeVisible();
   await memberRow.getByRole('button', { name: 'Edit' }).click();
@@ -585,20 +865,21 @@ test('periode dan kartu Majelis dapat ditambah, diaktifkan, diedit, dan dihapus'
   await expect(editor.locator('#member_name')).toBeFocused();
   await editor.locator('#member-form').getByRole('button', { name: 'Batal mengubah' }).click();
   await expect(editor.locator('[name="name"]')).toHaveValue('');
+  await editor.locator('[data-leadership-step-target="anggota-panel"]').click();
   await memberRow.getByRole('button', { name: 'Edit' }).click();
   await editor.locator('[name="name"]').fill(`${memberName} diperbarui`);
   await submitProfileFormAndWaitForReload(page, editor.getByRole('button', { name: 'Simpan perubahan anggota' }));
 
   await openEditor(page, 'leadership');
   editor = page.locator('#profile-leadership-editor');
-  await editor.locator('#anggota-panel summary').click();
+  await editor.locator('[data-leadership-step-target="anggota-panel"]').click();
   memberRow = editor.getByRole('row').filter({ hasText: `${memberName} diperbarui` });
   await expect(memberRow).toBeVisible();
   page.once('dialog', (dialog) => dialog.accept());
   await submitProfileFormAndWaitForReload(page, memberRow.getByRole('button', { name: 'Hapus' }));
 
   await openEditor(page, 'leadership');
-  await page.locator('#profile-leadership-editor #anggota-panel summary').click();
+  await page.locator('#profile-leadership-editor [data-leadership-step-target="anggota-panel"]').click();
   await expect(page.locator('#profile-leadership-editor')).toContainText('Belum ada anggota pada periode ini.');
 });
 
@@ -633,7 +914,7 @@ test.describe('tampilan mobile Pengelolaan Majelis', () => {
 
     await openEditor(page, 'leadership');
     editor = page.locator('#profile-leadership-editor');
-    await editor.locator('#anggota-panel summary').click();
+    await editor.locator('[data-leadership-step-target="anggota-form-panel"]').click();
 
     const memberName = `Anggota Mobile ${Date.now()}`;
     const memberForm = editor.locator('#member-form');
@@ -643,7 +924,7 @@ test.describe('tampilan mobile Pengelolaan Majelis', () => {
 
     await openEditor(page, 'leadership');
     editor = page.locator('#profile-leadership-editor');
-    await editor.locator('#anggota-panel summary').click();
+    await editor.locator('[data-leadership-step-target="anggota-panel"]').click();
     const memberRow = editor.getByRole('row').filter({
       has: page.getByRole('cell', { name: memberName, exact: true }),
     });

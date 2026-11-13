@@ -1,4 +1,5 @@
 const { test, expect } = require('@playwright/test');
+const { adminEmail, adminPassword } = require('./test-credentials');
 
 const publicPages = [
   { path: '', name: 'Beranda' },
@@ -17,6 +18,31 @@ for (const { path, name } of publicPages) {
     await expect(page).toHaveTitle(/Jemaat Leahari/);
   });
 }
+
+test('logo footer berada di tengah kolomnya pada layar kecil dan besar', async ({ page }) => {
+  await page.goto('galeri');
+
+  for (const width of [390, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    const alignment = await page.locator('.site-footer section[aria-labelledby="footer-brand"]').evaluate((section) => {
+      const sectionBounds = section.getBoundingClientRect();
+      const logoBounds = section.querySelector('.footer-brand-logo').getBoundingClientRect();
+      return {
+        horizontal: Math.abs(
+          (sectionBounds.left + sectionBounds.right) / 2
+          - (logoBounds.left + logoBounds.right) / 2
+        ),
+        vertical: Math.abs(
+          (sectionBounds.top + sectionBounds.bottom) / 2
+          - (logoBounds.top + logoBounds.bottom) / 2
+        ),
+      };
+    });
+
+    expect(alignment.horizontal, `logo footer berada di tengah kolom pada ${width}px`).toBeLessThanOrEqual(1);
+    expect(alignment.vertical, `logo footer berada di tengah vertikal pada ${width}px`).toBeLessThanOrEqual(1);
+  }
+});
 
 test('navigasi publik menyediakan akses masuk pengelola berbentuk ikon tanpa teks', async ({ page }) => {
   const entry = page.getByRole('link', { name: 'Masuk ke panel pengelola' });
@@ -136,6 +162,24 @@ test('pratinjau galeri beranda membuka koleksi kegiatan', async ({ page }) => {
 });
 
 test('galeri kosong tetap mudah dibaca pada ponsel dan layar lebar', async ({ page }) => {
+  await page.goto('/admin/login');
+  await page.getByLabel('Alamat Email').fill(adminEmail);
+  await page.locator('#password').fill(adminPassword);
+  await page.getByRole('button', { name: 'Masuk' }).click();
+  await expect(page).toHaveURL(/admin\/dashboard/);
+
+  await page.goto('/admin/galeri?status=Terbit');
+  const publishedRows = page.locator('.gallery-admin-table tbody tr');
+  while (await publishedRows.count()) {
+    const row = publishedRows.first();
+    page.once('dialog', (dialog) => dialog.accept());
+    await Promise.all([
+      page.waitForNavigation({ waitUntil: 'domcontentloaded' }),
+      row.getByRole('button', { name: 'Arsipkan' }).click(),
+    ]);
+    await page.goto('/admin/galeri?status=Terbit');
+  }
+
   await page.goto('galeri');
 
   await expect(page.getByRole('heading', { name: 'Belum ada dokumentasi kegiatan' })).toBeVisible();
@@ -151,12 +195,14 @@ test('header galeri memakai foto Majelis sebagai latar', async ({ page }) => {
   await page.goto('galeri');
 
   const heading = page.locator('.gallery-page-heading');
-  await expect(heading).toHaveCSS('background-image', /Gambar-MajelisJemaat\.jpeg/);
+  const backgroundImage = await heading.evaluate((element) => getComputedStyle(element).backgroundImage);
+  expect(backgroundImage).toContain('90deg');
+  expect(backgroundImage).toContain('rgba(72, 41, 80, 0.94)');
+  expect(backgroundImage).toContain('rgba(72, 41, 80, 0.62)');
+  expect(backgroundImage).toContain('Gambar-MajelisJemaat.jpeg');
   for (const text of [heading.locator('h1'), heading.locator('p')]) {
-    const shadowLayers = await text.evaluate((element) =>
-      getComputedStyle(element).textShadow.match(/rgba?\(/g)?.length ?? 0
-    );
-    expect(shadowLayers).toBeGreaterThanOrEqual(4);
+    const textShadow = await text.evaluate((element) => getComputedStyle(element).textShadow);
+    expect(textShadow).toBe('none');
   }
 
   await page.locator('html').evaluate((html) => {
@@ -291,13 +337,25 @@ test('kartu galeri memakai proporsi seragam dan membungkus poster di semua layar
   expect(singleCardAlignment, 'satu kartu berada di tengah area galeri').toBeLessThanOrEqual(1);
 });
 
+test('klik menu Profil membuka halaman profil', async ({ page }) => {
+  await page.goto('berita');
+
+  const profileLink = page.locator('.site-header #profil-menu-toggle');
+  await expect(profileLink).toHaveAttribute('href', /\/profil$/);
+  await profileLink.click();
+
+  await expect(page).toHaveURL(/\/profil$/);
+});
+
 test('menu Profil menavigasikan pengunjung ke bagian-bagian halaman profil', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('berita');
 
   const profileMenu = page.locator('#profil-menu');
-  const profileToggle = page.getByRole('button', { name: 'Profil' });
+  const profileToggle = page.locator('#profil-menu-toggle');
   await expect(profileToggle).toBeVisible();
-  await profileToggle.click();
+  await profileToggle.hover();
+  await expect(profileMenu).toBeVisible();
 
   const destinations = [
     ['Peta Pelayanan', '#peta-pelayanan'],
@@ -347,17 +405,13 @@ test('tombol Profil tidak menampilkan caret dropdown Bootstrap selain chevron SV
   expect(caretDisplay).toBe('none');
 });
 
-test('dropdown Profil menutup setelah pointer meninggalkan tombol yang diklik', async ({ page }) => {
-  await page.setViewportSize({ width: 1440, height: 900 });
+test('menu Profil dapat dinavigasikan dengan keyboard', async ({ page }) => {
   await page.goto('berita');
 
-  const profileToggle = page.locator('#profil-menu-toggle');
-  const profileMenu = page.locator('#profil-menu');
-  await profileToggle.click();
-  await expect(profileMenu).toBeVisible();
-
-  await page.mouse.move(0, 0);
-  await expect(profileMenu).toBeHidden();
+  const profileLink = page.locator('#profil-menu-toggle');
+  await profileLink.focus();
+  await profileLink.press('Enter');
+  await expect(page).toHaveURL(/\/profil$/);
 });
 
 test('tautan bagian Profil tetap tersedia tanpa JavaScript', async ({ browser }) => {
@@ -374,19 +428,16 @@ test('tautan bagian Profil tetap tersedia tanpa JavaScript', async ({ browser })
   await context.close();
 });
 
-test('menu Profil tetap dapat dibuka dari navigasi seluler', async ({ page }) => {
+test('tautan Profil dari navigasi seluler membuka halaman profil', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('berita');
   await page.getByRole('button', { name: 'Buka navigasi utama' }).click();
 
-  const profileToggle = page.getByRole('button', { name: 'Profil' });
-  await expect(profileToggle).toBeVisible();
-  await profileToggle.click();
+  const profileLink = page.locator('#profil-menu-toggle');
+  await expect(profileLink).toBeVisible();
+  await profileLink.click();
 
-  const profileMenu = page.locator('#profil-menu');
-  await expect(profileMenu.getByRole('link', { name: 'Gambaran Umum Wilayah Pelayanan' })).toBeVisible();
-  await profileMenu.getByRole('link', { name: 'Gambaran Umum Wilayah Pelayanan' }).click();
-  await expect(page).toHaveURL(/profil#wilayah$/);
+  await expect(page).toHaveURL(/\/profil$/);
 });
 
 test('kartu ibadah beranda tetap terlihat pada lebar layar yang didukung', async ({ page }) => {

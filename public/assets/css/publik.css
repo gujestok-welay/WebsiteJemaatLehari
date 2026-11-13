@@ -804,7 +804,12 @@ a:hover {
   min-height: clamp(20rem, 32vw, 28rem);
   background-color: var(--purple-dark);
   background-image:
-    linear-gradient(90deg, rgba(72, 41, 80, 0.94) 0%, rgba(72, 41, 80, 0.92) 75%, rgba(72, 41, 80, 0.62) 100%),
+    linear-gradient(
+      90deg,
+      rgba(72, 41, 80, 0.94) 0%,
+      rgba(72, 41, 80, 0.92) 75%,
+      rgba(72, 41, 80, 0.62) 100%
+    ),
     url("../images/gereja/Papan-nama.png");
   background-position: center 61%;
   background-size: cover;
@@ -1323,10 +1328,14 @@ details[open] summary {
 .site-footer a:hover {
   color: var(--gold);
 }
+.site-footer section[aria-labelledby="footer-brand"] {
+  display: flex;
+  align-items: center;
+}
 .site-footer .footer-brand {
   width: 8rem;
   height: 7rem;
-  margin: 0 0 0.5rem;
+  margin: 0 auto;
 }
 .site-footer .footer-brand-logo {
   display: block;
@@ -2331,7 +2340,10 @@ details[open] summary {
   border-radius: 50%;
   color: var(--purple, #4b2a6b);
   background: var(--paper, #fbf8f3);
-  transition: background-color 180ms ease, border-color 180ms ease, transform 180ms ease;
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease,
+    transform 180ms ease;
 }
 
 .leadership-carousel-arrow:hover {
@@ -2396,7 +2408,11 @@ details[open] summary {
   border: 1px solid #8a7f94;
   border-radius: 50%;
   background: var(--paper, #fbf8f3);
-  transition: width 220ms ease, border-color 220ms ease, border-radius 220ms ease, background-color 220ms ease;
+  transition:
+    width 220ms ease,
+    border-color 220ms ease,
+    border-radius 220ms ease,
+    background-color 220ms ease;
 }
 
 .leadership-carousel-indicator[aria-pressed="true"] span {
@@ -2839,6 +2855,27 @@ details[open] summary {
   font-size: 1.125rem;
   line-height: 1.85;
   overflow-wrap: anywhere;
+}
+
+.news-detail-source-link {
+  --bs-btn-color: var(--paper);
+  --bs-btn-bg: var(--purple-dark);
+  --bs-btn-border-color: var(--purple-dark);
+  --bs-btn-hover-color: var(--paper);
+  --bs-btn-hover-bg: var(--purple);
+  --bs-btn-hover-border-color: var(--purple);
+  --bs-btn-active-color: var(--paper);
+  --bs-btn-active-bg: var(--purple);
+  --bs-btn-active-border-color: var(--purple);
+}
+
+.news-detail-source-link:hover {
+  text-decoration: none;
+}
+
+.news-detail-source-link:focus-visible {
+  outline: 3px solid var(--gold);
+  outline-offset: 3px;
 }
 
 .news-not-found {

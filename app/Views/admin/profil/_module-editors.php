@@ -37,6 +37,13 @@ $profile = is_array($profile ?? null) ? $profile : [];
 $periods = is_array($periods ?? null) ? $periods : [];
 $members = is_array($members ?? null) ? $members : [];
 $selectedPeriod = (int) ($selectedPeriod ?? 0);
+$selectedPeriodName = '';
+foreach ($periods as $period) {
+    if ((int) ($period['id'] ?? 0) === $selectedPeriod) {
+        $selectedPeriodName = (string) ($period['period_name'] ?? '');
+        break;
+    }
+}
 $territoryGroups = [
     [
         'section' => 'territory',
@@ -207,6 +214,8 @@ $territoryGroups = [
     <div class="profile-module-form-grid">
         <section class="profile-census-step-panel" id="census-step-main" data-census-step-panel aria-labelledby="census-step-main-nav">
             <div class="profile-census-step-panel-body">
+                <h3 class="profile-step-panel-heading">Data utama</h3>
+                <p>Isi jumlah kepala keluarga. Total jiwa dihitung otomatis dari angka pada tiap kelompok usia.</p>
                 <?= view('admin/profil/_content-fields', [
                     'fields' => array_intersect_key($pageContent['census'], array_flip([
                         'section_badge',
@@ -221,7 +230,7 @@ $territoryGroups = [
                         'household_count',
                     ])),
                     'prefix' => 'census',
-                    'hiddenFields' => ['section_badge'],
+                    'hiddenFields' => ['section_badge', 'title', 'description'],
                 ]) ?>
             </div>
         </section>
@@ -236,30 +245,19 @@ $territoryGroups = [
         </section>
         <section class="profile-census-step-panel" id="census-step-labels" data-census-step-panel aria-labelledby="census-step-labels-nav" hidden>
             <div class="profile-census-step-panel-body">
-                <h3 class="profile-step-panel-heading">Atur teks yang tampil di halaman Profil</h3>
-                <p>Pengaturan ini hanya mengubah kata-kata di halaman publik. Jumlah KK dan jiwa tetap dihitung dari data sensus.</p>
+                <h3 class="profile-step-panel-heading"><?= esc((string) ($pageContent['census']['title'] ?? '')) ?></h3>
+                <p><?= esc((string) ($pageContent['census']['description'] ?? '')) ?></p>
                 <div class="profile-census-calculation profile-census-public-preview" aria-live="polite">
-                    <span>Pratinjau tampilan di halaman publik</span>
+                    <span>Pratinjau jumlah di halaman Profil</span>
                     <output data-census-public-preview>
                         <?= number_format((int) ($pageContent['census']['household_count'] ?? 0)) ?> <?= esc(trim((string) ($pageContent['census']['household_suffix'] ?? ''))) ?> <?= number_format((int) ($totalJiwa ?? 0)) ?> <?= esc(trim((string) ($pageContent['census']['population_suffix'] ?? ''))) ?>
                     </output>
                 </div>
                 <?= view('admin/profil/_content-fields', [
-                    'fields' => array_diff_key($pageContent['census'], array_flip([
-                        'section_badge',
-                        'title',
-                        'description',
-                        'household_count',
-                        'age_rows',
-                    ])),
-                    'templates' => array_diff_key($pageDefaults['census'], array_flip([
-                        'section_badge',
-                        'title',
-                        'description',
-                        'household_count',
-                        'age_rows',
-                    ])),
+                    'fields' => array_diff_key($pageContent['census'], array_flip(['household_count', 'age_rows'])),
+                    'templates' => array_diff_key($pageDefaults['census'], array_flip(['household_count', 'age_rows'])),
                     'prefix' => 'census',
+                    'hiddenFields' => array_keys(array_diff_key($pageContent['census'], array_flip(['household_count', 'age_rows']))),
                 ]) ?>
             </div>
         </section>
@@ -329,7 +327,6 @@ $territoryGroups = [
     </div>
     <?php $editorSectionEnd() ?>
     <?php $editorBodyOpen() ?>
-    <div class="profile-content-notice" role="note">Daftar ini menampilkan jenis pelayanan, bukan jadwal ibadah pada tanggal dan jam tertentu.</div>
     <div class="profile-form-message" data-profile-form-message role="alert" hidden></div>
     <div class="profile-form-grid">
         <?= view('admin/profil/_content-fields', [
@@ -349,6 +346,50 @@ $territoryGroups = [
 <?php endif; ?>
 
 <?php if ($editorModule === 'content'): ?>
+<?php
+$contentSettingsKeys = [
+    'hero' => array_fill_keys([
+        'page_title',
+        'meta_description',
+        'badge',
+        'title',
+        'links',
+        'stats_aria_label',
+        'map_link_label',
+    ], true),
+    'stats' => array_fill_keys(['icon', 'label'], true),
+    'leadership' => array_fill_keys([
+        'title',
+        'members_title',
+        'period_prefix',
+        'location_title',
+        'address_title',
+        'contact_title',
+    ], true),
+];
+$contentFieldsBySection = [];
+$contentSettingsBySection = [];
+foreach ($legacyContent as $sectionKey => $sectionFields) {
+    $settingsKeys = $contentSettingsKeys[$sectionKey] ?? [];
+    if ($sectionKey === 'stats') {
+        $contentFieldsBySection[$sectionKey] = array_map(
+            static fn (array $stat): array => array_diff_key($stat, $settingsKeys),
+            $sectionFields,
+        );
+        $contentSettingsBySection[$sectionKey] = array_map(
+            static fn (array $stat): array => array_intersect_key($stat, $settingsKeys),
+            $sectionFields,
+        );
+        continue;
+    }
+
+    $contentFieldsBySection[$sectionKey] = array_diff_key($sectionFields, $settingsKeys);
+    if ($settingsKeys !== []) {
+        $contentSettingsBySection[$sectionKey] = array_intersect_key($sectionFields, $settingsKeys);
+    }
+}
+$contentSettingsId = 'profile-content-settings';
+?>
 <?php $editorOpen('profile-content-editor') ?>
 <?php $editorContentOpen() ?>
 <form class="rm-form profile-module-form" method="post" action="<?= site_url('admin/profil/save-page-content') ?>" data-profile-ajax-form data-profile-reload data-profile-step-form>
@@ -356,15 +397,15 @@ $territoryGroups = [
     <?php $editorHeaderOpen() ?>
     <div class="rm-heading-copy">
         <?php $editorTitle('Konten Profil Publik', 'fw-semibold', ['id' => 'profile-content-title']) ?>
-        <?php $editorDescription('Edit semua teks halaman, termasuk judul, paragraf, label, daftar, dan pengaturan publikasi Majelis.', 'rm-description', ['id' => 'profile-content-description']) ?>
+        <?php $editorDescription('Perbarui isi Profil. Judul dan label halaman dikelola terpisah di bagian Pengaturan judul dan label.', 'rm-description', ['id' => 'profile-content-description']) ?>
     </div>
     <?php $editorSectionEnd() ?>
     <?php $editorBodyOpen() ?>
     <div class="profile-content-notice" role="note">Jumlah KK dan jiwa dikelola di kartu sensus. Nilai pada ringkasan Profil dihitung dari data sensus.</div>
     <div class="profile-form-message" data-profile-form-message role="alert" hidden></div>
     <nav class="profile-census-step-nav profile-step-nav" data-profile-step-nav aria-label="Langkah pengisian" hidden>
-        <ol class="profile-census-step-list profile-step-list" style="--profile-step-count: <?= count($legacyContent) ?>">
-            <?php foreach ($legacyContent as $sectionKey => $sectionFields): ?>
+        <ol class="profile-census-step-list profile-step-list" style="--profile-step-count: <?= count($contentFieldsBySection) ?>">
+            <?php foreach ($contentFieldsBySection as $sectionKey => $sectionFields): ?>
                 <?php $stepId = 'profile-content-' . $sectionKey; ?>
                 <li>
                     <button class="profile-census-step-link profile-step-link" id="<?= esc($stepId, 'attr') ?>-nav" type="button" data-profile-step-target="<?= esc($stepId, 'attr') ?>" aria-controls="<?= esc($stepId, 'attr') ?>" <?= $sectionKey === array_key_first($legacyContent) ? 'aria-current="step"' : '' ?>>
@@ -375,23 +416,69 @@ $territoryGroups = [
             <?php endforeach; ?>
         </ol>
     </nav>
-    <?php foreach ($legacyContent as $sectionKey => $sectionFields): ?>
+    <?php foreach ($contentFieldsBySection as $sectionKey => $sectionFields): ?>
+        <?php
+        $sectionTemplates = $pageDefaults[$sectionKey] ?? [];
+        $sectionObjectLabels = $sectionKey === 'stats'
+            ? array_column($legacyContent[$sectionKey], 'label')
+            : [];
+        ?>
         <section class="profile-content-section profile-step-panel" id="profile-content-<?= esc($sectionKey, 'attr') ?>" data-profile-step-panel aria-labelledby="profile-content-<?= esc($sectionKey, 'attr') ?>-nav">
             <div class="profile-content-section-body">
                 <h3 class="profile-step-panel-heading"><?= esc(\App\Libraries\PublicProfileContent::sectionLabels()[$sectionKey] ?? ucfirst($sectionKey)) ?></h3>
-                <p class="profile-step-panel-description">Edit semua teks dan pengaturan bagian.</p>
+                <p class="profile-step-panel-description">Ubah isi yang ingin ditampilkan pada halaman Profil Jemaat.</p>
                 <?= view('admin/profil/_content-fields', [
                     'fields' => $sectionFields,
-                    'templates' => $pageDefaults[$sectionKey] ?? [],
+                    'templates' => $sectionTemplates,
                     'prefix' => 'content[' . $sectionKey . ']',
                     'readOnlyFields' => $readOnlyFields,
+                    'objectLabels' => $sectionObjectLabels,
                 ]) ?>
             </div>
         </section>
     <?php endforeach; ?>
+    <section class="profile-content-section profile-step-panel" id="<?= esc($contentSettingsId, 'attr') ?>" hidden aria-labelledby="<?= esc($contentSettingsId, 'attr') ?>-heading">
+        <div class="profile-content-section-body">
+            <h3 class="profile-step-panel-heading" id="<?= esc($contentSettingsId, 'attr') ?>-heading">Pengaturan judul dan label</h3>
+            <p class="profile-step-panel-description">Atur teks judul, label, dan nama tautan yang tampil di halaman Profil. Isian ini terpisah dari isi utama.</p>
+            <?php foreach ($contentSettingsBySection as $sectionKey => $settingsFields): ?>
+                <details class="profile-content-settings-group" <?= $sectionKey === array_key_first($contentSettingsBySection) ? 'open' : '' ?>>
+                    <summary><?= esc(\App\Libraries\PublicProfileContent::sectionLabels()[$sectionKey] ?? ucfirst($sectionKey)) ?></summary>
+                    <?php
+                    $settingsHiddenFields = $sectionKey === 'hero'
+                        ? ['page_title', 'meta_description', 'badge', 'stats_aria_label', 'map_link_label', 'target']
+                        : ($sectionKey === 'stats' ? ['icon'] : []);
+                    $heroLinks = $sectionKey === 'hero' ? ($settingsFields['links'] ?? []) : [];
+                    if ($sectionKey === 'hero') {
+                        unset($settingsFields['links']);
+                    }
+                    ?>
+                    <?= view('admin/profil/_content-fields', [
+                        'fields' => $settingsFields,
+                        'templates' => $pageDefaults[$sectionKey] ?? [],
+                        'prefix' => 'content[' . $sectionKey . ']',
+                        'readOnlyFields' => $readOnlyFields,
+                        'hiddenFields' => $settingsHiddenFields,
+                    ]) ?>
+                    <?php if ($sectionKey === 'hero' && $heroLinks !== []): ?>
+                        <details class="profile-content-settings-links">
+                            <summary>Nama tautan bagian Profil</summary>
+                            <?= view('admin/profil/_content-fields', [
+                                'fields' => ['links' => $heroLinks],
+                                'templates' => ['links' => $pageDefaults['hero']['links'] ?? []],
+                                'prefix' => 'content[hero]',
+                                'readOnlyFields' => $readOnlyFields,
+                                'hiddenFields' => ['target'],
+                            ]) ?>
+                        </details>
+                    <?php endif; ?>
+                </details>
+            <?php endforeach; ?>
+        </div>
+    </section>
     <div class="profile-census-step-controls profile-step-controls" data-profile-step-controls hidden>
         <button class="profile-census-step-previous profile-step-previous" type="button" data-profile-step-previous disabled>Sebelumnya</button>
-        <span data-profile-step-count aria-live="polite">Bagian 1 dari <?= count($legacyContent) ?></span>
+        <span data-profile-step-count aria-live="polite">Bagian 1 dari <?= count($contentFieldsBySection) ?></span>
         <button class="profile-census-step-next profile-step-next" type="button" data-profile-step-next>Berikutnya</button>
     </div>
     <?php $editorSectionEnd() ?>
@@ -459,9 +546,32 @@ $territoryGroups = [
 <?php $editorSectionEnd() ?>
 <?php $editorBodyOpen() ?>
 <div class="profile-form-message" data-profile-form-message role="alert" hidden></div>
-<details id="periode-panel" class="profile-content-section" open>
-    <summary><span>Periode Majelis</span></summary>
+<div class="profile-leadership-stepper" data-leadership-stepper>
+    <nav class="profile-census-step-nav profile-step-nav" data-leadership-step-nav aria-label="Bagian pengelolaan Majelis" hidden>
+        <ol class="profile-step-list" style="--profile-step-count: 3">
+            <li>
+                <button class="profile-step-link" id="leadership-step-period-nav" type="button" data-leadership-step-target="periode-panel" aria-controls="periode-panel" aria-current="step">
+                    <span class="profile-step-number" aria-hidden="true">1</span>
+                    <span>Periode Majelis</span>
+                </button>
+            </li>
+            <li>
+                <button class="profile-step-link" id="leadership-step-member-nav" type="button" data-leadership-step-target="anggota-form-panel" aria-controls="anggota-form-panel">
+                    <span class="profile-step-number" aria-hidden="true">2</span>
+                    <span>Data anggota</span>
+                </button>
+            </li>
+            <li>
+                <button class="profile-step-link" id="leadership-step-list-nav" type="button" data-leadership-step-target="anggota-panel" aria-controls="anggota-panel">
+                    <span class="profile-step-number" aria-hidden="true">3</span>
+                    <span>Daftar anggota</span>
+                </button>
+            </li>
+        </ol>
+    </nav>
+    <section id="periode-panel" class="profile-content-section profile-step-panel" data-leadership-step-panel aria-labelledby="leadership-step-period-nav">
     <div class="profile-content-section-body">
+        <h3 class="profile-step-panel-heading">Periode Majelis</h3>
         <form class="profile-management-form" method="post" action="<?= site_url('admin/profil/save-periode') ?>" data-profile-ajax-form data-profile-reload data-profile-confirm="<?= $editPeriod ? 'Simpan perubahan periode?' : '' ?>">
             <?= csrf_field() ?>
             <input type="hidden" name="id" value="<?= esc($editPeriod['id'] ?? 0) ?>" data-profile-period-id>
@@ -533,11 +643,11 @@ $territoryGroups = [
             </table>
         </div>
     </div>
-</details>
+</section>
 
-<details id="anggota-panel" class="profile-content-section">
-    <summary><span>Kartu Majelis</span></summary>
+<section id="anggota-form-panel" class="profile-content-section profile-step-panel" data-leadership-step-panel aria-labelledby="leadership-step-member-nav">
     <div class="profile-content-section-body">
+        <h3 class="profile-step-panel-heading">Data anggota</h3>
         <div class="profile-period-filter">
             <label for="member-period-id">Periode yang dikelola</label>
             <select class="form-select" id="member-period-id" data-profile-period-select>
@@ -583,6 +693,16 @@ $territoryGroups = [
                 <button class="button button-secondary" type="button" data-edit-member-reset>Batal mengubah</button>
             </div>
         </form>
+    </div>
+</section>
+
+<section id="anggota-panel" class="profile-content-section profile-step-panel" data-leadership-step-panel aria-labelledby="leadership-step-list-nav">
+    <div class="profile-content-section-body">
+        <h3 class="profile-step-panel-heading">Daftar anggota</h3>
+        <div class="profile-period-filter">
+            <span>Periode yang dikelola</span>
+            <strong><?= esc($selectedPeriodName !== '' ? $selectedPeriodName : 'Belum ada periode') ?></strong>
+        </div>
         <div class="profile-table-wrap">
             <table class="profile-table">
                 <thead><tr><th>Nama</th><th>Jabatan</th><th>Foto</th><th>Tindakan</th></tr></thead>
@@ -626,7 +746,13 @@ $territoryGroups = [
             </table>
         </div>
     </div>
-</details>
+</section>
+    <div class="profile-step-controls" data-leadership-step-controls hidden>
+        <button class="profile-step-previous" type="button" data-leadership-step-previous disabled>Sebelumnya</button>
+        <span data-leadership-step-count aria-live="polite">Bagian 1 dari 3</span>
+        <button class="profile-step-next" type="button" data-leadership-step-next>Berikutnya</button>
+    </div>
+</div>
 <?php $editorSectionEnd() ?>
 <?php $editorFooterOpen() ?>
 <?php $editorSectionEnd() ?>

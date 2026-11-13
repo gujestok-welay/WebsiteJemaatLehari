@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Models\BeritaModel;
+use App\Libraries\ExternalNewsMetadata;
 use CodeIgniter\Database\Exceptions\DatabaseException;
 use CodeIgniter\HTTP\Exceptions\HTTPException;
 use CodeIgniter\HTTP\Files\UploadedFile;
@@ -44,6 +45,44 @@ class AdminBerita extends BaseController
         return redirect()->to(site_url('admin/berita?create=1'));
     }
 
+    public function metadata(): \CodeIgniter\HTTP\ResponseInterface
+    {
+        $url = $this->request->getPost('url');
+        if (! is_string($url)) {
+            return $this->metadataJson(['message' => 'Masukkan tautan berita yang valid.'], 422);
+        }
+
+        try {
+            $metadata = (new ExternalNewsMetadata())->fetch($url);
+        } catch (\InvalidArgumentException $exception) {
+            return $this->metadataJson(['message' => $exception->getMessage()], 422);
+        } catch (\RuntimeException $exception) {
+            log_message('warning', 'Metadata berita eksternal tidak dapat diambil: {message}', [
+                'message' => $exception->getMessage(),
+            ]);
+
+            return $this->metadataJson(['message' => $exception->getMessage()], 422);
+        }
+
+        return $this->metadataJson([
+            'title' => $metadata['title'],
+            'source_name' => $metadata['source_name'],
+            'summary' => $metadata['summary'],
+            'image_url' => $metadata['image_url'],
+            'image_available' => $metadata['image_url'] !== null,
+        ]);
+    }
+
+    private function metadataJson(array $data, int $status = 200): \CodeIgniter\HTTP\ResponseInterface
+    {
+        return $this->response
+            ->setStatusCode($status)
+            ->setJSON($data + [
+                'csrf_token' => csrf_token(),
+                'csrf_hash' => csrf_hash(),
+            ]);
+    }
+
     public function save(): \CodeIgniter\HTTP\RedirectResponse
     {
         $idValue = $this->request->getPost('id');
@@ -75,12 +114,16 @@ class AdminBerita extends BaseController
         }
 
         $postedFields = [];
-        foreach (['title', 'summary', 'content', 'status', 'slug'] as $field) {
+        foreach (['title', 'summary', 'content', 'status', 'slug', 'article_type', 'source_url', 'source_name', 'source_image_url'] as $field) {
             $value = $this->request->getPost($field);
             if ($value !== null && ! is_string($value)) {
                 return $this->redirectWithSaveError('Data berita tidak valid. Periksa kembali isian formulir.', $id, $returnTo);
             }
             $postedFields[$field] = $value ?? '';
+        }
+        $useSourceImageValue = $this->request->getPost('use_source_image');
+        if ($useSourceImageValue !== null && ! is_string($useSourceImageValue)) {
+            return $this->redirectWithSaveError('Pilihan gambar kover tidak valid.', $id, $returnTo);
         }
 
         $title = trim($postedFields['title']);
@@ -88,9 +131,53 @@ class AdminBerita extends BaseController
         $content = trim($postedFields['content']);
         $status = $postedFields['status'];
         $slug = trim($postedFields['slug']);
+        $articleType = trim($postedFields['article_type']) ?: 'internal';
+        $sourceUrl = trim($postedFields['source_url']);
+        $sourceName = trim($postedFields['source_name']);
+        $sourceImageUrl = trim($postedFields['source_image_url']);
+        $useSourceImage = $useSourceImageValue === '1';
 
-        if ($title === '' || $summary === '' || $content === '' || ! in_array($status, BeritaModel::formStatusOptions(), true)) {
+        if (
+            $title === ''
+            || $summary === ''
+            || ($articleType === 'internal' && $content === '')
+            || ! in_array($status, BeritaModel::formStatusOptions(), true)
+        ) {
             return $this->redirectWithSaveError('Judul, ringkasan, isi, dan status berita wajib diisi.', $id, $returnTo);
+        }
+        if (! in_array($articleType, ['internal', 'external'], true)) {
+            return $this->redirectWithSaveError('Jenis berita tidak valid.', $id, $returnTo);
+        }
+
+        if ($articleType === 'external') {
+            try {
+                $sourceUrl = (new ExternalNewsMetadata())->normalizeUrl($sourceUrl);
+            } catch (\InvalidArgumentException $exception) {
+                return $this->redirectWithSaveError($exception->getMessage(), $id, $returnTo);
+            }
+
+            if ($sourceName === '' || mb_strlen($sourceName) > 255) {
+                return $this->redirectWithSaveError('Nama sumber wajib diisi dan maksimal 255 karakter.', $id, $returnTo);
+            }
+            if ($useSourceImage) {
+                try {
+                    $sourceImageUrl = (new ExternalNewsMetadata())->normalizeUrl($sourceImageUrl);
+                } catch (\InvalidArgumentException $exception) {
+                    return $this->redirectWithSaveError('Gambar sumber tidak valid. Ambil ulang metadata atau pilih gambar kover manual.', $id, $returnTo);
+                }
+            } else {
+                $sourceImageUrl = '';
+            }
+            $content = $summary;
+        } else {
+            if ($content === '') {
+                return $this->redirectWithSaveError('Isi berita wajib diisi.', $id, $returnTo);
+            }
+
+            $sourceUrl = '';
+            $sourceName = '';
+            $sourceImageUrl = '';
+            $useSourceImage = false;
         }
 
         $slug = $slug !== '' ? $slug : BeritaModel::generateSlug($title);
@@ -103,6 +190,9 @@ class AdminBerita extends BaseController
             'summary' => $summary,
             'content' => $content,
             'status' => $status,
+            'article_type' => $articleType,
+            'source_url' => $sourceUrl !== '' ? $sourceUrl : null,
+            'source_name' => $sourceName !== '' ? $sourceName : null,
             'updated_by' => (int) session()->get('admin_id'),
         ];
 
@@ -110,6 +200,22 @@ class AdminBerita extends BaseController
         $newCover = null;
         if ($uploadedFile instanceof UploadedFile && $uploadedFile->getError() !== UPLOAD_ERR_NO_FILE) {
             $uploadResult = $this->handleCoverUpload($uploadedFile);
+            if ($uploadResult['success'] === false) {
+                return $this->redirectWithSaveError($uploadResult['message'], $id, $returnTo);
+            }
+            $newCover = $uploadResult['file'];
+            $data['cover_image'] = $newCover;
+        } elseif ($useSourceImage) {
+            try {
+                $uploadResult = $this->handleExternalCover($sourceImageUrl);
+            } catch (\InvalidArgumentException|\RuntimeException $exception) {
+                log_message('warning', 'Gambar kover berita eksternal tidak dapat diambil: {message}', [
+                    'message' => $exception->getMessage(),
+                ]);
+
+                return $this->redirectWithSaveError($exception->getMessage(), $id, $returnTo);
+            }
+
             if ($uploadResult['success'] === false) {
                 return $this->redirectWithSaveError($uploadResult['message'], $id, $returnTo);
             }
@@ -306,6 +412,59 @@ class AdminBerita extends BaseController
         $storedPath = 'uploads/berita/' . basename($safeName);
 
         return ['success' => true, 'file' => $storedPath];
+    }
+
+    /**
+     * @return array{contents: string, mime: string}
+     */
+    protected function downloadExternalImage(string $url): array
+    {
+        return (new ExternalNewsMetadata())->fetchImage($url);
+    }
+
+    protected function handleExternalCover(string $url): array
+    {
+        $image = $this->downloadExternalImage($url);
+        $extensions = [
+            'image/jpeg' => 'jpg',
+            'image/png' => 'png',
+            'image/webp' => 'webp',
+        ];
+        $contents = $image['contents'] ?? null;
+        $mime = $image['mime'] ?? null;
+        $imageInfo = is_string($contents) ? @getimagesizefromstring($contents) : false;
+
+        if (
+            ! is_string($contents)
+            || strlen($contents) > self::MAX_COVER_IMAGE_BYTES
+            || ! is_string($mime)
+            || ! isset($extensions[$mime])
+            || $imageInfo === false
+            || ($imageInfo['mime'] ?? null) !== $mime
+            || ($imageInfo[0] ?? 0) < 1
+            || ($imageInfo[1] ?? 0) < 1
+            || $imageInfo[0] * $imageInfo[1] > 40_000_000
+        ) {
+            return ['success' => false, 'message' => 'Gambar dari sumber tidak valid atau melebihi 10 MB. Pilih gambar kover manual.'];
+        }
+
+        $targetDir = WRITEPATH . 'uploads/berita';
+        if (! is_dir($targetDir) && ! @mkdir($targetDir, 0775, true) && ! is_dir($targetDir)) {
+            return ['success' => false, 'message' => 'Direktori upload berita tidak dapat dibuat.'];
+        }
+
+        $safeName = bin2hex(random_bytes(16)) . '.' . $extensions[$mime];
+        $filePath = $targetDir . DIRECTORY_SEPARATOR . $safeName;
+        $written = @file_put_contents($filePath, $contents, LOCK_EX);
+        if ($written !== strlen($contents)) {
+            if (is_file($filePath)) {
+                @unlink($filePath);
+            }
+
+            return ['success' => false, 'message' => 'Gambar kover dari sumber gagal disimpan.'];
+        }
+
+        return ['success' => true, 'file' => 'uploads/berita/' . $safeName];
     }
 
     protected function removeStoredCover(string $storedPath): void

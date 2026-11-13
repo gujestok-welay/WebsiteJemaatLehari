@@ -57,5 +57,6 @@ skills-lock.json
 /playwright-report/
 /test-results/
 /writable/playwright-test-data/
+/writable/playwright-test-data-*/
 /writable/playwright-session/
 /e2e/test-credentials.js

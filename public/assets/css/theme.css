@@ -77,6 +77,14 @@ html[data-theme="dark"] .home-shell {
   background: #211d25;
 }
 
+html[data-theme="dark"] .news-detail-header {
+  color: var(--ink);
+}
+
+html[data-theme="dark"] .news-detail-header .news-detail-meta {
+  color: var(--ink);
+}
+
 html[data-theme="dark"] .home-news .berita-card,
 html[data-theme="dark"] .berita-page .berita-card {
   border-color: #51465a;
@@ -92,6 +100,51 @@ html[data-theme="dark"] .btn.btn-gold:focus-visible {
   color: #29232c;
 }
 
+html[data-theme="dark"] .navbar-brand-wordmark {
+  filter: brightness(0) invert(1);
+}
+
+html[data-theme="dark"] .site-footer .footer-tagline,
+html[data-theme="dark"] .site-footer .footer-links a,
+html[data-theme="dark"] .site-footer .footer-contact-note,
+html[data-theme="dark"] .site-footer .footer-bottom {
+  color: var(--muted);
+}
+
+html[data-theme="dark"] .site-footer .footer-heading,
+html[data-theme="dark"] .site-footer .footer-social-link,
+html[data-theme="dark"] .site-footer .footer-bottom a {
+  color: var(--ink);
+}
+
+html[data-theme="dark"] .site-footer .footer-links a:hover,
+html[data-theme="dark"] .site-footer .footer-social-link:hover {
+  color: var(--gold);
+}
+
+html[data-theme="dark"] .berita-page .berita-hero {
+  background-color: var(--paper);
+  background-image:
+    linear-gradient(90deg, rgb(33 29 37 / 78%) 0%, rgb(33 29 37 / 74%) 75%, rgb(33 29 37 / 70%) 100%),
+    url("../images/gereja/Papan-nama.png");
+}
+
+html[data-theme="dark"] .berita-page .berita-hero h1 {
+  color: var(--ink);
+  text-shadow: none;
+}
+
+html[data-theme="dark"] .berita-page .berita-hero p {
+  color: var(--muted);
+  text-shadow: none;
+}
+
+html[data-theme="dark"] :is(.profil-page, .berita-page, .jadwal-page) .badge-soft,
+html[data-theme="dark"] .jadwal-page .badge-hari {
+  background: var(--gold-soft);
+  color: var(--ink);
+}
+
 html[data-theme="dark"] .gallery-page-heading {
   background-color: #352d3b;
   color: #f4edf5;
@@ -103,6 +156,16 @@ html[data-theme="dark"] .gallery-page-heading h1 {
 
 html[data-theme="dark"] .gallery-page-heading p {
   color: #d9cce0;
+}
+
+html[data-theme="dark"] .gallery-detail-heading time {
+  color: var(--paper);
+}
+
+html[data-theme="dark"] .home-gallery-card,
+html[data-theme="dark"] .gallery-card {
+  border: 1px solid #51465a;
+  background: #302936;
 }
 
 html[data-theme="dark"] :is(.gallery-card-image, .home-gallery-image, .gallery-card-image-fallback, .home-gallery-image-fallback) {
@@ -428,7 +491,7 @@ html[data-theme="dark"] .jadwal-page .search-wrap .form-control::placeholder {
   color: #c7bacd;
 }
 
-html[data-theme="dark"] .btn:not(.btn-outline-primary) {
+html[data-theme="dark"] .btn:not(.btn-outline-primary):not(.btn-gold):not(.news-detail-source-link) {
   color: #fff;
 }
 

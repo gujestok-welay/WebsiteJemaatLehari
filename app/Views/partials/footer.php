@@ -10,8 +10,6 @@
                         width="128"
                         height="150">
                 </h2>
-                <p class="footer-tagline">Informasi yang mendekatkan.</p>
-
             </section>
 
             <nav class="col-6 col-md-3 col-lg-3 footer-links" aria-labelledby="footer-links">
