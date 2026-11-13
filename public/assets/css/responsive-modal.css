@@ -118,6 +118,13 @@
     font: 400 .92rem var(--font-body, "DM Sans", sans-serif);
 }
 
+.rm-news-title-field {
+    overflow-x: hidden;
+    overflow-y: hidden;
+    overflow-wrap: anywhere;
+    resize: none;
+}
+
 .rm-field .form-control:focus,
 .rm-field .form-select:focus {
     border-color: var(--admin-purple, #4b2a6b);

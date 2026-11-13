@@ -1,80 +1,77 @@
-﻿---
-name: Website Informasi Jemaat Leahari - Revamp Dinamis
-description: Sistem desain estetik dan dinamis. Menggabungkan gaya modern (glassmorphism, soft shadows, fluid hover) dengan pondasi Bootstrap 5.
+---
+name: Website Informasi Jemaat Leahari
+description: Identitas publik yang hangat dan mudah dibaca, memakai palet ungu-gading, tipografi Cormorant Garamond dan DM Sans, serta interaksi responsif.
 colors:
-  bg-primary: "#FBF8F3"
-  bg-secondary: "#F3ECDF"
-  bg-tertiary: "#E7DECF"
-  card-bg: "#FFFFFF"
-  brand-purple: "#4B2A6B"
-  brand-purple-dark: "#2E1A45"
-  brand-purple-hover: "#3C2157"
-  brand-gold: "#d8bd72"
-  text-main: "#241B2E"
-  text-muted: "#6B6275"
-  text-light: "#8A7F94"
+  bg-primary: "#FFFEFA"
+  bg-secondary: "#F5F1F6"
+  bg-tertiary: "#EEE2BD"
+  card-bg: "#FFFEFA"
+  brand-purple: "#663F72"
+  brand-purple-dark: "#482950"
+  brand-purple-hover: "#482950"
+  brand-gold: "#D8BD72"
+  text-main: "#29232C"
+  text-muted: "#5D5361"
 typography:
   display:
     fontFamily: "'Cormorant Garamond', serif"
-    fontWeight: 500, 600
+    fontWeight: 600
     letterSpacing: "-.02em"
   body:
     fontFamily: "'DM Sans', sans-serif"
-    fontWeight: 400, 500
+    fontWeight: 400, 600, 700
     lineHeight: 1.65
 rounded:
-  md: "0.5rem" # 8px
-  lg: "0.75rem" # 12px
-  xl: "1rem" # 16px
-  2xl: "1.5rem" # 24px
+  control: "0.5rem"
+  card: "1rem"
+  panel: "1.6rem"
   pill: "9999px"
 ---
 
-# Design System: Website Informasi Jemaat Leahari (Dinamis & Estetik)
+# Design System: Website Informasi Jemaat Leahari
 
 ## Overview
 
-Dokumen ini adalah panduan desain utama yang **telah dirombak total** untuk memprioritaskan estetika, fluiditas, dan pengalaman antarmuka yang dinamis. Desain referensi mengusung gaya modern dengan sudut membulat yang lembut (_rounded-2xl_), efek kaca (_backdrop-blur_), dan interaksi _hover_ yang hidup.
+Antarmuka publik memakai komposisi editorial yang mengutamakan identitas jemaat, berita, dan jadwal ibadah. Implementasi memakai PHP Views, Bootstrap 5, dan CSS khusus. Panduan ini mencatat token serta perilaku yang saat ini diterapkan di `public/assets/css/publik.css`; warna palet adalah pilihan desain proyek, bukan identitas visual yang telah disahkan mitra.
 
-**Tumpukan Teknologi:** Implementasi wajib menggunakan **CodeIgniter 4, MySQL, dan Bootstrap 5**. Pendekatan _utility-first_ (seperti Tailwind pada desain awal referensi) harus diadaptasi menggunakan _Bootstrap 5 Utility API_ atau penambahan _Custom CSS_ yang efisien.
+## 1. Warna
 
-## 1. Warna & Palet (Kaya & Elegan)
+- **Latar utama:** `#FFFEFA`, gading lembut.
+- **Permukaan sekunder:** `#F5F1F6`; aksen permukaan hangat `#EEE2BD`.
+- **Aksen utama:** ungu `#663F72`; ungu gelap `#482950` untuk tautan dan hover.
+- **Aksen emas:** `#D8BD72`.
+- **Teks utama:** `#29232C`; teks sekunder `#5D5361`.
 
-Desain membuang skema warna datar dan menggunakan hierarki warna yang memberi kontras lembut dan elegan.
-
-- **Background:** Menggunakan `#FBF8F3` (krem sangat terang) untuk memberi kesan hangat, dipadukan dengan `#F3ECDF` untuk _section_ sorotan.
-- **Aksen Utama:** `#4B2A6B` (Ungu Leahari) digunakan untuk elemen interaktif, tombol utama, dan inisial avatar.
-- **Garis & Pembatas (Borders):** Menggunakan `#E7DECF` yang sangat tipis untuk memisahkan kartu konten tanpa bayangan yang berat.
-- **Tipografi Kontras:** `#241B2E` untuk _heading_ (sangat gelap) dan `#6B6275` untuk teks paragraf/deskripsi agar tidak melelahkan mata.
+Gunakan warna melalui token CSS pada `:root` agar elemen publik tetap konsisten. Status konten contoh menggunakan label berteks “Contoh”, bukan warna saja.
 
 ## 2. Tipografi
 
-- **Cormorant Garamond (Serif):** Eksklusif untuk _Heading_ (H1-H4) dan angka penunjuk waktu/tanggal yang besar. Menggunakan _tracking_ rapat (`letter-spacing: -0.02em`) dan _line-height_ padat (`0.95` - `1.1`) untuk kesan premium.
-- **DM Sans (Sans-serif):** Digunakan untuk seluruh teks tubuh, paragraf, tombol, metadata, dan antarmuka _Dashboard Admin_. Memberi kesan bersih dan geometris.
+- **Cormorant Garamond, 600:** judul halaman dan bagian.
+- **DM Sans, 400/600/700:** isi, metadata, tombol, dan antarmuka.
+- Ukuran teks isi dasar 18 px dengan line-height 1.65. Ukuran heading responsif menggunakan `clamp()`.
+- Font disimpan lokal dan menggunakan `font-display: swap`.
 
-## 3. Bentuk, Elevasi & _Micro-Interactions_ (Kebebasan Animasi)
+## 3. Bentuk, permukaan, dan hierarki
 
-Aturan lama yang melarang animasi dan membatasi bayangan **dihapus sepenuhnya**. Interaksi kini wajib terasa hidup:
+- Kartu konten umumnya menggunakan radius 1rem; panel hero menggunakan radius 1.6rem. Kontrol kecil dapat memakai sudut 0.5rem, sementara pil digunakan untuk chip kecil.
+- Header publik sticky dengan latar gading semi-transparan, blur 10 px, garis bawah, dan bayangan lembut.
+- Bayangan membantu membedakan panel dan kartu dari latar; gunakan secara hemat.
+- Susun konten dengan grid Bootstrap dan urutan yang mendahulukan berita serta jadwal setelah hero. Di ponsel, daftar menjadi satu kolom tanpa overflow horizontal.
 
-- **Bentuk (Border Radius):** Kartu berita, panel jadwal, dan gambar wajib menggunakan lengkungan besar (`border-radius: 1rem` hingga `1.5rem` / `xl` dan `2xl` di Bootstrap).
-- **Hover Cards (Transisi Mulus):** Kartu konten (berita, profil, jadwal) wajib memiliki efek transisi halus. Saat di-_hover_, kartu akan sedikit membesar (`transform: scale(1.02)`), garis batas (`border-color`) berubah menjadi lebih gelap (`#CFC2AE`), dan memancarkan _soft shadow_ untuk mengangkat elemen dari latar belakang.
-- **Glassmorphism (Efek Kaca):** _Header/Navbar_ utama menggunakan latar belakang transparan (`bg-color` dengan opasitas 90%) dikombinasikan dengan efek _backdrop-filter: blur(8px)_ agar terlihat menyatu dengan konten yang di-scroll di bawahnya.
-- **Image Reveal:** Gambar _thumbnail_ memiliki efek _zoom-in_ yang mulus di dalam kontainernya saat kartu di-_hover_.
+## 4. Interaksi dan aksesibilitas
 
-## 4. Adaptasi Komponen ke Bootstrap 5
+- Kartu berita dan panel hero memiliki gerak hover skala hingga 1.05. Gerak otomatis carousel Majelis menyediakan tombol jeda/navigasi dan menghormati `prefers-reduced-motion`.
+- Semua kontrol keyboard mempertahankan indikator fokus yang terlihat: outline ungu 3 px dengan offset.
+- Navigasi menggunakan offcanvas Bootstrap pada layar kecil; skip link mengarahkan langsung ke konten utama.
+- Konten berita contoh menampilkan badge “Contoh” pada setiap kartu.
+- Jadwal beranda hanya menampilkan waktu ibadah yang belum dimulai menurut WIT; jika tidak ada, tampilkan empty state.
 
-Karena kita menggunakan Bootstrap 5, berikut panduan _mapping_ gayanya:
+## 5. Komponen
 
-1.  **Grid & Layout:** Tinggalkan aturan _custom grid_ kaku dari desain lama. Gunakan sistem `row` dan `col-lg-*` dari Bootstrap 5 dengan kelas _gap_ (`gap-3`, `gap-4`) untuk jarak antar elemen.
-2.  **Custom Utilities:** Tambahkan kelas utilitas di file `style.css` Anda untuk mengakomodasi kebutuhan estetik:
-    - `.backdrop-blur` -> `backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);`
-    - `.hover-scale` -> `transition: transform 0.3s ease, border-color 0.3s ease;` (tambahkan `:hover { transform: scale(1.02); }`)
-    - `.line-clamp-2` -> (Gunakan trik _webkit-box_ untuk memotong teks berita panjang).
-3.  **Aksesibilitas (Tanpa Mengorbankan Estetika):** Elemen interaktif tetap wajib bisa diakses _keyboard_. Ganti _outline_ standar peramban dengan _ring_ estetik: saat elemen difokuskan (`:focus-visible`), berikan bayangan cincin berwarna ungu transparan (`box-shadow: 0 0 0 3px rgba(75, 42, 107, 0.3)`).
+- **Navbar:** logo, navigasi dengan halaman aktif, dan menu offcanvas responsif.
+- **Hero beranda:** identitas Jemaat Leahari, tautan langsung ke jadwal dan berita, serta panel jadwal terdekat.
+- **Kartu berita:** kategori, tanggal, status contoh bila relevan, judul, dan ringkasan.
+- **Jadwal:** tanggal, jenis ibadah, waktu WIT, lokasi, dan pelayan bila tersedia.
+- **Carousel Majelis:** hanya ditampilkan setelah konten anggota diaktifkan untuk publikasi; menyediakan kontrol untuk jeda dan navigasi.
 
-## 5. Komponen Inti
-
-- **Navbar Sticky:** Berada di `top-0`, dengan _border-bottom_ tipis, _background_ tembus pandang, dan _backdrop-blur_.
-- **Badges/Tags:** Membulat penuh (`rounded-pill`), teks tebal berukuran kecil (`text-xs`), digunakan untuk status ibadah ("Terjadwal", "Perubahan") dan kategori berita.
-- **Empty States (Kondisi Kosong):** Tidak lagi menggunakan teks polos yang membosankan. Gunakan kontainer dengan _border-dashed_, warna latar transparan, dipadu dengan ikon _Iconify_ ukuran besar di tengah untuk mempertahankan estetika.
-- **Dashboard Admin:** Mewarisi kebersihan UI publik, menggunakan sidebar responsif. Kartu statistik menggunakan _border_ tipis dan radius `xl`.
+Konten, nama personel, tanggal, statistik, dan materi visual resmi harus berasal dari informasi yang telah disahkan atau diizinkan. Jangan mengisi kekosongan dengan klaim atau identitas rekaan.

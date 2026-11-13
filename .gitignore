@@ -54,3 +54,8 @@ skills-lock.json
 .taste-skill
 # Playwright CLI output (may contain credentials)
 .playwright-cli/
+/playwright-report/
+/test-results/
+/writable/playwright-test-data/
+/writable/playwright-session/
+/e2e/test-credentials.js

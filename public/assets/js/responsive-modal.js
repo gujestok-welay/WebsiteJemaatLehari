@@ -100,6 +100,7 @@
         if (state.instance) state.instance.dispose();
         state.instance = null;
         state.mode = null;
+        root.setAttribute('aria-hidden', 'true');
 
         if (state.pendingMode) {
             var nextMode = state.pendingMode;
@@ -134,6 +135,7 @@
                 state.instance.hide();
                 return;
             }
+            root.removeAttribute('aria-hidden');
             emit(root, true);
         });
         root.addEventListener('shown.bs.offcanvas', function () {
@@ -141,6 +143,7 @@
                 state.instance.hide();
                 return;
             }
+            root.removeAttribute('aria-hidden');
             emit(root, true);
         });
         root.addEventListener('hidden.bs.modal', function () {
