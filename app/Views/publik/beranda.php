@@ -1,12 +1,7 @@
 <?= $this->extend('layouts/publik') ?>
 <?= $this->section('content') ?>
 <?php
-$quickLinks = [
-    ['profil', 'Profil Jemaat', 'Sejarah, pelayanan, dan identitas jemaat.'],
-    ['berita', 'Berita Jemaat', 'Kabar terbaru dan kegiatan bersama.'],
-    ['jadwal-ibadah', 'Jadwal Ibadah', 'Waktu, lokasi, dan agenda ibadah.'],
-];
-$nextService = $schedules[0] ?? null;
+$nextService = $nextService ?? null;
 $latestNews = array_slice($news, 0, 2);
 ?>
 
@@ -14,7 +9,6 @@ $latestNews = array_slice($news, 0, 2);
     <div class="container-xl py-4 py-lg-5">
         <div class="row align-items-center g-4 g-lg-5">
             <div class="col-lg-7">
-                <p class="home-kicker">Jemaat GPM Leahari</p>
                 <h1 class="home-title" id="judul-beranda">Jemaat <span>Leahari</span></h1>
                 <p class="home-intro">Ruang informasi jemaat untuk mengikuti berita, mengenal pelayanan, dan
                     merencanakan kehadiran dalam ibadah.</p>
@@ -42,9 +36,9 @@ $latestNews = array_slice($news, 0, 2);
 
                     <?php if ($nextService): ?>
                         <div class="hero-panel-card">
-                            <p class="panel-kicker"><span class="kicker-dot"></span> Ibadah terdekat</p>
-                            <h2><?= esc($nextService['name']) ?></h2>
-                            <p class="panel-date"><?= esc($nextService['day_label']) ?>, <?= esc($nextService['date']) ?>
+                            <h2>Ibadah terdekat</h2>
+                            <p class="panel-service-name"><?= esc($nextService['name']) ?></p>
+                            <p class="panel-date"><?= esc($nextService['day_label']) ?>
                             </p>
 
                             <hr class="panel-divider">
@@ -68,45 +62,14 @@ $latestNews = array_slice($news, 0, 2);
                         </div>
                     <?php else: ?>
                         <div class="hero-panel-card">
-                            <p class="panel-kicker"><span class="kicker-dot"
-                                    style="background-color: var(--muted, #6B6275);"></span> Ibadah terdekat</p>
-                            <h2>Belum ada jadwal</h2>
-                            <p class="panel-date">Jadwal akan segera ditambahkan.</p>
+                            <h2>Jadwal ibadah</h2>
+                            <p class="panel-service-name">Belum ada jadwal mendatang</p>
+                            <p class="panel-date">Belum ada jadwal ibadah mendatang yang dapat ditampilkan.</p>
                         </div>
                     <?php endif ?>
                 </aside>
             </div>
         </div>
-    </div>
-
-    <div class="container-xl pb-4 pb-lg-5">
-        <section class="leadership-section" aria-labelledby="kepemimpinan">
-            <div class="section-heading leadership-heading">
-                <h2 id="kepemimpinan">Majelis Jemaat</h2>
-            </div>
-
-            <div class="leadership-grid">
-                <?php
-                $leaders = [
-                    ['name' => 'Pdt. Ny. J. K. Tutupary/L', 'role' => 'Ketua Majelis Jemaat', 'image' => 'assets/images/gereja/Ketua-Majelis-Jemaat.jpeg'],
-                    ['name' => 'Pdt. J. N. W. Tualeka', 'role' => 'Wakil Ketua Majelis Jemaat', 'image' => 'assets/images/gereja/Wakil-Ketua-Majelis-Jemaat.jpeg'],
-                    ['name' => 'A. L. T. R. Siahaya', 'role' => 'Bendahara Jemaat', 'image' => 'assets/images/gereja/Bendahara-Jemaat.jpeg'],
-
-                ];
-                ?>
-
-
-                <?php foreach ($leaders as $leader): ?>
-                    <article class="leader-card"
-                        style="--leader-image: url('<?= base_url(esc($leader['image'], 'attr')) ?>');">
-                        <div class="leader-card-body">
-                            <h3><?= esc($leader['name']) ?></h3>
-                            <p><?= esc($leader['role']) ?></p>
-                        </div>
-                    </article>
-                <?php endforeach ?>
-            </div>
-        </section>
     </div>
 
     <div class="container-xl home-updates">
@@ -127,28 +90,12 @@ $latestNews = array_slice($news, 0, 2);
                         <p class="home-empty">Belum ada berita yang tersedia.</p>
                     <?php else: ?>
                         <div class="news-list">
-                            <?php foreach ($latestNews as $item): ?>
-                                <article class="news-card card rounded-4 shadow-sm overflow-hidden">
-                                    <div class="news-card-thumb" aria-hidden="true">Warta</div>
-                                    <div class="news-card-copy card-body">
-                                        <p class="meta small text-body-secondary"><?= ! empty($isSample) ? 'Contoh · ' : '' ?><?= esc($item['category'] ?? 'Berita') ?> ·
-                                            <?= esc($item['date'] ?? '') ?>
-                                        </p>
-                                        <h3><?= view('components/css-link', [
-                                            'url' => $item['url'],
-                                            'label' => $item['title'],
-                                            'className' => '',
-                                            'icon' => '',
-                                        ]) ?></h3>
-                                        <p><?= esc($item['summary']) ?></p>
-                                        <?= view('components/css-link', [
-                                            'url' => $item['url'],
-                                            'label' => 'Baca selengkapnya',
-                                            'icon' => '→',
-                                            'className' => 'inline-link fw-semibold text-decoration-none',
-                                        ]) ?>
-                                    </div>
-                                </article>
+                            <?php foreach ($latestNews as $index => $item): ?>
+                                <?= view('components/berita-card', [
+                                    'item' => $item,
+                                    'index' => $index,
+                                    'isSample' => ! empty($isSample),
+                                ]) ?>
                             <?php endforeach ?>
                         </div>
                     <?php endif ?>
@@ -170,7 +117,7 @@ $latestNews = array_slice($news, 0, 2);
 
                     <div class="schedule-list">
                         <?php if ($schedules === []): ?>
-                            <p>Belum ada jadwal ibadah yang tersedia saat ini.</p>
+                            <p>Belum ada jadwal ibadah mendatang yang tersedia saat ini.</p>
                         <?php else: ?>
                             <?php foreach (array_slice($schedules, 0, 4) as $schedule): ?>
                                 <div class="schedule-item">
@@ -196,29 +143,51 @@ $latestNews = array_slice($news, 0, 2);
     </div>
 
     <div class="container-xl pb-4 pb-lg-5">
-        <div class="row g-4 home-connection">
-            <div class="col-md-5">
-                <div class="verse-panel">
-                    <p class="verse-label">Kebersamaan</p>
-                    <blockquote>“Bersama dalam iman, pelayanan, dan sukacita, Jemaat Leahari terus tumbuh dalam
-                        persekutuan.”</blockquote>
-                </div>
+        <section class="leadership-section" aria-labelledby="kepemimpinan">
+            <div class="section-heading leadership-heading">
+                <h2 id="kepemimpinan"><?= esc($leadershipTitle) ?></h2>
             </div>
-            <div class="col-md-7">
-                <div class="connect-panel">
-                    <p class="panel-kicker">Media Center</p>
-                    <h2>Jemaat tumbuh bukan hanya dalam ibadah, tetapi dalam pelayanan bersama.</h2>
-                    <p>Informasi resmi tetap mengikuti saluran yang telah ditetapkan, agar setiap pembaruan dapat dibaca
-                        dengan jelas dan konsisten.</p>
-                    <?= view('components/css-link', [
-                        'url' => site_url('profil'),
-                        'label' => 'Baca profil jemaat',
-                        'icon' => '↗',
-                        'className' => '',
-                    ]) ?>
+
+            <?php if (! empty($majelis)): ?>
+                <div class="leadership-carousel" data-leadership-carousel role="region" aria-roledescription="carousel" aria-label="Susunan Majelis Jemaat" data-autoplay-interval="5000">
+                    <div class="leadership-grid" data-carousel-track>
+                        <?php foreach ($majelis as $index => $member): ?>
+                            <article class="leader-card" data-carousel-slide aria-roledescription="slide" aria-label="<?= esc(($index + 1) . ' dari ' . count($majelis) . ': ' . $member['name'], 'attr') ?>">
+                                <?php if (! empty($member['photo_path'])): ?>
+                                    <img class="leader-card-image" src="<?= esc(base_url($member['photo_path']), 'attr') ?>" alt="" aria-hidden="true">
+                                <?php endif; ?>
+                                <div class="leader-card-body">
+                                    <h3><?= esc($member['name']) ?></h3>
+                                    <p><?= esc($member['position']) ?></p>
+                                </div>
+                            </article>
+                        <?php endforeach; ?>
+                    </div>
+                    <div class="leadership-carousel-controls" data-carousel-controls hidden>
+                        <button class="leadership-carousel-arrow" type="button" data-carousel-previous aria-label="Anggota sebelumnya">
+                            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m15 18-6-6 6-6M21 12H9" /></svg>
+                        </button>
+                        <div class="leadership-carousel-middle">
+                            <div class="leadership-carousel-indicators" role="group" aria-label="Pilih anggota">
+                                <?php foreach ($majelis as $index => $member): ?>
+                                    <button class="leadership-carousel-indicator" type="button" data-carousel-indicator="<?= $index ?>" aria-label="<?= esc('Tampilkan anggota ' . ($index + 1) . ': ' . $member['name'], 'attr') ?>" aria-pressed="false">
+                                        <span aria-hidden="true"></span>
+                                    </button>
+                                <?php endforeach; ?>
+                            </div>
+                            <button class="leadership-carousel-toggle" type="button" data-carousel-toggle aria-label="Jeda pergantian otomatis">
+                                <span data-carousel-toggle-label>Jeda</span>
+                            </button>
+                        </div>
+                        <button class="leadership-carousel-arrow" type="button" data-carousel-next aria-label="Anggota berikutnya">
+                            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m9 18 6-6-6-6m6 6H3" /></svg>
+                        </button>
+                    </div>
                 </div>
-            </div>
-        </div>
+            <?php else: ?>
+                <p class="home-empty"><?= esc($leadershipEmpty) ?></p>
+            <?php endif; ?>
+        </section>
     </div>
 
     <section class="about-preview container-xl" aria-labelledby="kenali">

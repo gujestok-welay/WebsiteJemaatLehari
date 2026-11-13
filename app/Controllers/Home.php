@@ -291,8 +291,18 @@ class Home extends BaseController
     {
         $days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
         $months = [
-            1 => 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-            'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember',
+            1 => 'Januari',
+            'Februari',
+            'Maret',
+            'April',
+            'Mei',
+            'Juni',
+            'Juli',
+            'Agustus',
+            'September',
+            'Oktober',
+            'November',
+            'Desember',
         ];
         $timezone = new \DateTimeZone('Asia/Jayapura');
         $model = new JadwalIbadahModel();
@@ -319,5 +329,32 @@ class Home extends BaseController
                 'cancelled' => false,
             ];
         }, $model->findPublicSchedules());
+    }
+
+    private function upcomingSchedules(array $schedules): array
+    {
+        $timezone = new \DateTimeZone('Asia/Jayapura');
+        $now = new \DateTimeImmutable('now', $timezone);
+        $upcoming = array_values(array_filter(
+            $schedules,
+            static function (array $schedule) use ($now, $timezone): bool {
+                $startsAt = new \DateTimeImmutable(
+                    $schedule['date'] . ' ' . str_replace('.', ':', $schedule['time']),
+                    $timezone
+                );
+
+                return $startsAt >= $now;
+            }
+        ));
+
+        usort(
+            $upcoming,
+            static fn (array $first, array $second): int => strcmp(
+                $first['date'] . ' ' . $first['time'],
+                $second['date'] . ' ' . $second['time']
+            )
+        );
+
+        return $upcoming;
     }
 }

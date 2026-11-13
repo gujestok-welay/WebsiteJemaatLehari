@@ -142,7 +142,51 @@
         border-radius: 9999px;
         white-space: nowrap;
         position: relative;
-        transition: background-color .25s ease, color .25s ease, border-color .25s ease, transform .2s ease;
+        transition: background-color .25s ease, color .25s ease, border-color .25s ease, transform .2s ease, box-shadow .25s ease;
+    }
+
+    .jadwal-page .day-pill:focus-visible,
+    .jadwal-page .kat-chip:focus-visible,
+    .jadwal-page .detail-toggle:focus-visible,
+    .jadwal-page #cari:focus-visible,
+    .jadwal-page #reset:focus-visible,
+    .jadwal-page #bn-lihat:focus-visible {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(75, 42, 107, 0.2);
+    }
+
+    .jadwal-page .search-wrap {
+        border: 1px solid var(--bs-border-color);
+        border-radius: 9999px;
+        background: rgba(255, 255, 255, 0.75);
+        box-shadow: 0 0.25rem 0.75rem rgba(36, 27, 46, 0.04);
+        transition: border-color .2s ease, box-shadow .2s ease, transform .2s ease;
+    }
+
+    .jadwal-page .search-wrap:focus-within {
+        border-color: rgba(var(--bs-primary-rgb), 0.7);
+        box-shadow: 0 0 0 4px rgba(75, 42, 107, 0.08);
+    }
+
+    .jadwal-page .search-wrap .form-control,
+    .jadwal-page .search-wrap .input-group-text {
+        background: transparent;
+        border: 0;
+    }
+
+    .jadwal-page .search-wrap .form-control::placeholder {
+        color: var(--muted);
+    }
+
+    .jadwal-page .search-wrap .input-group-text {
+        color: var(--bs-primary);
+        padding-inline: 0.95rem;
+    }
+
+    .jadwal-page .search-wrap svg {
+        width: 1.15rem;
+        height: 1.15rem;
+        display: block;
     }
 
     .jadwal-page .day-pill {
@@ -392,10 +436,15 @@
 
                 <div class="row g-2 align-items-center">
                     <div class="col-md-5">
-                        <div class="input-group rounded-pill overflow-hidden border">
+                        <div class="search-wrap input-group rounded-pill overflow-hidden">
                             <input type="search" id="cari" class="form-control border-0 shadow-none"
                                 placeholder="Cari ibadah atau tempat..." aria-label="Cari ibadah">
-                            <span class="input-group-text border-0"><img src="https://img.icons8.com/?size=50&id=83218&format=png&color=000000" alt="" class="w-100"></span>
+                            <span class="input-group-text border-0" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <circle cx="11" cy="11" r="6.5" stroke="currentColor" stroke-width="1.8"/>
+                                    <path d="M16 16L21 21" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                                </svg>
+                            </span>
                         </div>
                     </div>
                     <div class="col-md-7">

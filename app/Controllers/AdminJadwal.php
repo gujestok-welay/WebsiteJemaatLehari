@@ -76,7 +76,7 @@ class AdminJadwal extends BaseController
             return $hariDipilih === 'semua' || $item['hari_key'] === $hariDipilih;
         }));
 
-        return $this->renderAdminPage('admin/jadwal/index', [
+        $viewData = [
             'items' => $jadwal,
             'term' => $term,
             'cancelled' => $cancelledValue,
@@ -91,7 +91,18 @@ class AdminJadwal extends BaseController
             'error' => session()->getFlashdata('error'),
             'scheduleError' => session()->getFlashdata('schedule_error') ?? '',
             'scheduleModalOpen' => $this->request->getGet('create') === '1',
-        ], 'Jadwal Ibadah');
+        ];
+
+        if ($this->request->getHeaderLine('X-Schedule-Partial') === '1') {
+            $this->response
+                ->setHeader('Vary', 'X-Schedule-Partial')
+                ->setHeader('X-Schedule-Partial-Response', '1')
+                ->setHeader('Cache-Control', 'no-store');
+
+            return view('admin/jadwal/_filters-results', $viewData);
+        }
+
+        return $this->renderAdminPage('admin/jadwal/index', $viewData, 'Jadwal Ibadah');
     }
 
     public function create(): \CodeIgniter\HTTP\RedirectResponse

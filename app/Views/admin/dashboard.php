@@ -19,32 +19,21 @@ $todayLabelText = is_array($todayLabelValue)
     <p class="welcome-date">
         <?= esc($todayLabelText) ?>
         <time id="admin-live-clock" aria-label="Waktu saat ini">--:--:--</time>
-        <span id="admin-timezone">· Mendeteksi zona waktu…</span>
     </p>
     <script>
         (() => {
             const clock = document.getElementById('admin-live-clock');
-            const timezoneLabel = document.getElementById('admin-timezone');
-            const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
             const timeFormatter = new Intl.DateTimeFormat(undefined, {
                 hour: '2-digit',
                 minute: '2-digit',
                 second: '2-digit',
                 hourCycle: 'h23',
-                timeZone: timezone,
-            });
-            const offsetFormatter = new Intl.DateTimeFormat('en', {
-                timeZone: timezone,
-                timeZoneName: 'longOffset',
             });
 
             const updateClock = () => {
                 const now = new Date();
                 clock.dateTime = now.toISOString();
                 clock.textContent = timeFormatter.format(now);
-                const offset = offsetFormatter.formatToParts(now)
-                    .find((part) => part.type === 'timeZoneName')?.value ?? 'GMT';
-                timezoneLabel.textContent = `· ${offset.replace(/^GMT/, 'UTC')} (${timezone})`;
             };
 
             updateClock();
@@ -161,7 +150,6 @@ $todayLabelText = is_array($todayLabelValue)
                         <dd><?= esc($nextSchedule['lokasi']) ?></dd>
                     </div>
                 </dl>
-                <a class="text-link" href="<?= site_url('admin/jadwal') ?>">Periksa semua jadwal</a>
             </div>
         <?php endif; ?>
     </section>

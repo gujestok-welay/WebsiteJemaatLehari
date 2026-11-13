@@ -81,6 +81,14 @@ final class TestableAdminPageController extends BaseController
 
 final class AdminPartialNavigationTest extends CIUnitTestCase
 {
+    public function testAdminLayoutVersionsItsStylesheetWhenTheFileChanges(): void
+    {
+        $html = view('layouts/admin', ['title' => 'Uji cache stylesheet', 'name' => 'Admin']);
+        $version = (string) filemtime(FCPATH . 'assets/css/admin.css');
+
+        $this->assertStringContainsString('assets/css/admin.css?v=' . $version, $html);
+    }
+
     public function testCreateRouteRedirectsToNewsListWithModalOpen(): void
     {
         $controller = (new ReflectionClass(AdminBerita::class))->newInstanceWithoutConstructor();

@@ -142,6 +142,31 @@ final class AdminJadwalCrudTest extends CIUnitTestCase
         $this->assertStringContainsString('Jenis ibadah', (string) session()->getFlashdata('schedule_error'));
     }
 
+    public function testScheduleFilterRequestReturnsOnlyFilterAndResultRegions(): void
+    {
+        $this->insertSchedule(['jenis_ibadah' => 'Jadwal aktif']);
+        $this->insertSchedule([
+            'jenis_ibadah' => 'Jadwal arsip',
+            'deleted_at' => '2026-11-06 09:00:00',
+        ]);
+        service('request')->setHeader('X-Schedule-Partial', '1');
+
+        $response = service('response');
+        $controller = $this->controller(get: ['archived' => '1', 'hari' => 'minggu']);
+        $html = $controller->index();
+
+        $this->assertSame('1', $response->getHeaderLine('X-Schedule-Partial-Response'));
+        $this->assertStringContainsString('data-schedule-controls', $html);
+        $this->assertStringContainsString('data-schedule-toolbar', $html);
+        $this->assertStringContainsString('data-schedule-results', $html);
+        $this->assertStringContainsString('Jadwal arsip', $html);
+        $this->assertStringNotContainsString('Jadwal aktif', $html);
+        $this->assertStringContainsString('cancelled&#x3D;0&amp;hari&#x3D;minggu', $html);
+        $this->assertStringNotContainsString('schedule-page-title', $html);
+        $this->assertStringNotContainsString('schedule-metrics', $html);
+        $this->assertStringNotContainsString('schedule-create-modal', $html);
+    }
+
     public function testUpdateSuccessPersistsChangesAndShowsSuccess(): void
     {
         $id = $this->insertSchedule();

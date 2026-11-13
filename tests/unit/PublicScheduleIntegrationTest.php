@@ -154,7 +154,12 @@ final class PublicScheduleIntegrationTest extends CIUnitTestCase
 
     public function testHomepageUsesDatabaseScheduleInsteadOfScheduleExamples(): void
     {
-        $this->addSchedule(['jenis_ibadah' => 'Jadwal Beranda', 'lokasi' => 'Ruang Jemaat']);
+        $upcomingDate = (new DateTimeImmutable('tomorrow', new DateTimeZone('Asia/Jayapura')))->format('Y-m-d');
+        $this->addSchedule([
+            'jenis_ibadah' => 'Jadwal Beranda',
+            'tanggal' => $upcomingDate,
+            'lokasi' => 'Ruang Jemaat',
+        ]);
 
         $response = $this->get('/');
 
@@ -231,7 +236,7 @@ final class PublicScheduleIntegrationTest extends CIUnitTestCase
     {
         $response = $this->get('/');
 
-        $response->assertSee('Belum ada jadwal ibadah yang tersedia saat ini.');
+        $response->assertSee('Belum ada jadwal ibadah mendatang yang tersedia saat ini.');
         $response->assertDontSee('Lokasi contoh A');
     }
 
