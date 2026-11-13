@@ -219,6 +219,7 @@ final class PublicPagesTest extends CIUnitTestCase
         $result->assertStatus(200);
         $result->assertSee('assets/images/logo/footer-brand.png');
         $result->assertSee('Gereja Protestan Maluku Jemaat Leahari');
+        $result->assertDontSee('Informasi yang mendekatkan.');
         $result->assertDontSee('Fondasi website publik');
         $this->assertSame(
             1,

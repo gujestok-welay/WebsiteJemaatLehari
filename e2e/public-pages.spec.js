@@ -18,6 +18,31 @@ for (const { path, name } of publicPages) {
   });
 }
 
+test('logo footer berada di tengah kolomnya pada layar kecil dan besar', async ({ page }) => {
+  await page.goto('galeri');
+
+  for (const width of [390, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    const alignment = await page.locator('.site-footer section[aria-labelledby="footer-brand"]').evaluate((section) => {
+      const sectionBounds = section.getBoundingClientRect();
+      const logoBounds = section.querySelector('.footer-brand-logo').getBoundingClientRect();
+      return {
+        horizontal: Math.abs(
+          (sectionBounds.left + sectionBounds.right) / 2
+          - (logoBounds.left + logoBounds.right) / 2
+        ),
+        vertical: Math.abs(
+          (sectionBounds.top + sectionBounds.bottom) / 2
+          - (logoBounds.top + logoBounds.bottom) / 2
+        ),
+      };
+    });
+
+    expect(alignment.horizontal, `logo footer berada di tengah kolom pada ${width}px`).toBeLessThanOrEqual(1);
+    expect(alignment.vertical, `logo footer berada di tengah vertikal pada ${width}px`).toBeLessThanOrEqual(1);
+  }
+});
+
 test('navigasi publik menyediakan akses masuk pengelola berbentuk ikon tanpa teks', async ({ page }) => {
   const entry = page.getByRole('link', { name: 'Masuk ke panel pengelola' });
 
