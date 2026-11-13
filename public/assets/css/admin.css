@@ -2478,6 +2478,18 @@ button:focus-visible {
 .profile-content-list-items {
   display: grid;
 }
+#profile-worship-editor .profile-content-list-items {
+  gap: 12px;
+}
+#profile-worship-editor .profile-form-grid > .profile-content-list {
+  grid-column: 1 / -1;
+}
+#profile-worship-editor .profile-content-list-items > .profile-content-item {
+  padding: 14px;
+  border: 1px solid var(--admin-line);
+  border-radius: 16px;
+  background-color: var(--admin-paper);
+}
 .profile-content-item {
   min-width: 0;
   padding: 14px 0;
