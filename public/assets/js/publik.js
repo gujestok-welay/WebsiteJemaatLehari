@@ -85,6 +85,55 @@ if (serviceSelect) {
     });
 }
 
+document.querySelectorAll('[data-schedule-share]').forEach((button) => {
+    const wrapper = button.closest('[data-schedule-share-wrap]');
+    const status = wrapper?.querySelector('[data-schedule-share-status]');
+    if (!status) {
+        throw new Error('Tombol berbagi jadwal membutuhkan status aksesibel.');
+    }
+
+    button.addEventListener('click', async () => {
+        const name = button.dataset.scheduleName;
+        const date = button.dataset.scheduleDate;
+        const time = button.dataset.scheduleTime;
+        const location = button.dataset.scheduleLocation;
+        const url = button.dataset.scheduleUrl;
+        if (![name, date, time, location, url].every((value) => typeof value === 'string' && value.trim() !== '')) {
+            status.textContent = 'Jadwal belum bisa dibagikan karena informasinya tidak lengkap.';
+            return;
+        }
+
+        const text = `${name}\n${date}\n${time} WIT · ${location}`;
+        const shareData = {
+            title: 'Jadwal ibadah Jemaat Leahari',
+            text,
+            url,
+        };
+        button.disabled = true;
+        status.textContent = 'Menyiapkan jadwal untuk dibagikan…';
+
+        try {
+            if (typeof navigator.share === 'function') {
+                await navigator.share(shareData);
+                status.textContent = 'Selesai membagikan jadwal.';
+            } else if (typeof navigator.clipboard?.writeText === 'function') {
+                await navigator.clipboard.writeText(`${text}\n${url}`);
+                status.textContent = 'Jadwal disalin. Silakan tempel untuk membagikannya.';
+            } else {
+                status.textContent = 'Fitur berbagi tidak tersedia di perangkat ini. Buka halaman Jadwal Ibadah untuk melihat detail.';
+            }
+        } catch (error) {
+            if (error instanceof DOMException && error.name === 'AbortError') {
+                status.textContent = 'Berbagi dibatalkan.';
+            } else {
+                status.textContent = 'Jadwal belum bisa dibagikan. Coba lagi atau buka halaman Jadwal Ibadah.';
+            }
+        } finally {
+            button.disabled = false;
+        }
+    });
+});
+
 document.querySelectorAll('[data-leadership-carousel]').forEach((carousel) => {
     const slides = Array.from(carousel.querySelectorAll('[data-carousel-slide]'));
     const images = Array.from(carousel.querySelectorAll('.leader-card-image'));

@@ -60,6 +60,7 @@ $featuredActivities = $featuredActivities ?? [];
                                     'className' => 'panel-link',
                                 ]) ?>
                             </div>
+                            <?= view('components/schedule-share-button', ['schedule' => $nextService]) ?>
                         </div>
                     <?php else: ?>
                         <div class="hero-panel-card">
@@ -120,7 +121,7 @@ $featuredActivities = $featuredActivities ?? [];
                         <?php if ($schedules === []): ?>
                             <p>Belum ada jadwal ibadah mendatang yang tersedia saat ini.</p>
                         <?php else: ?>
-                            <?php foreach (array_slice($schedules, 0, 4) as $schedule): ?>
+                            <?php foreach (array_slice($schedules, 0, 4) as $index => $schedule): ?>
                                 <div class="schedule-item">
                                     <div class="schedule-day">
                                         <strong><?= esc($schedule['dom']) ?></strong>
@@ -132,6 +133,9 @@ $featuredActivities = $featuredActivities ?? [];
                                         <p><?= esc($schedule['time']) ?> WIT · <?= esc($schedule['location']) ?></p>
                                         <?php if (! empty($schedule['minister'])): ?>
                                             <p>Pelayan: <?= esc($schedule['minister']) ?></p>
+                                        <?php endif; ?>
+                                        <?php if ($index > 0): ?>
+                                            <?= view('components/schedule-share-button', ['schedule' => $schedule]) ?>
                                         <?php endif; ?>
                                     </div>
                                 </div>

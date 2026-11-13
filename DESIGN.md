@@ -61,6 +61,7 @@ Gunakan warna melalui token CSS pada `:root` agar elemen publik tetap konsisten.
 ## 4. Interaksi dan aksesibilitas
 
 - Kartu berita dan panel hero memiliki gerak hover skala hingga 1.05. Gerak otomatis carousel Majelis menyediakan tombol jeda/navigasi dan menghormati `prefers-reduced-motion`.
+- Jadwal terdekat di beranda dapat dibagikan lewat fitur berbagi perangkat, dengan salin ke clipboard sebagai fallback dan konfirmasi aksesibel.
 - Semua kontrol keyboard mempertahankan indikator fokus yang terlihat: outline ungu 3 px dengan offset.
 - Navigasi menggunakan offcanvas Bootstrap pada layar kecil; skip link mengarahkan langsung ke konten utama.
 - Konten berita contoh menampilkan badge “Contoh” pada setiap kartu.

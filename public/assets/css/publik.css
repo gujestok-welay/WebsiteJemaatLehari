@@ -1933,8 +1933,14 @@ details[open] summary {
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .quick-card:hover {
+  .quick-card:hover,
+  .hero-panel-card:hover,
+  .hero-panel-card:focus-visible {
     transform: none;
+  }
+
+  .hero-panel-card {
+    transition: none;
   }
 }
 
@@ -2036,7 +2042,7 @@ details[open] summary {
   border-radius: 17px;
 
   cursor: pointer;
-  transition: all 0.5s;
+  transition: transform 180ms ease, border-color 180ms ease;
 
   user-select: none;
   font-weight: bolder;
@@ -2662,6 +2668,68 @@ details[open] summary {
   margin: 0;
   color: var(--muted);
   font-size: 0.9rem;
+}
+
+.schedule-share {
+  display: grid;
+  justify-items: start;
+  gap: 0.2rem;
+  margin-top: 0.45rem;
+}
+
+.schedule-share-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 44px;
+  padding: 0.45rem 0.65rem;
+  border: 0;
+  border-radius: 0.5rem;
+  background: transparent;
+  color: var(--purple-dark);
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 160ms ease, color 160ms ease;
+}
+
+.schedule-share-button:hover {
+  background: rgba(102, 63, 114, 0.08);
+  color: var(--purple);
+}
+
+.schedule-share-button:focus-visible {
+  outline: 3px solid var(--purple);
+  outline-offset: 2px;
+}
+
+.schedule-share-button:disabled {
+  cursor: wait;
+  opacity: 0.72;
+}
+
+.schedule-share-button svg {
+  width: 1.1rem;
+  height: 1.1rem;
+  flex: none;
+}
+
+.schedule-share-status {
+  max-width: 34ch;
+  color: var(--muted);
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+.schedule-share-status:empty {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .schedule-share-button {
+    transition: none;
+  }
 }
 
 .home-connection {
