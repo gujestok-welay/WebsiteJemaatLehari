@@ -6,6 +6,8 @@ use CodeIgniter\Router\RouteCollection;
 $routes->get('/', 'Home::index');
 $routes->get('profil', 'Home::profil');
 $routes->get('berita', 'Home::berita');
+$routes->get('berita/gambar/(:segment)', 'Home::beritaGambar/$1');
+$routes->get('berita/(:segment)', 'Home::beritaDetail/$1');
 $routes->get('jadwal-ibadah', 'Home::jadwal');
 
 $routes->get('admin', 'AdminAuth::index');
@@ -35,6 +37,10 @@ $routes->group('admin', ['filter' => 'adminAuth'], static function ($routes): vo
 
     $routes->get('profil', 'AdminProfil::index');
     $routes->post('profil/save-profile', 'AdminProfil::saveProfile', ['filter' => 'csrf']);
+    $routes->post('profil/save-page-content', 'AdminProfil::savePageContent', ['filter' => 'csrf']);
+    $routes->post('profil/modules/territory', 'AdminProfil::saveTerritoryModule', ['filter' => 'csrf']);
+    $routes->post('profil/modules/census', 'AdminProfil::saveCensusModule', ['filter' => 'csrf']);
+    $routes->post('profil/modules/service-map', 'AdminProfil::saveServiceMap', ['filter' => 'csrf']);
     $routes->post('profil/save-periode', 'AdminProfil::savePeriode', ['filter' => 'csrf']);
     $routes->post('profil/activate-periode/(:num)', 'AdminProfil::activatePeriode/$1', ['filter' => 'csrf']);
     $routes->post('profil/save-anggota', 'AdminProfil::saveAnggota', ['filter' => 'csrf']);

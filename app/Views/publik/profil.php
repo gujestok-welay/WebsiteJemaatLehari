@@ -1,286 +1,298 @@
 <?= $this->extend('layouts/publik') ?>
 <?= $this->section('content') ?>
-
+<?php
+$hero = $content['hero'];
+$territory = $content['territory'];
+$census = $content['census'];
+$leadership = $content['leadership'];
+$worship = $content['worship'];
+$leaders = ! empty($showMembers) && ! empty($members)
+    ? array_map(static fn (array $member): array => [
+        'name' => $member['name'],
+        'role' => $member['position'],
+        'image' => $member['photo_path'] ?? null,
+    ], $members)
+    : [];
+?>
 <div class="profil-page">
-<section class="profil-hero text-white">
-    <div class="container py-5 position-relative">
-        <span class="badge rounded-pill badge-soft mb-3">Profil Jemaat</span>
-        <h1 class="display-5 fw-bold mb-3">Jemaat GPM Leahari</h1>
-        <p class="lead col-lg-7 mb-4">
-            Ibukota Kecamatan Leitimur Selatan, di pegunungan Kakusang, menghadap langsung ke Laut Banda,
-            sebuah jemaat pesisir di sisi timur Pulau Ambon.
-        </p>
-        <div class="d-flex flex-wrap gap-2">
-            <a href="#wilayah" class="btn btn-light rounded-pill px-4">Wilayah</a>
-            <a href="#jemaat" class="btn btn-outline-light rounded-pill px-4">Data Jemaat</a>
-            <a href="#ibadah" class="btn btn-outline-light rounded-pill px-4">Peribadahan</a>
+    <section class="profil-hero text-white">
+        <div class="container py-5 position-relative">
+            <span class="badge rounded-pill badge-soft mb-3"><?= esc($hero['badge']) ?></span>
+            <h1 class="display-5 fw-bold mb-3"><?= esc($hero['title']) ?></h1>
+            <p class="lead col-lg-7 mb-4"><?= esc($hero['description']) ?></p>
+            <div class="d-flex flex-wrap gap-2">
+                <?php foreach ($hero['links'] as $index => $link): ?>
+                    <a href="#<?= esc($link['target'], 'attr') ?>" class="btn <?= $index === 0 ? 'btn-light' : 'btn-outline-light' ?> rounded-pill px-4"><?= esc($link['label']) ?></a>
+                <?php endforeach; ?>
+            </div>
         </div>
-    </div>
-</section>
+    </section>
 
-<section class="container stat-strip">
-    <div class="row g-3">
-        <?php
-        $stats = [
-            ['bi-people', number_format($total_jiwa), 'Jiwa'],
-            ['bi-house-heart', $total_kk, 'Kepala Keluarga'],
-            ['bi-diagram-3', '3 Sektor · 9 Unit', 'Wilayah Pelayanan'],
-            ['bi-map', number_format($luas_total, 2) . ' Ha', 'Luas Wilayah'],
-        ];
-        foreach ($stats as $stat): ?>
-            <div class="col-6 col-lg-3">
-                <div class="card card-lift border-0 shadow h-100 rounded-4">
-                    <div class="card-body text-center py-4">
-                        <i class="bi <?= esc($stat[0]) ?> fs-2 text-primary"></i>
-                        <div class="fs-4 fw-bold mt-2"><?= esc($stat[1]) ?></div>
-                        <div class="text-body-secondary small"><?= esc($stat[2]) ?></div>
+    <section class="container stat-strip" aria-label="<?= esc($hero['stats_aria_label'], 'attr') ?>">
+        <div class="row g-3">
+            <?php foreach ($content['stats'] as $stat): ?>
+                <div class="col-6 col-lg-3">
+                    <div class="card card-lift border-0 shadow h-100 rounded-4">
+                        <div class="card-body text-center py-4">
+                            <i class="bi <?= esc($stat['icon'], 'attr') ?> fs-2 text-primary" aria-hidden="true"></i>
+                            <div class="fs-4 fw-bold mt-2"><?= esc($stat['value']) ?></div>
+                            <div class="text-body-secondary small"><?= esc($stat['label']) ?></div>
+                        </div>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        </div>
+    </section>
+
+    <section class="container py-5 service-map-section" aria-labelledby="service-map-title">
+        <div class="mb-4">
+            <h2 class="fw-bold" id="service-map-title"><?= esc($serviceMapTitle) ?></h2>
+        </div>
+        <img
+            class="img-fluid w-100 rounded-4 shadow-sm service-map-image"
+            src="<?= esc(base_url($serviceMapPath), 'attr') ?>"
+            alt="<?= esc($serviceMapAlt, 'attr') ?>"
+            width="817"
+            height="551"
+            loading="lazy"
+            decoding="async">
+    </section>
+
+    <div class="container-xl pb-4 pb-lg-5">
+        <div class="section-heading leadership-heading">
+            <h2 id="leadership-title"><?= esc($leadership['members_title']) ?></h2>
+        </div>
+        <?php if ($leaders !== []): ?>
+            <div class="leadership-carousel" data-leadership-carousel role="region" aria-roledescription="carousel" aria-label="Susunan Majelis Jemaat" data-autoplay-interval="5000">
+                <div class="leadership-grid" data-carousel-track>
+                    <?php foreach ($leaders as $index => $leader): ?>
+                        <article class="leader-card" data-carousel-slide aria-roledescription="slide" aria-label="<?= esc(($index + 1) . ' dari ' . count($leaders) . ': ' . $leader['name'], 'attr') ?>">
+                            <?php if (! empty($leader['image'])): ?>
+                                <img class="leader-card-image" src="<?= esc(base_url($leader['image']), 'attr') ?>" alt="" aria-hidden="true">
+                            <?php endif; ?>
+                            <div class="leader-card-body">
+                                <h3><?= esc($leader['name']) ?></h3>
+                                <p><?= esc($leader['role']) ?></p>
+                            </div>
+                        </article>
+                    <?php endforeach; ?>
+                </div>
+                <div class="leadership-carousel-controls" data-carousel-controls hidden>
+                    <button class="leadership-carousel-arrow" type="button" data-carousel-previous aria-label="Anggota sebelumnya">
+                        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m15 18-6-6 6-6M21 12H9" /></svg>
+                    </button>
+                    <div class="leadership-carousel-middle">
+                        <div class="leadership-carousel-indicators" role="group" aria-label="Pilih anggota">
+                            <?php foreach ($leaders as $index => $leader): ?>
+                                <button class="leadership-carousel-indicator" type="button" data-carousel-indicator="<?= $index ?>" aria-label="<?= esc('Tampilkan anggota ' . ($index + 1) . ': ' . $leader['name'], 'attr') ?>" aria-pressed="false">
+                                    <span aria-hidden="true"></span>
+                                </button>
+                            <?php endforeach; ?>
+                        </div>
+                        <button class="leadership-carousel-toggle" type="button" data-carousel-toggle aria-label="Jeda pergantian otomatis">
+                            <span data-carousel-toggle-label>Jeda</span>
+                        </button>
+                    </div>
+                    <button class="leadership-carousel-arrow" type="button" data-carousel-next aria-label="Anggota berikutnya">
+                        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m9 18 6-6-6-6m6 6H3" /></svg>
+                    </button>
+                </div>
+            </div>
+        <?php else: ?>
+            <p class="home-empty"><?= esc($leadership['members_empty']) ?></p>
+        <?php endif; ?>
+    </div>
+
+    <section id="wilayah" class="container py-5">
+        <div class="mb-4">
+            <span class="badge rounded-pill badge-soft"><?= esc($territory['section_badge']) ?></span>
+            <h2 class="fw-bold mt-2"><?= esc($territory['title']) ?></h2>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-lg-7">
+                <div class="card border-0 shadow-sm rounded-4 h-100">
+                    <div class="card-body p-4">
+                        <h3 class="h5 fw-bold"><?= esc($territory['administration_title']) ?></h3>
+                        <p class="text-body-secondary"><?= esc($territory['administration_text']) ?></p>
+                        <h3 class="h5 fw-bold mt-4"><?= esc($territory['topography_title']) ?></h3>
+                        <p class="text-body-secondary"><?= esc($territory['topography_text']) ?></p>
+                        <p class="text-body-secondary mb-0"><?= esc($territory['community_text']) ?></p>
                     </div>
                 </div>
             </div>
-        <?php endforeach; ?>
-    </div>
-</section>
 
-<section id="wilayah" class="container py-5">
-    <div class="mb-4">
-        <span class="badge rounded-pill badge-soft">2.1</span>
-        <h2 class="fw-bold mt-2">Gambaran Umum Wilayah Pelayanan</h2>
-    </div>
-
-    <div class="row g-4">
-        <div class="col-lg-7">
-            <div class="card border-0 shadow-sm rounded-4 h-100">
-                <div class="card-body p-4">
-                    <h3 class="h5 fw-bold">Status Administrasi</h3>
-                    <p class="text-body-secondary">
-                        Secara administratif pemerintahan, Jemaat GPM Leahari berada di pusat wilayah Kecamatan
-                        Leitimur Selatan dan menjadi ibukota kecamatan tersebut, masuk dalam wilayah Negeri Leahari,
-                        Kota Ambon.
-                    </p>
-                    <h3 class="h5 fw-bold mt-4">Topografi</h3>
-                    <p class="text-body-secondary">
-                        Jemaat berada di wilayah pegunungan Kakusang, di sebelah timur Pulau Ambon, pada posisi
-                        lintang 128°16′0″ dan bujur 3°42′48″, dengan kondisi wilayah yang relatif datar.
-                        Leahari merupakan salah satu jemaat di pinggiran Kota Ambon.
-                    </p>
-                    <p class="text-body-secondary mb-0">
-                        Selain warga GPM, terdapat pula warga gereja denominasi lain. Meski demikian, komunikasi dan
-                        relasi antaranggota tetap sangat baik, terlihat dari keterlibatan mereka dalam kegiatan jemaat.
-                    </p>
+            <div class="col-lg-5">
+                <div class="card border-0 shadow-sm rounded-4 h-100">
+                    <div class="card-body p-4">
+                        <h3 class="h5 fw-bold mb-3"><?= esc($territory['boundaries_title']) ?></h3>
+                        <div class="row g-2">
+                            <?php foreach ($territory['boundaries'] as $boundary): ?>
+                                <div class="col-6">
+                                    <div class="batas-item rounded-3 p-3 h-100">
+                                        <i class="bi <?= esc($boundary['icon'], 'attr') ?> text-primary fs-4" aria-hidden="true"></i>
+                                        <div class="small text-body-secondary mt-1"><?= esc($territory['boundary_prefix']) ?> <?= esc($boundary['direction']) ?></div>
+                                        <div class="fw-semibold"><?= esc($boundary['name']) ?></div>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="col-lg-5">
-            <div class="card border-0 shadow-sm rounded-4 h-100">
+        <div class="row g-4 mt-1">
+            <?php foreach ($territory['sectors'] as $sector): ?>
+                <?php
+                $areaShare = $areaTotal > 0 ? (int) round($sector['area'] / $areaTotal * 100) : 0;
+                ?>
+                <div class="col-md-4">
+                    <div class="card card-lift border-0 shadow-sm rounded-4 h-100">
+                        <div class="card-body p-4">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <h3 class="h5 fw-bold mb-0"><?= esc($territory['sector_prefix']) ?> <?= esc($sector['name']) ?></h3>
+                                <span class="badge rounded-pill badge-soft"><?= (int) $sector['units'] ?> <?= esc($territory['unit_suffix']) ?></span>
+                            </div>
+                            <div class="display-6 fw-bold mt-3"><?= number_format((float) $sector['area'], 2) ?> <small class="fs-6 text-body-secondary"><?= esc($sector['area_unit']) ?></small></div>
+                            <div class="progress mt-3" style="height:8px" role="progressbar" aria-valuenow="<?= $areaShare ?>" aria-valuemin="0" aria-valuemax="100">
+                                <div class="progress-bar" style="width: <?= $areaShare ?>%"></div>
+                            </div>
+                            <div class="small text-body-secondary mt-2"><?= $areaShare ?><?= esc($territory['area_share_suffix']) ?></div>
+                        </div>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        </div>
+
+        <div class="card border-0 shadow-sm rounded-4 mt-4">
+            <div class="card-body p-4">
+                <h3 class="h5 fw-bold mb-3"><?= esc($territory['orbit_title']) ?></h3>
+                <div class="row g-3">
+                    <?php foreach ($territory['orbitations'] as $orbit): ?>
+                        <div class="col-6 col-md-3">
+                            <div class="small text-body-secondary"><?= esc($orbit['label']) ?></div>
+                            <div class="fw-bold fs-5"><?= esc($orbit['value']) ?></div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4 mt-1">
+            <?php foreach ($content['seasons']['items'] as $index => $season): ?>
+                <div class="col-md-6">
+                    <div class="card border-0 rounded-4 h-100 musim <?= $index % 2 === 0 ? 'musim-timur' : 'musim-barat' ?>">
+                        <div class="card-body p-4">
+                            <span class="badge rounded-pill text-bg-light mb-2"><?= esc($season['period']) ?></span>
+                            <h3 class="h5 fw-bold"><?= esc($season['title']) ?></h3>
+                            <p class="mb-0"><?= esc($season['description']) ?></p>
+                        </div>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        </div>
+    </section>
+
+    <section id="jemaat" class="bg-body-tertiary py-5">
+        <div class="container">
+            <div class="mb-4">
+                <span class="badge rounded-pill badge-soft"><?= esc($census['section_badge']) ?></span>
+                <h2 class="fw-bold mt-2"><?= esc($census['title']) ?></h2>
+                <p class="text-body-secondary col-lg-8">
+                    <?= esc($census['description']) ?> <?= (int) $census['household_count'] ?><?= esc($census['household_suffix']) ?>
+                    <?= number_format($totalJiwa) ?><?= esc($census['population_suffix']) ?>
+                    <?php if (($largestAgeGroups ?? []) !== [] && (int) ($largestAgeGroupCount ?? 0) > 0): ?>
+                        <strong class="d-block mt-2">Kelompok terbanyak: <?= esc(implode(', ', $largestAgeGroups)) ?> (<?= number_format((int) $largestAgeGroupCount) ?> jiwa)</strong>
+                    <?php endif; ?>
+                </p>
+            </div>
+
+            <div class="card border-0 shadow-sm rounded-4">
                 <div class="card-body p-4">
-                    <h3 class="h5 fw-bold mb-3">Batas Wilayah</h3>
-                    <div class="row g-2">
-                        <?php foreach ($batas as $b): ?>
-                            <div class="col-6">
-                                <div class="batas-item rounded-3 p-3 h-100">
-                                    <i class="bi <?= esc($b['ikon']) ?> text-primary fs-4"></i>
-                                    <div class="small text-body-secondary mt-1">Sebelah <?= esc($b['arah']) ?></div>
-                                    <div class="fw-semibold"><?= esc($b['nama']) ?></div>
+                    <div class="d-flex flex-wrap gap-3 small mb-3">
+                        <span><span class="legend-dot bg-primary"></span> <?= esc($census['legend_male']) ?></span>
+                        <span><span class="legend-dot bg-warning"></span> <?= esc($census['legend_female']) ?></span>
+                    </div>
+
+                    <?php foreach ($ageRows as $age): ?>
+                        <?php
+                        $maleWidth = $age['total'] > 0 ? ($age['male'] / $age['total']) * $age['share'] : 0;
+                        $femaleWidth = $age['total'] > 0 ? ($age['female'] / $age['total']) * $age['share'] : 0;
+                        $ariaLabel = $census['aria_age_prefix'] . $age['label'] . $census['aria_age_suffix']
+                            . $census['aria_male_separator'] . $age['male'] . $census['aria_male_suffix']
+                            . $age['female'] . $census['aria_female_suffix'] . $age['total'] . $census['aria_total_suffix'];
+                        ?>
+                        <div class="row align-items-center g-2 mb-2">
+                            <div class="col-3 col-md-2 small fw-semibold"><?= esc($age['label']) ?> <?= esc($census['age_unit']) ?></div>
+                            <div class="col-7 col-md-8 age-range-chart">
+                                <div class="progress rounded-pill age-range-progress" style="height:18px" role="img" tabindex="0" aria-label="<?= esc($ariaLabel, 'attr') ?>">
+                                    <div class="progress-bar bg-primary" style="width: <?= $maleWidth ?>%"></div>
+                                    <div class="progress-bar bg-warning" style="width: <?= $femaleWidth ?>%"></div>
+                                </div>
+                                <div class="age-range-counts" aria-hidden="true">
+                                    <span class="age-range-count age-range-count-men"><?= esc($census['legend_male']) ?><?= esc($census['count_separator']) ?><?= esc($age['male']) ?></span>
+                                    <span class="age-range-count age-range-count-women"><?= esc($census['legend_female']) ?><?= esc($census['count_separator']) ?><?= esc($age['female']) ?></span>
                                 </div>
                             </div>
-                        <?php endforeach; ?>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="row g-4 mt-1">
-        <?php foreach ($sektor as $s):
-            $persen = round($s['luas'] / $luas_total * 100); ?>
-            <div class="col-md-4">
-                <div class="card card-lift border-0 shadow-sm rounded-4 h-100">
-                    <div class="card-body p-4">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <h3 class="h5 fw-bold mb-0">Sektor <?= esc($s['nama']) ?></h3>
-                            <span class="badge rounded-pill badge-soft"><?= (int) $s['unit'] ?> unit</span>
+                            <div class="col-2 text-end small fw-bold"><?= esc($age['total']) ?></div>
                         </div>
-                        <div class="display-6 fw-bold mt-3"><?= number_format($s['luas'], 2) ?> <small
-                                class="fs-6 text-body-secondary">Ha</small></div>
-                        <div class="progress mt-3" style="height:8px" role="progressbar" aria-valuenow="<?= $persen ?>"
-                            aria-valuemin="0" aria-valuemax="100">
-                            <div class="progress-bar" style="width: <?= $persen ?>%"></div>
-                        </div>
-                        <div class="small text-body-secondary mt-2"><?= $persen ?>% dari total wilayah</div>
-                    </div>
-                </div>
-            </div>
-        <?php endforeach; ?>
-    </div>
+                    <?php endforeach; ?>
 
-    <div class="card border-0 shadow-sm rounded-4 mt-4">
-        <div class="card-body p-4">
-            <h3 class="h5 fw-bold mb-3">Orbitasi</h3>
-            <div class="row g-3">
-                <?php foreach ($orbitasi as $o): ?>
-                    <div class="col-6 col-md-3">
-                        <div class="small text-body-secondary"><?= esc($o['label']) ?></div>
-                        <div class="fw-bold fs-5"><?= esc($o['jarak']) ?></div>
-                    </div>
-                <?php endforeach; ?>
-            </div>
-        </div>
-    </div>
-
-    <div class="row g-4 mt-1">
-        <div class="col-md-6">
-            <div class="card border-0 rounded-4 h-100 musim musim-timur">
-                <div class="card-body p-4">
-                    <span class="badge rounded-pill text-bg-light mb-2">April – Agustus</span>
-                    <h3 class="h5 fw-bold">Musim Timur</h3>
-                    <p class="mb-0">
-                        Angin Timur Tenggara bertiup kuat disertai curah hujan tinggi dan gelombang laut yang besar
-                        karena Leahari berhadapan langsung dengan Laut Banda. Pada musim ini jemaat rentan terhadap
-                        bencana alam dan pola hidup warga ikut terpengaruh.
-                    </p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="card border-0 rounded-4 h-100 musim musim-barat">
-                <div class="card-body p-4">
-                    <span class="badge rounded-pill text-bg-light mb-2">Oktober – Februari</span>
-                    <h3 class="h5 fw-bold">Musim Barat</h3>
-                    <p class="mb-0">
-                        Angin Barat Laut bertiup, kadang hujan lebat dengan angin kencang, namun tidak sebesar Musim
-                        Timur.
-                        Warga dapat bekerja lebih leluasa di laut, yang berdampak pada pendapatan keluarga.
-                    </p>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<section id="jemaat" class="bg-body-tertiary py-5">
-    <div class="container">
-        <div class="mb-4">
-            <span class="badge rounded-pill badge-soft">2.2.1</span>
-            <h2 class="fw-bold mt-2">Jumlah Kepala Keluarga dan Jiwa</h2>
-            <p class="text-body-secondary col-lg-8">
-                Rekapitulasi anggota jemaat berdasarkan kategori usia: <?= $total_kk ?> KK dan
-                <?= number_format($total_jiwa) ?> jiwa. Kelompok usia produktif (16–45 tahun) menjadi yang terbesar.
-            </p>
-        </div>
-
-        <div class="card border-0 shadow-sm rounded-4">
-            <div class="card-body p-4">
-                <div class="d-flex flex-wrap gap-3 small mb-3">
-                    <span><span class="legend-dot bg-primary"></span> Laki-laki</span>
-                    <span><span class="legend-dot bg-warning"></span> Perempuan</span>
-                </div>
-
-                <?php foreach ($usia as $u): ?>
-                    <div class="row align-items-center g-2 mb-2">
-                        <div class="col-3 col-md-2 small fw-semibold"><?= esc($u['label']) ?> th</div>
-                        <div class="col-7 col-md-8 age-range-chart">
-                            <div class="progress rounded-pill age-range-progress" style="height:18px" role="img" tabindex="0"
-                                aria-label="Jemaat usia <?= esc($u['label']) ?> tahun: <?= esc($u['lk']) ?> laki-laki, <?= esc($u['pr']) ?> perempuan, total <?= esc($u['jumlah']) ?> orang">
-                                <?php
-                                $lkWidth = $u['jumlah'] ? ($u['lk'] / $u['jumlah']) * $u['persen'] : 0;
-                                $prWidth = $u['jumlah'] ? ($u['pr'] / $u['jumlah']) * $u['persen'] : 0;
-                                ?>
-                                <div class="progress-bar bg-primary" style="width: <?= $lkWidth ?>%"></div>
-                                <div class="progress-bar bg-warning" style="width: <?= $prWidth ?>%"></div>
-                            </div>
-                            <div class="age-range-counts" aria-hidden="true">
-                                <span class="age-range-count age-range-count-men">Laki-laki: <?= esc($u['lk']) ?></span>
-                                <span class="age-range-count age-range-count-women">Perempuan: <?= esc($u['pr']) ?></span>
-                            </div>
-                        </div>
-                        <div class="col-2 text-end small fw-bold"><?= $u['jumlah'] ?></div>
-                    </div>
-                <?php endforeach; ?>
-
-                <div class="table-responsive mt-4">
-                    <table class="table table-sm align-middle mb-0">
-                        <thead class="table-light">
-                            <tr>
-                                <th>Usia (th)</th>
-                                <th class="text-end">Lk</th>
-                                <th class="text-end">Pr</th>
-                                <th class="text-end">Jumlah</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php foreach ($usia as $u): ?>
+                    <div class="table-responsive mt-4">
+                        <table class="table table-sm align-middle mb-0">
+                            <thead class="table-light">
                                 <tr>
-                                    <td><?= esc($u['label']) ?></td>
-                                    <td class="text-end"><?= $u['lk'] ?></td>
-                                    <td class="text-end"><?= $u['pr'] ?></td>
-                                    <td class="text-end fw-semibold"><?= $u['jumlah'] ?></td>
+                                    <th><?= esc($census['table_age_heading']) ?></th>
+                                    <th class="text-end"><?= esc($census['table_male_heading']) ?></th>
+                                    <th class="text-end"><?= esc($census['table_female_heading']) ?></th>
+                                    <th class="text-end"><?= esc($census['table_total_heading']) ?></th>
                                 </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                        <tfoot class="table-light fw-bold">
-                            <tr>
-                                <td colspan="3">Total jiwa</td>
-                                <td class="text-end"><?= number_format($total_jiwa) ?></td>
-                            </tr>
-                        </tfoot>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<section class="container py-5" aria-labelledby="informasi-belum-tersedia">
-    <div class="mb-4">
-        <h2 class="fw-bold" id="informasi-belum-tersedia">Susunan Majelis dan kontak</h2>
-    </div>
-    <div class="row g-4">
-        <div class="col-md-6">
-            <h3 class="h5 fw-bold">Majelis Jemaat</h3>
-            <p class="text-body-secondary">Susunan Majelis aktif belum tersedia untuk publikasi.</p>
-            <p class="text-body-secondary mb-0">
-                Nama, jabatan, dan periode pelayanan akan ditampilkan setelah data serta izin publikasinya dikonfirmasi.
-            </p>
-        </div>
-        <div class="col-md-6">
-            <h3 class="h5 fw-bold">Lokasi dan kontak</h3>
-            <dl class="contact-list">
-                <dt>Alamat lengkap</dt>
-                <dd>Menunggu konfirmasi resmi.</dd>
-                <dt>Kontak dan media sosial</dt>
-                <dd>Belum tersedia. Tidak ada nomor pribadi yang ditampilkan.</dd>
-            </dl>
-        </div>
-    </div>
-</section>
-
-<section id="ibadah" class="container py-5">
-    <div class="mb-4">
-        <span class="badge rounded-pill badge-soft">2.2.2</span>
-        <h2 class="fw-bold mt-2">Pelayanan Peribadahan</h2>
-        <p class="text-body-secondary col-lg-8">
-            Beragam jenis ibadah sepanjang pekan menumbuhkan iman dan memperkuat persekutuan. Beberapa di antaranya
-            merupakan kekhasan Jemaat Leahari.
-        </p>
-    </div>
-
-    <div class="row g-3">
-        <?php foreach ($ibadah as $i): ?>
-            <div class="col-md-6 col-lg-4">
-                <div class="card card-lift border-0 shadow-sm rounded-4 h-100">
-                    <div class="card-body p-4">
-                        <span class="badge rounded-pill badge-soft mb-2"><?= esc($i['hari']) ?></span>
-                        <h3 class="h6 fw-bold"><?= esc($i['nama']) ?></h3>
-                        <div class="small text-body-secondary"><i class="bi bi-geo-alt me-1"></i><?= esc($i['tempat']) ?>
-                        </div>
-                        <div class="small mt-1"><?= esc($i['ket']) ?></div>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($ageRows as $age): ?>
+                                    <tr>
+                                        <td><?= esc($age['label']) ?></td>
+                                        <td class="text-end"><?= esc($age['male']) ?></td>
+                                        <td class="text-end"><?= esc($age['female']) ?></td>
+                                        <td class="text-end fw-semibold"><?= esc($age['total']) ?></td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                            <tfoot class="table-light fw-bold">
+                                <tr>
+                                    <td colspan="3"><?= esc($census['table_total_label']) ?></td>
+                                    <td class="text-end"><?= number_format($totalJiwa) ?></td>
+                                </tr>
+                            </tfoot>
+                        </table>
                     </div>
                 </div>
             </div>
-        <?php endforeach; ?>
-    </div>
-</section>
-</div>
+        </div>
+    </section>
 
+    <section id="ibadah" class="container py-5">
+        <div class="mb-4">
+            <span class="badge rounded-pill badge-soft"><?= esc($worship['section_badge']) ?></span>
+            <h2 class="fw-bold mt-2"><?= esc($worship['title']) ?></h2>
+            <p class="text-body-secondary col-lg-8"><?= esc($worship['description']) ?></p>
+        </div>
+
+        <div class="row g-3">
+            <?php foreach ($worship['items'] as $item): ?>
+                <div class="col-md-6 col-lg-4">
+                    <div class="card card-lift border-0 shadow-sm rounded-4 h-100">
+                        <div class="card-body p-4">
+                            <span class="badge rounded-pill badge-soft mb-2"><?= esc($item['day']) ?></span>
+                            <h3 class="h6 fw-bold"><?= esc($item['name']) ?></h3>
+                            <div class="small text-body-secondary"><i class="bi bi-geo-alt me-1" aria-hidden="true"></i><?= esc($item['place']) ?></div>
+                            <div class="small mt-1"><?= esc($item['note']) ?></div>
+                        </div>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        </div>
+    </section>
+</div>
 <?= $this->endSection() ?>

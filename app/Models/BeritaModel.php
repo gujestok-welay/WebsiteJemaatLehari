@@ -163,7 +163,11 @@ class BeritaModel extends Model
                 ->groupEnd();
         }
 
-        return $builder->orderBy('created_at', 'DESC')->findAll();
+        return $builder
+            ->orderBy('updated_at', 'DESC')
+            ->orderBy('created_at', 'DESC')
+            ->orderBy('id', 'DESC')
+            ->findAll();
     }
 
     public static function statusOptions(): array

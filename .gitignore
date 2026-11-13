@@ -52,3 +52,5 @@ skills-lock.json
 .codex
 .impeccable
 .taste-skill
+# Playwright CLI output (may contain credentials)
+.playwright-cli/

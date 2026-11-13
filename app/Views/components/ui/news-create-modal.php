@@ -34,7 +34,7 @@ $defaultOpen = ($defaultOpen ?? false) || $newsError !== '';
     <div class="rm-form-grid">
         <div class="rm-field">
             <label for="news-create-title-input">Judul</label>
-            <input class="form-control" id="news-create-title-input" name="title" value="<?= esc(old('title') ?? '') ?>" minlength="3" maxlength="255" required>
+            <textarea class="form-control rm-news-title-field" id="news-create-title-input" name="title" rows="1" minlength="3" maxlength="255" required data-news-title><?= esc(old('title') ?? '') ?></textarea>
         </div>
         <div class="rm-field">
             <label for="news-create-slug">Slug</label>

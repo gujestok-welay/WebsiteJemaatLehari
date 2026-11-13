@@ -5,10 +5,19 @@ namespace App\Controllers;
 use App\Models\MajelisAnggotaModel;
 use App\Models\MajelisPeriodeModel;
 use App\Models\ProfilJemaatModel;
+use App\Libraries\PublicProfileContent;
+use App\Libraries\ProfileDashboardModules;
+use App\Models\JadwalIbadahModel;
 use CodeIgniter\HTTP\Files\UploadedFile;
+use CodeIgniter\HTTP\ResponseInterface;
+use InvalidArgumentException;
+use JsonException;
 
 class AdminProfil extends BaseController
 {
+    private const MAX_MODULE_JSON_BYTES = 60 * 1024;
+    private const MAX_SERVICE_MAP_BYTES = 5 * 1024 * 1024;
+
     protected ProfilJemaatModel $profileModel;
     protected MajelisPeriodeModel $periodeModel;
     protected MajelisAnggotaModel $anggotaModel;
@@ -29,7 +38,32 @@ class AdminProfil extends BaseController
             'address' => '',
             'maps_url' => '',
             'contact_info' => '',
+            'page_content' => null,
         ];
+
+        $pageContent = PublicProfileContent::fromProfile($profile);
+        $oldContent = old('content');
+        if (is_array($oldContent)) {
+            $pageContent = PublicProfileContent::mergeForDisplay(PublicProfileContent::defaults(), $oldContent);
+        }
+
+        $censusSummary = ProfileDashboardModules::censusSummary($pageContent['census']);
+        $pageContent['stats'][0]['value'] = (string) $censusSummary['totalJiwa'];
+        $pageContent['stats'][1]['value'] = (string) $censusSummary['householdCount'];
+        $territorySaved = trim((string) ($profile['territory_content'] ?? '')) !== '';
+        $censusSaved = trim((string) ($profile['census_content'] ?? '')) !== '';
+        $serviceMapPath = trim((string) ($profile['service_map_path'] ?? ''));
+        if ($serviceMapPath === '') {
+            $serviceMapPath = 'assets/images/gereja/Peta Pelayanan.png';
+        }
+        $serviceMapAlt = trim((string) ($profile['service_map_alt'] ?? ''));
+        if ($serviceMapAlt === '') {
+            $serviceMapAlt = 'Peta pelayanan Jemaat Leahari';
+        }
+        $serviceMapTitle = trim((string) ($profile['service_map_title'] ?? ''));
+        if ($serviceMapTitle === '') {
+            $serviceMapTitle = 'Peta Pelayanan';
+        }
 
         $periods = $this->periodeModel->orderBy('start_date', 'DESC')->findAll();
         $selectedPeriod = (int) ($this->request->getGet('period_id') ?: $this->periodeModel->where('is_active', 1)->first()['id'] ?? 0);
@@ -39,17 +73,233 @@ class AdminProfil extends BaseController
             $members = $this->anggotaModel->findByPeriode($selectedPeriod);
         }
 
+        $editPeriodId = (int) $this->request->getGet('edit_period');
+        $editPeriod = $editPeriodId > 0 ? $this->periodeModel->find($editPeriodId) : null;
+        $editMemberId = (int) $this->request->getGet('edit_member');
+        $editMember = $editMemberId > 0 ? $this->anggotaModel->find($editMemberId) : null;
+        if ($editMember !== null && (int) $editMember['periode_id'] !== $selectedPeriod) {
+            $editMember = null;
+        }
+
         return $this->renderAdminPage('admin/profil/index', [
             'profile' => $profile,
+            'pageContent' => $pageContent,
             'periods' => $periods,
             'selectedPeriod' => $selectedPeriod,
             'members' => $members,
+            'territorySummary' => count($pageContent['territory']['boundaries']) . ' batas · ' . count($pageContent['seasons']['items']) . ' musim',
+            'territoryStatus' => $territorySaved ? 'Tersimpan' : 'Belum diperbarui',
+            'censusStatus' => $censusSaved ? 'Tersimpan' : 'Konten awal',
+            'householdCount' => $censusSummary['householdCount'],
+            'totalJiwa' => $censusSummary['totalJiwa'],
+            'largestAgeGroups' => $censusSummary['largestAgeGroups'],
+            'scheduleCount' => count((new JadwalIbadahModel())->findPublicSchedules()),
+            'serviceMapPath' => $serviceMapPath,
+            'serviceMapTitle' => $serviceMapTitle,
+            'serviceMapAlt' => $serviceMapAlt,
+            'serviceMapSaved' => ! empty($profile['service_map_path']),
+            'editPeriod' => $editPeriod,
+            'editMember' => $editMember,
             'success' => session()->getFlashdata('success'),
             'error' => session()->getFlashdata('error'),
         ], 'Profil & Majelis');
     }
 
-    public function saveProfile(): \CodeIgniter\HTTP\RedirectResponse
+    public function saveTerritoryModule(): ResponseInterface
+    {
+        try {
+            $module = ProfileDashboardModules::normalizeTerritory($this->request->getPost());
+            $json = json_encode($module, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR);
+        } catch (InvalidArgumentException | JsonException $exception) {
+            return $this->moduleError($exception->getMessage(), 422);
+        }
+
+        if (strlen($json) > self::MAX_MODULE_JSON_BYTES) {
+            return $this->moduleError('Data wilayah dan musim maksimal 60 KB.', 422);
+        }
+
+        if (! $this->persistProfileColumns(['territory_content' => $json])) {
+            return $this->moduleError('Data wilayah gagal disimpan. Coba kembali.', 500);
+        }
+
+        return $this->response->setStatusCode(200)->setJSON([
+            'success' => true,
+            'message' => 'Gambaran umum wilayah berhasil disimpan.',
+            'csrf' => ['name' => csrf_token(), 'hash' => csrf_hash()],
+            'summary' => [
+                'territoryStatus' => 'Tersimpan',
+                'territorySummary' => count($module['territory']['boundaries']) . ' batas · ' . count($module['seasons']['items']) . ' musim',
+            ],
+        ]);
+    }
+
+    public function saveCensusModule(): ResponseInterface
+    {
+        try {
+            $census = ProfileDashboardModules::normalizeCensus($this->request->getPost());
+            $json = json_encode($census, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR);
+        } catch (InvalidArgumentException | JsonException $exception) {
+            return $this->moduleError($exception->getMessage(), 422);
+        }
+
+        if (strlen($json) > self::MAX_MODULE_JSON_BYTES) {
+            return $this->moduleError('Data jumlah KK dan kelompok usia maksimal 60 KB.', 422);
+        }
+
+        if (! $this->persistProfileColumns(['census_content' => $json])) {
+            return $this->moduleError('Data jumlah KK dan jiwa gagal disimpan. Coba kembali.', 500);
+        }
+
+        $summary = ProfileDashboardModules::censusSummary($census);
+
+        return $this->response->setStatusCode(200)->setJSON([
+            'success' => true,
+            'message' => 'Data jumlah KK dan jiwa berhasil disimpan.',
+            'csrf' => ['name' => csrf_token(), 'hash' => csrf_hash()],
+            'summary' => $summary,
+        ]);
+    }
+
+    public function saveServiceMap(): ResponseInterface
+    {
+        $post = $this->request->getPost();
+        $profile = $this->profileModel->first() ?? [];
+        $altInput = $post['service_map_alt'] ?? null;
+        if (! is_string($altInput)) {
+            return $this->moduleError('Alt text wajib berupa teks.', 422, 'service_map_alt');
+        }
+        $alt = trim($altInput);
+        if ($alt === '' || mb_strlen($alt) > 255) {
+            return $this->moduleError('Alt text wajib diisi dan maksimal 255 karakter.', 422, 'service_map_alt');
+        }
+        $titleInput = $post['service_map_title'] ?? null;
+        if ($titleInput !== null && ! is_string($titleInput)) {
+            return $this->moduleError('Judul peta harus berupa teks.', 422, 'service_map_title');
+        }
+        $title = trim((string) ($titleInput ?? $profile['service_map_title'] ?? 'Peta Pelayanan'));
+        if ($title === '' || mb_strlen($title) > 150) {
+            return $this->moduleError('Judul peta wajib diisi dan maksimal 150 karakter.', 422, 'service_map_title');
+        }
+
+        $file = $this->request->getFile('service_map');
+        $fileWasUploaded = $file instanceof UploadedFile && $file->getError() !== UPLOAD_ERR_NO_FILE;
+        if (! $fileWasUploaded) {
+            if (! $this->persistProfileColumns([
+                'service_map_title' => $title,
+                'service_map_alt' => $alt,
+            ])) {
+                return $this->moduleError('Judul dan alt text peta gagal disimpan. Coba kembali.', 500);
+            }
+
+            return $this->response->setStatusCode(200)->setJSON([
+                'success' => true,
+                'message' => 'Judul dan alt text peta berhasil disimpan.',
+                'csrf' => ['name' => csrf_token(), 'hash' => csrf_hash()],
+                'summary' => ['serviceMapTitle' => $title, 'serviceMapAlt' => $alt],
+            ]);
+        }
+
+        if (! $file->isValid()) {
+            $message = in_array($file->getError(), [UPLOAD_ERR_INI_SIZE, UPLOAD_ERR_FORM_SIZE], true)
+                ? 'Ukuran peta maksimal 5 MB.'
+                : 'File peta tidak valid. Pilih ulang gambar lalu coba kembali.';
+            return $this->moduleError($message, 422, 'service_map');
+        }
+
+        if ($file->getSize() > self::MAX_SERVICE_MAP_BYTES) {
+            return $this->moduleError('Ukuran peta maksimal 5 MB.', 422, 'service_map');
+        }
+
+        $allowedTypes = [
+            'jpg' => 'image/jpeg',
+            'jpeg' => 'image/jpeg',
+            'png' => 'image/png',
+            'webp' => 'image/webp',
+        ];
+        $extension = strtolower($file->getExtension());
+        $mime = $file->getMimeType();
+        $imageInfo = getimagesize($file->getTempName());
+        if (! isset($allowedTypes[$extension]) || $allowedTypes[$extension] !== $mime || $imageInfo === false || $imageInfo['mime'] !== $mime) {
+            return $this->moduleError('Format gambar tidak valid. Gunakan JPG, PNG, atau WEBP.', 422, 'service_map');
+        }
+
+        $directory = FCPATH . 'uploads/profil/peta';
+        if (! is_dir($directory) && ! mkdir($directory, 0775, true) && ! is_dir($directory)) {
+            return $this->moduleError('Direktori penyimpanan peta tidak dapat dibuat.', 500);
+        }
+
+        $fileName = $file->getRandomName();
+        if (! $file->move($directory, $fileName)) {
+            return $this->moduleError('Gambar peta gagal diunggah. Coba kembali.', 500);
+        }
+
+        $storedPath = 'uploads/profil/peta/' . basename($fileName);
+        $saved = false;
+        try {
+            $saved = $this->persistProfileColumns([
+                'service_map_path' => $storedPath,
+                'service_map_title' => $title,
+                'service_map_alt' => $alt,
+            ]);
+        } finally {
+            if (! $saved && is_file(FCPATH . $storedPath)) {
+                unlink(FCPATH . $storedPath);
+            }
+        }
+
+        if (! $saved) {
+            return $this->moduleError('Gambar peta sudah diunggah, tetapi gagal disimpan. Peta lama tetap digunakan.', 500);
+        }
+
+        return $this->response->setStatusCode(200)->setJSON([
+            'success' => true,
+            'message' => 'Peta pelayanan berhasil diperbarui.',
+            'csrf' => ['name' => csrf_token(), 'hash' => csrf_hash()],
+            'summary' => [
+                'serviceMapPath' => $storedPath,
+                'serviceMapTitle' => $title,
+                'serviceMapUrl' => base_url($storedPath),
+                'serviceMapAlt' => $alt,
+                'serviceMapStatus' => 'Tersimpan',
+            ],
+        ]);
+    }
+
+    private function persistProfileColumns(array $columns): bool
+    {
+        $now = date('Y-m-d H:i:s');
+        $data = $columns + [
+            'updated_by' => (int) session()->get('admin_id'),
+            'updated_at' => $now,
+        ];
+        $profile = $this->profileModel->first();
+        $builder = db_connect()->table('profil_jemaat');
+
+        if ($profile !== null) {
+            return $builder->where('id', (int) $profile['id'])->update($data);
+        }
+
+        return $builder->insert($data + [
+            'created_by' => (int) session()->get('admin_id'),
+            'created_at' => $now,
+        ]);
+    }
+
+    private function moduleError(string $message, int $status, ?string $field = null): ResponseInterface
+    {
+        $response = [
+            'success' => false,
+            'message' => $message,
+            'csrf' => ['name' => csrf_token(), 'hash' => csrf_hash()],
+        ];
+        if ($field !== null) {
+            $response['errors'] = [$field => $message];
+        }
+
+        return $this->response->setStatusCode($status)->setJSON($response);
+    }
+
+    public function saveProfile(): ResponseInterface
     {
         $id = (int) $this->request->getPost('id');
         $history = trim((string) $this->request->getPost('history'));
@@ -59,6 +309,14 @@ class AdminProfil extends BaseController
         $contactInfo = trim((string) $this->request->getPost('contact_info'));
 
         if ($history === '' || $visionMission === '' || $address === '' || $contactInfo === '') {
+            if ($this->request->isAJAX()) {
+                return $this->profileAjaxError('Lengkapi sejarah, visi-misi, alamat, dan kontak resmi.', 422, [
+                    'history' => 'Sejarah wajib diisi.',
+                    'vision_mission' => 'Visi dan misi wajib diisi.',
+                    'address' => 'Alamat wajib diisi.',
+                    'contact_info' => 'Kontak resmi wajib diisi.',
+                ]);
+            }
             return redirect()->back()->withInput()->with('error', 'Semua field profil Jemaat wajib diisi.');
         }
 
@@ -73,16 +331,92 @@ class AdminProfil extends BaseController
         ];
 
         if ($id > 0) {
-            $this->profileModel->update($id, $data);
+            $saved = $this->profileModel->update($id, $data);
         } else {
             $data['created_by'] = $adminId;
-            $this->profileModel->insert($data);
+            $saved = $this->profileModel->insert($data);
+        }
+
+        if ($saved === false) {
+            if ($this->request->isAJAX()) {
+                return $this->profileAjaxError('Data jemaat gagal disimpan. Periksa kembali isian lalu coba lagi.', 422);
+            }
+            return redirect()->back()->withInput()->with('error', 'Data jemaat gagal disimpan. Periksa kembali isian lalu coba lagi.');
+        }
+
+        if ($this->request->isAJAX()) {
+            return $this->profileAjaxSuccess('Data jemaat berhasil disimpan.');
         }
 
         return redirect()->to(site_url('admin/profil'))->with('success', 'Data profil Jemaat berhasil disimpan.');
     }
 
-    public function savePeriode(): \CodeIgniter\HTTP\RedirectResponse
+    public function savePageContent(): ResponseInterface
+    {
+        $input = $this->request->getPost('content');
+        if (! is_array($input)) {
+            if ($this->request->isAJAX()) {
+                return $this->profileAjaxError('Konten halaman profil tidak terkirim. Periksa kembali lalu simpan ulang.', 422);
+            }
+            return redirect()->back()->with('error', 'Konten halaman profil tidak terkirim. Periksa kembali lalu simpan ulang.');
+        }
+
+        $profile = $this->profileModel->first();
+        $currentContent = PublicProfileContent::fromProfile($profile ?? []);
+        foreach (['territory', 'seasons', 'census'] as $moduleKey) {
+            if (! array_key_exists($moduleKey, $input)) {
+                $input[$moduleKey] = $currentContent[$moduleKey];
+            }
+        }
+
+        try {
+            $content = PublicProfileContent::normalize($input);
+            $json = json_encode($content, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR);
+        } catch (InvalidArgumentException | JsonException $exception) {
+            if ($this->request->isAJAX()) {
+                return $this->profileAjaxError($exception->getMessage(), 422);
+            }
+            return redirect()->back()->withInput()->with('error', $exception->getMessage());
+        }
+
+        if (strlen($json) > 60 * 1024) {
+            if ($this->request->isAJAX()) {
+                return $this->profileAjaxError('Konten halaman maksimal 60 KB. Kurangi panjang teks atau jumlah item.', 422);
+            }
+            return redirect()->back()->withInput()->with('error', 'Konten halaman maksimal 60 KB. Kurangi panjang teks atau jumlah item.');
+        }
+
+        $now = date('Y-m-d H:i:s');
+        $data = [
+            'page_content' => $json,
+            'updated_by' => (int) session()->get('admin_id'),
+            'updated_at' => $now,
+        ];
+
+        $builder = db_connect()->table('profil_jemaat');
+        if ($profile !== null) {
+            $saved = $builder->where('id', (int) $profile['id'])->update($data);
+        } else {
+            $data['created_by'] = (int) session()->get('admin_id');
+            $data['created_at'] = $now;
+            $saved = $builder->insert($data);
+        }
+
+        if (! $saved) {
+            if ($this->request->isAJAX()) {
+                return $this->profileAjaxError('Konten halaman profil gagal disimpan. Coba kembali.', 500);
+            }
+            return redirect()->back()->withInput()->with('error', 'Konten halaman profil gagal disimpan. Coba kembali.');
+        }
+
+        if ($this->request->isAJAX()) {
+            return $this->profileAjaxSuccess('Konten halaman Profil publik berhasil disimpan.');
+        }
+
+        return redirect()->to(site_url('admin/profil'))->with('success', 'Konten halaman profil publik berhasil disimpan.');
+    }
+
+    public function savePeriode(): ResponseInterface
     {
         $id = (int) $this->request->getPost('id');
         $periodName = trim((string) $this->request->getPost('period_name'));
@@ -91,6 +425,12 @@ class AdminProfil extends BaseController
         $isActive = (int) $this->request->getPost('is_active');
 
         if ($periodName === '' || $startDate === '') {
+            if ($this->request->isAJAX()) {
+                return $this->profileAjaxError('Nama periode dan tanggal mulai wajib diisi.', 422, [
+                    'period_name' => 'Nama periode wajib diisi.',
+                    'start_date' => 'Tanggal mulai wajib diisi.',
+                ]);
+            }
             return redirect()->back()->withInput()->with('error', 'Nama periode dan tanggal mulai wajib diisi.');
         }
 
@@ -102,35 +442,55 @@ class AdminProfil extends BaseController
             'updated_by' => $adminId,
         ];
 
-        if ($isActive === 1) {
-            $this->periodeModel->setActivePeriod($id > 0 ? $id : 0, $adminId);
-            $data['is_active'] = 1;
+        if ($id > 0) {
+            if ($isActive === 1) {
+                $this->periodeModel->setActivePeriod($id, $adminId);
+            }
+            $data['is_active'] = $isActive === 1 ? 1 : 0;
+            $saved = $this->periodeModel->update($id, $data);
         } else {
             $data['is_active'] = 0;
+            $data['created_by'] = $adminId;
+            $newId = $this->periodeModel->insert($data);
+            $saved = $newId !== false;
+            if ($newId !== false && $isActive === 1) {
+                $this->periodeModel->setActivePeriod((int) $newId, $adminId);
+            }
         }
 
-        if ($id > 0) {
-            $this->periodeModel->update($id, $data);
-        } else {
-            $data['created_by'] = $adminId;
-            $this->periodeModel->insert($data);
+        if ($saved === false) {
+            if ($this->request->isAJAX()) {
+                return $this->profileAjaxError('Periode Majelis gagal disimpan. Periksa data lalu coba kembali.', 422);
+            }
+            return redirect()->back()->withInput()->with('error', 'Periode Majelis gagal disimpan. Periksa data lalu coba kembali.');
+        }
+
+        if ($this->request->isAJAX()) {
+            return $this->profileAjaxSuccess('Periode kepengurusan berhasil disimpan.');
         }
 
         return redirect()->to(site_url('admin/profil'))->with('success', 'Periode kepengurusan berhasil disimpan.');
     }
 
-    public function activatePeriode(int $id): \CodeIgniter\HTTP\RedirectResponse
+    public function activatePeriode(int $id): ResponseInterface
     {
         $period = $this->periodeModel->find($id);
         if (! $period) {
+            if ($this->request->isAJAX()) {
+                return $this->profileAjaxError('Periode tidak ditemukan. Muat ulang halaman lalu coba kembali.', 404);
+            }
             return redirect()->to(site_url('admin/profil'))->with('error', 'Periode tidak ditemukan.');
         }
 
         $this->periodeModel->setActivePeriod($id, (int) session()->get('admin_id'));
+        if ($this->request->isAJAX()) {
+            return $this->profileAjaxSuccess('Periode aktif berhasil diperbarui.');
+        }
+
         return redirect()->to(site_url('admin/profil'))->with('success', 'Periode aktif berhasil diperbarui.');
     }
 
-    public function saveAnggota(): \CodeIgniter\HTTP\RedirectResponse
+    public function saveAnggota(): ResponseInterface
     {
         $id = (int) $this->request->getPost('id');
         $periodeId = (int) $this->request->getPost('periode_id');
@@ -138,6 +498,13 @@ class AdminProfil extends BaseController
         $position = trim((string) $this->request->getPost('position'));
 
         if ($periodeId <= 0 || $name === '' || $position === '') {
+            if ($this->request->isAJAX()) {
+                return $this->profileAjaxError('Periode, nama, dan jabatan anggota wajib diisi.', 422, [
+                    'periode_id' => 'Pilih periode Majelis.',
+                    'name' => 'Nama anggota wajib diisi.',
+                    'position' => 'Jabatan wajib diisi.',
+                ]);
+            }
             return redirect()->back()->withInput()->with('error', 'Periode, nama, dan jabatan anggota wajib diisi.');
         }
 
@@ -146,6 +513,9 @@ class AdminProfil extends BaseController
         if ($uploadedFile instanceof UploadedFile && $uploadedFile->getError() !== UPLOAD_ERR_NO_FILE) {
             $uploadResult = $this->handlePhotoUpload($uploadedFile, $id > 0 ? $id : null);
             if ($uploadResult['success'] === false) {
+                if ($this->request->isAJAX()) {
+                    return $this->profileAjaxError($uploadResult['message'], 422, ['photo' => $uploadResult['message']]);
+                }
                 return redirect()->back()->withInput()->with('error', $uploadResult['message']);
             }
             $photoPath = $uploadResult['file'];
@@ -167,19 +537,33 @@ class AdminProfil extends BaseController
             if ($current && empty($photoPath) && ! empty($current['photo_path'])) {
                 $data['photo_path'] = $current['photo_path'];
             }
-            $this->anggotaModel->update($id, $data);
+            $saved = $this->anggotaModel->update($id, $data);
         } else {
             $data['created_by'] = (int) session()->get('admin_id');
-            $this->anggotaModel->insert($data);
+            $saved = $this->anggotaModel->insert($data);
+        }
+
+        if ($saved === false) {
+            if ($this->request->isAJAX()) {
+                return $this->profileAjaxError('Data anggota Majelis gagal disimpan. Periksa kembali isian.', 422);
+            }
+            return redirect()->back()->withInput()->with('error', 'Data anggota Majelis gagal disimpan. Periksa kembali isian.');
+        }
+
+        if ($this->request->isAJAX()) {
+            return $this->profileAjaxSuccess('Data anggota Majelis berhasil disimpan.');
         }
 
         return redirect()->to(site_url('admin/profil?period_id=' . $periodeId))->with('success', 'Data anggota Majelis berhasil disimpan.');
     }
 
-    public function deleteAnggota(int $id): \CodeIgniter\HTTP\RedirectResponse
+    public function deleteAnggota(int $id): ResponseInterface
     {
         $member = $this->anggotaModel->find($id);
         if (! $member) {
+            if ($this->request->isAJAX()) {
+                return $this->profileAjaxError('Anggota Majelis tidak ditemukan. Muat ulang halaman lalu coba kembali.', 404);
+            }
             return redirect()->to(site_url('admin/profil'))->with('error', 'Anggota Majelis tidak ditemukan.');
         }
 
@@ -188,7 +572,40 @@ class AdminProfil extends BaseController
         }
 
         $this->anggotaModel->delete($id);
+        if ($this->request->isAJAX()) {
+            return $this->profileAjaxSuccess('Anggota Majelis berhasil dihapus.');
+        }
+
         return redirect()->to(site_url('admin/profil?period_id=' . (int) $member['periode_id']))->with('success', 'Anggota Majelis berhasil dihapus.');
+    }
+
+    private function profileAjaxSuccess(string $message): ResponseInterface
+    {
+        return $this->response->setStatusCode(200)->setJSON([
+            'success' => true,
+            'message' => $message,
+            'csrf' => [
+                'name' => csrf_token(),
+                'hash' => csrf_hash(),
+            ],
+        ]);
+    }
+
+    private function profileAjaxError(string $message, int $status, array $errors = []): ResponseInterface
+    {
+        $response = [
+            'success' => false,
+            'message' => $message,
+            'csrf' => [
+                'name' => csrf_token(),
+                'hash' => csrf_hash(),
+            ],
+        ];
+        if ($errors !== []) {
+            $response['errors'] = $errors;
+        }
+
+        return $this->response->setStatusCode($status)->setJSON($response);
     }
 
     protected function handlePhotoUpload(UploadedFile $file, ?int $id = null): array

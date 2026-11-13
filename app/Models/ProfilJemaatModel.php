@@ -21,6 +21,12 @@ class ProfilJemaatModel extends Model
         'address',
         'maps_url',
         'contact_info',
+        'page_content',
+        'territory_content',
+        'census_content',
+        'service_map_path',
+        'service_map_title',
+        'service_map_alt',
         'created_by',
         'updated_by',
     ];
