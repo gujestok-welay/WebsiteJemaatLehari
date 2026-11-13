@@ -15,7 +15,20 @@ class BeritaModel extends Model
     protected $useTimestamps = true;
     protected $createdField = 'created_at';
     protected $updatedField = 'updated_at';
-    protected $allowedFields = ['title', 'slug', 'summary', 'content', 'status', 'archived_from_status', 'cover_image', 'created_by', 'updated_by'];
+    protected $allowedFields = [
+        'title',
+        'slug',
+        'summary',
+        'content',
+        'status',
+        'archived_from_status',
+        'cover_image',
+        'article_type',
+        'source_url',
+        'source_name',
+        'created_by',
+        'updated_by',
+    ];
 
     protected $validationRules = [
         'id' => 'permit_empty|integer',
@@ -25,6 +38,9 @@ class BeritaModel extends Model
         'content' => 'required',
         'status' => 'required|in_list[Draft,Terbit,Arsip]',
         'archived_from_status' => 'permit_empty|in_list[Draft,Terbit]',
+        'article_type' => 'permit_empty|in_list[internal,external]',
+        'source_url' => 'permit_empty|max_length[2048]',
+        'source_name' => 'permit_empty|max_length[255]',
     ];
 
     /**

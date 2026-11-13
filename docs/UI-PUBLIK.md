@@ -4,6 +4,14 @@ Implementasi memiliki halaman Beranda, Profil, Berita, Galeri, dan Jadwal Ibadah
 
 Detail berita tersedia pada `/berita/{slug}` hanya untuk berita berstatus `Terbit`. Slug yang tidak ditemukan atau tidak publik menghasilkan halaman 404 dengan tautan kembali ke daftar berita. Gambar unggahan hanya disajikan melalui route publik ketika masih terhubung ke berita terbit.
 
+## Berita dari sumber eksternal
+
+Media Center dapat memilih jenis **Berita dari sumber lain**, menempelkan URL HTTP(S), lalu meminta sistem mengambil judul, nama sumber, ringkasan metadata, dan kandidat gambar dari halaman. Ringkasan kandidat hanya mengisi draf isian dan perlu ditinjau sebelum terbit. Gambar ditampilkan sebagai pratinjau; operator dapat mengonfirmasi izin dan menyimpannya sebagai cover lokal, atau mengunggah cover lain. Bila metadata tidak tersedia, judul, ringkasan, dan sumber tetap dapat diisi manual. Pengambilan otomatis hanya mengikuti URL publik tanpa redirect; alamat IP langsung, domain privat, kredensial URL, dan port nonstandar ditolak. Cover eksternal dibatasi 10 MB, diverifikasi tipe dan isi gambarnya, lalu disimpan di luar direktori publik.
+
+Detail publik menampilkan atribusi sumber, ringkasan yang sudah ditinjau, cover lokal yang dipilih, dan tautan ke artikel asli; isi artikel sumber tidak disalin ke website. Berita eksternal tanpa cover yang dipilih tidak memakai gambar fallback berita internal.
+
+Migrasi `2026-11-12-000001_AddExternalNewsAttribution` menambahkan jenis berita dan atribusi sebagai kolom nullable/default tanpa menghapus berita lama; entri lama tetap bertipe internal. Fitur ini adalah perluasan implementasi lokal dari berita eksternal P1 pada PRD, bukan bukti persetujuan mitra atau perubahan baseline P0.
+
 Galeri kegiatan tersedia pada `/galeri` dan `/galeri/{slug}`. Kegiatan Draft atau Arsip serta gambarnya tidak tersedia melalui route publik. Beranda menampilkan paling banyak tiga kegiatan terbit yang dipilih secara khusus dari panel admin. Pengelolaan galeri tersedia pada `/admin/galeri`; unggahan gambar disimpan di luar direktori publik dan disajikan melalui route yang memeriksa status publikasi.
 
 ## Editor Profil publik
@@ -36,8 +44,9 @@ Beranda hanya menampilkan jadwal yang belum dimulai menurut zona waktu WIT, diur
 
 ## File implementasi
 
-- `app/Config/Routes.php`: enam route GET publik eksplisit untuk empat halaman utama, detail berita, dan gambar berita.
+- `app/Config/Routes.php`: route publik eksplisit untuk halaman utama, detail dan gambar berita, serta route metadata berita eksternal yang hanya tersedia bagi admin.
 - `app/Controllers/Home.php`: menyiapkan data dan merender halaman; mengambil berita publik dari `BeritaModel` saat database dikonfigurasi dan membaca konten Profil dari model profil jemaat. Detail dan gambar berita hanya tersedia untuk berita terbit.
+- `app/Controllers/AdminBerita.php` dan `app/Libraries/ExternalNewsMetadata.php`: mengelola atribusi sumber, mengambil metadata halaman publik secara terbatas, dan menyediakan isian manual bila metadata gagal.
 - `app/Libraries/PublicSampleContent.php`: sumber berita contoh bila database belum dikonfigurasi dan tiga jadwal contoh; tidak melakukan persistence.
 - `app/Views/layouts/publik.php`: dokumen HTML, aset lokal, skip link, pemberitahuan dummy, slot konten.
 - `app/Views/partials/navbar.php`: navigasi responsif dengan penanda halaman aktif dan dropdown Profil ke ringkasan Profil Jemaat, Peta Pelayanan, Majelis Jemaat, Gambaran Umum Wilayah Pelayanan, Jumlah Kepala Keluarga dan Jiwa, serta Pelayanan Peribadahan.
@@ -45,12 +54,13 @@ Beranda hanya menampilkan jadwal yang belum dimulai menurut zona waktu WIT, diur
 - `app/Views/publik/beranda.php`: pengantar, berita terbaru, jadwal mendatang, akses profil; bagian berita/jadwal mengikuti hero sebelum bagian Majelis.
 - `app/Views/publik/profil.php`: profil wilayah, statistik, Majelis, kontak, dan peribadahan dari konten yang dapat dikelola melalui panel admin.
 - `app/Views/publik/berita.php`: daftar berita terbit dari database atau fallback contoh; filter kategori hanya tersedia pada konten contoh yang memiliki kategori.
-- `app/Views/publik/berita_detail.php` dan `app/Views/publik/berita_tidak_ditemukan.php`: isi berita publik dan halaman 404 dengan navigasi kembali ke daftar berita.
+- `app/Views/publik/berita_detail.php` dan `app/Views/publik/berita_tidak_ditemukan.php`: isi berita publik, atribusi dan tautan berita eksternal, serta halaman 404 dengan navigasi kembali ke daftar berita.
 - `app/Views/publik/jadwal.php`: daftar lengkap jadwal dan filter jenis ibadah.
 - `public/assets/css/publik.css`: token palet, tipografi, responsivitas, fokus keyboard, reduced motion, dan cetak.
 - `public/assets/js/publik.js`: progressive enhancement filter jadwal dan carousel Majelis dengan pergantian otomatis 5 detik, kontrol jeda/navigasi, dukungan reduced motion, dan seluruh kartu tetap tersedia tanpa JavaScript.
 - `public/assets/vendor/bootstrap/bootstrap.min.css` dan `bootstrap.bundle.min.js`: distribusi Bootstrap 5.3.8, lisensi MIT pada header aset.
-- `tests/unit/PublicPagesTest.php` dan `tests/unit/PublicNewsDetailTest.php`: regresi halaman publik, konten berita, akses detail berdasarkan slug, penolakan draft/arsip, dan penyajian gambar hanya untuk berita terbit.
+- `tests/unit/PublicPagesTest.php`, `tests/unit/PublicNewsDetailTest.php`, dan `tests/unit/ExternalNewsMetadataTest.php`: regresi halaman publik, atribusi berita eksternal, pemrosesan metadata dan validasi URL.
+- `e2e/external-news.spec.js`: pengujian alur Media Center dari formulir hingga detail berita publik.
 - `composer.lock`: hasil instalasi dependensi untuk versi yang dapat direproduksi; `composer.json` dan framework tidak diubah.
 - `.gitignore`: mencegah dependensi, pengaturan rahasia, dan hasil pemeriksaan lokal ikut ter-commit.
 

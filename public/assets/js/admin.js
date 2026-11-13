@@ -25,6 +25,19 @@
         preview.hidden = true;
     }
 
+    function clearNewsSourceImagePreview(form) {
+        var imageUrl = form.querySelector('[data-news-source-image-url]');
+        var preview = form.querySelector('[data-news-source-image-preview]');
+        var imageFigure = form.querySelector('[data-news-source-image-figure]');
+        var useImage = form.querySelector('[data-news-use-source-image]');
+
+        imageUrl.value = '';
+        imageFigure.replaceChildren();
+        preview.hidden = true;
+        useImage.checked = false;
+        useImage.required = false;
+    }
+
     function renderNewsCoverPreview(form, isValid) {
         var input = form.querySelector('[name="cover_image"]');
         var preview = form.querySelector('[data-news-cover-preview]');
@@ -82,6 +95,13 @@
         form.querySelector('[name="summary"]').value = '';
         form.querySelector('[name="content"]').value = '';
         form.querySelector('[name="status"]').value = '';
+        form.querySelector('[name="article_type"]').value = 'internal';
+        form.querySelector('[name="source_url"]').value = '';
+        form.querySelector('[name="source_name"]').value = '';
+        form.querySelector('[data-news-metadata-status]').textContent = '';
+        form.querySelector('[data-news-summary-help]').hidden = true;
+        clearNewsSourceImagePreview(form);
+        syncNewsType(form);
         resizeNewsTitle(form.querySelector('[data-news-title]'));
         var coverInput = form.querySelector('[name="cover_image"]');
         coverInput.value = '';
@@ -104,6 +124,24 @@
         if (error) error.remove();
     }
 
+    function syncNewsType(form) {
+        var isExternal = form.querySelector('[name="article_type"]').value === 'external';
+        var contentField = form.querySelector('[data-news-content-field]');
+        var content = form.querySelector('[name="content"]');
+        var sourceUrl = form.querySelector('[name="source_url"]');
+        var sourceName = form.querySelector('[name="source_name"]');
+
+        contentField.hidden = isExternal;
+        content.required = !isExternal;
+        form.querySelector('[data-news-source-url-field]').hidden = !isExternal;
+        sourceUrl.required = isExternal;
+        form.querySelector('[data-news-source-name-field]').hidden = !isExternal;
+        sourceName.required = isExternal;
+    }
+
+    var initialNewsForm = getNewsForm();
+    if (initialNewsForm) syncNewsType(initialNewsForm);
+
     function populateNewsForm(trigger) {
         var form = getNewsForm();
         if (!form) return;
@@ -124,6 +162,13 @@
         form.querySelector('[name="summary"]').value = news.summary || '';
         form.querySelector('[name="content"]').value = news.content || '';
         form.querySelector('[name="status"]').value = news.status || '';
+        form.querySelector('[name="article_type"]').value = news.article_type || 'internal';
+        form.querySelector('[name="source_url"]').value = news.source_url || '';
+        form.querySelector('[name="source_name"]').value = news.source_name || '';
+        form.querySelector('[data-news-metadata-status]').textContent = '';
+        form.querySelector('[data-news-summary-help]').hidden = true;
+        clearNewsSourceImagePreview(form);
+        syncNewsType(form);
         var coverInput = form.querySelector('[name="cover_image"]');
         coverInput.value = '';
         coverInput.setCustomValidity('');
@@ -201,9 +246,99 @@
 
     document.addEventListener('change', function (event) {
         var input = event.target;
+        if (input instanceof HTMLSelectElement && input.name === 'article_type' && input.form.matches('[data-news-form]')) {
+            syncNewsType(input.form);
+            return;
+        }
         if (input instanceof HTMLInputElement && input.name === 'cover_image' && input.form.matches('[data-news-form]')) {
             var isValid = validateCoverFile(input.form);
             renderNewsCoverPreview(input.form, isValid);
+            var sourceImage = input.form.querySelector('[data-news-use-source-image]');
+            sourceImage.required = !isValid && input.form.querySelector('[data-news-source-image-url]').value !== '';
+        }
+    });
+
+    document.addEventListener('input', function (event) {
+        var input = event.target;
+        if (input instanceof HTMLInputElement && input.hasAttribute('data-news-source-url')) {
+            clearNewsSourceImagePreview(input.form);
+            input.form.querySelector('[data-news-summary-help]').hidden = true;
+        }
+    });
+
+    document.addEventListener('click', async function (event) {
+        var target = event.target instanceof Element ? event.target.closest('[data-news-fetch-metadata]') : null;
+        if (!target) return;
+
+        var form = getNewsForm();
+        if (!form) return;
+
+        var urlField = form.querySelector('[name="source_url"]');
+        var status = form.querySelector('[data-news-metadata-status]');
+        var button = target;
+        var typeField = form.querySelector('[name="article_type"]');
+        clearNewsSourceImagePreview(form);
+        form.querySelector('[data-news-summary-help]').hidden = true;
+        typeField.value = 'external';
+        typeField.dispatchEvent(new Event('change', { bubbles: true }));
+        syncNewsType(form);
+        if (!urlField.reportValidity()) return;
+
+        var payload = new URLSearchParams();
+        payload.set('url', urlField.value);
+        var csrf = form.querySelector('input[name^="csrf_"]');
+        if (csrf) payload.set(csrf.name, csrf.value);
+
+        button.disabled = true;
+        status.textContent = 'Mengambil metadata...';
+        try {
+            var response = await fetch(form.dataset.newsMetadataUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest' },
+                body: payload.toString(),
+                credentials: 'same-origin'
+            });
+            var result = await response.json();
+            var csrfInput = form.querySelector('input[name^="csrf_"]');
+            if (csrfInput && result.csrf_token && result.csrf_hash) {
+                csrfInput.name = result.csrf_token;
+                csrfInput.value = result.csrf_hash;
+            }
+            if (!response.ok) throw new Error(result.message || 'Metadata tidak dapat diambil.');
+
+            form.querySelector('[name="title"]').value = result.title || '';
+            form.querySelector('[name="source_name"]').value = result.source_name || '';
+            var summary = form.querySelector('[name="summary"]');
+            if (result.summary && !summary.value.trim()) {
+                summary.value = result.summary;
+                form.querySelector('[data-news-summary-help]').hidden = false;
+            }
+            if (result.image_url) {
+                form.querySelector('[data-news-source-image-url]').value = result.image_url;
+                var sourceImage = document.createElement('img');
+                sourceImage.className = 'news-source-image-thumbnail';
+                sourceImage.alt = 'Pratinjau gambar kover dari artikel sumber';
+                sourceImage.referrerPolicy = 'no-referrer';
+                sourceImage.src = result.image_url;
+                form.querySelector('[data-news-source-image-figure]').replaceChildren(sourceImage);
+                form.querySelector('[data-news-source-image-preview]').hidden = false;
+                form.querySelector('[data-news-use-source-image]').required =
+                    !form.querySelector('[name="cover_image"]').files.length;
+            }
+            resizeNewsTitle(form.querySelector('[data-news-title]'));
+            status.textContent = result.image_url
+                ? (result.summary
+                    ? 'Judul, ringkasan, dan gambar ditemukan. Tinjau ringkasan serta pastikan izin gambar sebelum menyimpan.'
+                    : 'Judul dan gambar ditemukan. Tulis ringkasan sendiri dan pastikan izin gambar sebelum menyimpan.')
+                : (result.summary
+                    ? 'Judul dan ringkasan terisi. Tinjau ringkasan sebelum diterbitkan.'
+                    : 'Judul terisi. Tulis ringkasan sendiri sebelum diterbitkan.');
+        } catch (error) {
+            status.textContent = error instanceof Error
+                ? error.message
+                : 'Metadata tidak dapat diambil. Isi judul dan sumber secara manual.';
+        } finally {
+            button.disabled = false;
         }
     });
 

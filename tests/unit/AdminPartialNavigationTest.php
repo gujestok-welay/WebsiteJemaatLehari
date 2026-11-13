@@ -135,6 +135,9 @@ final class AdminPartialNavigationTest extends CIUnitTestCase
             'content' => "Isi berita\nbaris kedua",
             'status' => 'Draft',
             'cover_image' => 'uploads/berita/cover.jpg',
+            'article_type' => 'internal',
+            'source_url' => '',
+            'source_name' => '',
         ];
 
         $body = $controller->showNews([$news]);
