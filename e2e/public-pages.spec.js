@@ -151,12 +151,14 @@ test('header galeri memakai foto Majelis sebagai latar', async ({ page }) => {
   await page.goto('galeri');
 
   const heading = page.locator('.gallery-page-heading');
-  await expect(heading).toHaveCSS('background-image', /Gambar-MajelisJemaat\.jpeg/);
+  const backgroundImage = await heading.evaluate((element) => getComputedStyle(element).backgroundImage);
+  expect(backgroundImage).toContain('90deg');
+  expect(backgroundImage).toContain('rgba(72, 41, 80, 0.94)');
+  expect(backgroundImage).toContain('rgba(72, 41, 80, 0.62)');
+  expect(backgroundImage).toContain('Gambar-MajelisJemaat.jpeg');
   for (const text of [heading.locator('h1'), heading.locator('p')]) {
-    const shadowLayers = await text.evaluate((element) =>
-      getComputedStyle(element).textShadow.match(/rgba?\(/g)?.length ?? 0
-    );
-    expect(shadowLayers).toBeGreaterThanOrEqual(4);
+    const textShadow = await text.evaluate((element) => getComputedStyle(element).textShadow);
+    expect(textShadow).toBe('none');
   }
 
   await page.locator('html').evaluate((html) => {

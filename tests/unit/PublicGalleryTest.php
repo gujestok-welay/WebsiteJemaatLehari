@@ -162,6 +162,27 @@ final class PublicGalleryTest extends CIUnitTestCase
         $this->get('/galeri/catatan-internal')->assertStatus(404);
     }
 
+    public function testActivityPosterRemainsOnGalleryCardButIsNotRepeatedInDetail(): void
+    {
+        $this->insertActivity('Perayaan Pemuda', 'perayaan-pemuda', 'Terbit', false);
+        $activityId = (int) db_connect('tests')->table('kegiatan')->where('slug', 'perayaan-pemuda')->get()->getRowArray()['id'];
+        db_connect('tests')->table('kegiatan_media')->insert([
+            'kegiatan_id' => $activityId,
+            'media_type' => 'foto',
+            'file_path' => 'uploads/galeri/perayaan-pemuda-dokumentasi.jpg',
+        ]);
+
+        $detail = $this->get('/galeri/perayaan-pemuda');
+        $detailBody = $detail->getBody();
+
+        $detail->assertStatus(200);
+        $this->assertStringNotContainsString('gallery-detail-poster', $detailBody);
+        $this->assertStringContainsString('gallery-detail-image', $detailBody);
+
+        $galleryBody = $this->get('/galeri')->getBody();
+        $this->assertStringContainsString('gallery-card-image', $galleryBody);
+    }
+
     public function testHomepageReplacesProfilePreviewWithSelectedPublishedGalleryActivities(): void
     {
         $this->insertActivity('Kegiatan pilihan', 'kegiatan-pilihan', 'Terbit', true);

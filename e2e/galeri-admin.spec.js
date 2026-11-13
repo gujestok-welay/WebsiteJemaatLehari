@@ -52,6 +52,8 @@ test('admin dapat membuka daftar dan formulir kegiatan', async ({ page }) => {
   await expect(page.getByRole('heading', { name: 'Tambah kegiatan', level: 1 })).toBeVisible();
   await expect(page.getByLabel('Nama kegiatan')).toBeVisible();
   await expect(page.getByLabel(/Poster atau flayer utama/)).toBeVisible();
+  await expect(page.getByText('Disarankan rasio vertikal 2:3 (contoh: 1200 × 1800 px). Rasio lain tetap dapat diunggah.'))
+    .toBeVisible();
   await expect(page.getByLabel(/Keterangan/)).toBeVisible();
 
   for (const width of [320, 390, 768, 1440]) {
@@ -239,6 +241,109 @@ test('memilih foto dokumentasi bertahap menambahkan file, bukan mengganti piliha
   await page.locator('select[name="status"]').selectOption('Draft');
   await page.getByRole('button', { name: 'Simpan kegiatan' }).click();
   await expect(page).toHaveURL(/admin\/galeri$/);
+});
+
+test('poster dan foto pada detail kegiatan tampil ringkas di desktop dan tetap responsif', async ({ page }) => {
+  await loginAsAdmin(page);
+  await page.goto('/admin/galeri/create');
+
+  const title = `Uji ukuran dokumentasi ${Date.now()}`;
+  cleanupActivityTitle = title;
+  await page.getByLabel('Nama kegiatan').fill(title);
+  await page.locator('select[name="status"]').selectOption('Terbit');
+  await page.locator('input[name="poster"]').setInputFiles(path.join(__dirname, '../public/assets/images/kegiatan/berita2.jpeg'));
+  const photoInput = page.locator('input[name="photos[]"]');
+  await photoInput.setInputFiles(path.join(__dirname, '../public/assets/images/gereja/Gambar-suasanaIbadah.jpeg'));
+  await photoInput.setInputFiles(path.join(__dirname, '../public/assets/images/kegiatan/berita1.jpeg'));
+  await page.getByRole('button', { name: 'Simpan kegiatan' }).click();
+  await expect(page).toHaveURL(/admin\/galeri$/);
+
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.goto('/galeri');
+  await page.getByRole('link', { name: `Lihat dokumentasi: ${title}`, exact: true }).click();
+  const photos = page.locator('.gallery-detail-grid img');
+  await expect(photos).toHaveCount(2);
+  await expect.poll(() => photos.evaluateAll((images) => images.every((image) => image.naturalWidth > 0))).toBe(true);
+  await expect(page.locator('.gallery-detail-poster')).toHaveCount(0);
+
+  const desktop = await page.evaluate(() => {
+    const images = [...document.querySelectorAll('.gallery-detail-image img')];
+    return {
+      columns: getComputedStyle(document.querySelector('.gallery-detail-grid')).gridTemplateColumns.split(' ').length,
+      images: images.map((image) => {
+        const bounds = image.getBoundingClientRect();
+        return {
+          naturalRatio: image.naturalWidth / image.naturalHeight,
+          renderedRatio: bounds.width / bounds.height,
+          width: bounds.width,
+          height: bounds.height,
+          fit: getComputedStyle(image).objectFit,
+        };
+      }),
+    };
+  });
+  expect(desktop.columns, 'foto dokumentasi memakai dua kolom yang lebih lapang pada desktop').toBe(2);
+  for (const image of desktop.images) {
+    expect(image.renderedRatio, 'rasio foto asli dipertahankan').toBeCloseTo(image.naturalRatio, 2);
+    expect(image.width, 'foto dokumentasi tidak tampil terlalu kecil').toBeGreaterThanOrEqual(280);
+    expect(image.height, 'foto dokumentasi tetap memiliki batas tinggi').toBeLessThanOrEqual(544);
+    expect(image.fit, 'foto tampil utuh tanpa dipotong').toBe('contain');
+  }
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  const mobile = await page.evaluate(() => {
+    const images = [...document.querySelectorAll('.gallery-detail-image img')];
+    return {
+      documentWidth: document.documentElement.scrollWidth,
+      viewportWidth: document.documentElement.clientWidth,
+      images: images.map((image) => {
+        const bounds = image.getBoundingClientRect();
+        return {
+          naturalRatio: image.naturalWidth / image.naturalHeight,
+          renderedRatio: bounds.width / bounds.height,
+        };
+      }),
+    };
+  });
+  await expect(page.locator('.gallery-detail-poster')).toHaveCount(0);
+  expect(mobile.documentWidth).toBeLessThanOrEqual(mobile.viewportWidth);
+  for (const image of mobile.images) {
+    expect(image.renderedRatio, 'rasio foto asli tetap dipertahankan di ponsel').toBeCloseTo(image.naturalRatio, 2);
+  }
+  await page.locator('.gallery-detail-image-open').nth(1).dispatchEvent('click');
+  const viewer = page.getByRole('dialog', { name: 'Dokumentasi foto' });
+  await expect(viewer).toBeVisible();
+  await expect(viewer.getByText('2 / 2')).toBeVisible();
+  await expect(viewer.locator('img')).toHaveAttribute('src', await photos.nth(1).getAttribute('src'));
+  const viewerSurface = await viewer.evaluate((dialog) => ({
+    background: getComputedStyle(dialog).backgroundColor,
+    backdropBackground: getComputedStyle(dialog, '::backdrop').backgroundColor,
+    backdropFilter: getComputedStyle(dialog, '::backdrop').backdropFilter,
+  }));
+  expect(viewerSurface.background, 'permukaan viewer transparan').toBe('rgba(0, 0, 0, 0)');
+  expect(viewerSurface.backdropBackground, 'lapisan belakang bukan ungu pekat').not.toBe('rgba(20, 14, 24, 0.88)');
+  expect(viewerSurface.backdropFilter, 'halaman di belakang viewer diburamkan').toContain('blur(');
+  const imageMotion = await viewer.locator('[data-photo-viewer-image]').evaluate((image) => {
+    const style = getComputedStyle(image);
+    return {
+      name: style.animationName,
+      duration: style.animationDuration,
+    };
+  });
+  expect(imageMotion.name, 'foto memiliki animasi masuk yang halus').not.toBe('none');
+  expect(Number.parseFloat(imageMotion.duration), 'animasi preview tidak terasa lambat').toBeLessThanOrEqual(0.5);
+
+  await viewer.getByRole('button', { name: 'Foto selanjutnya' }).click();
+  await expect(viewer.getByText('1 / 2')).toBeVisible();
+  await viewer.getByRole('button', { name: 'Foto sebelumnya' }).click();
+  await expect(viewer.getByText('2 / 2')).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(viewer).not.toBeVisible();
+
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.locator('.gallery-detail-image-open').nth(1).dispatchEvent('click');
+  const reducedMotionName = await viewer.locator('[data-photo-viewer-image]').evaluate((image) => getComputedStyle(image).animationName);
+  expect(reducedMotionName, 'animasi preview dinonaktifkan bila pengguna mengurangi gerakan').toBe('none');
 });
 
 test('kegiatan mendukung 30 foto dan menampilkan semuanya dalam satu modal geser', async ({ page }) => {

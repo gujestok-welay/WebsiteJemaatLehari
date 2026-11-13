@@ -88,5 +88,6 @@ Konten, nama personel, tanggal, statistik, dan materi visual resmi harus berasal
 
 - Halaman publik, admin, login, dan halaman pengguna menyediakan sakelar tema **Terang/Gelap**. Sebelum pengguna memilih, tema mengikuti preferensi sistem; setelah sakelar digunakan, pilihannya disimpan pada browser dan dibagikan antarhalaman pada origin yang sama.
 - Tema gelap memakai latar utama `#211D25`, permukaan `#2B2530`, teks `#F4EDF5`, teks sekunder `#C7BACD`, serta aksen ungu muda `#E4C9EF`. Aksen tombol ungu tetap gelap agar label tombol putih terbaca; emas disesuaikan ke `#E2C97F`.
+- Kartu galeri memakai permukaan terangkat `#302936` dan garis tepi `#51465A` agar bidang kontennya tidak menyatu dengan latar halaman gelap; tanggal detail galeri memakai teks gelap di atas heading ungu muda.
 - Komponen sakelar bersama berada di `app/Views/components/theme-toggle.php`; warna dan geraknya diterapkan melalui `public/assets/css/theme.css`. Perilaku, penyimpanan, dan sinkronisasi preferensi sistem ditangani `public/assets/js/theme.js`.
 - Sakelar memakai semantik switch, label aksesibel, indikator fokus, dan gerak yang menghormati `prefers-reduced-motion`. Tema hanya mengubah presentasi; konten, autentikasi, navigasi, dan alur kerja tetap sama.

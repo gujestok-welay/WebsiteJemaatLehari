@@ -94,6 +94,7 @@ $videoUrl = (string) $value('video_url');
                     </span>
                 </label>
                 <small class="gallery-admin-upload-hint">JPG, PNG, atau WEBP; maksimal 10 MB.</small>
+                <small class="gallery-admin-upload-hint">Disarankan rasio vertikal 2:3 (contoh: 1200 × 1800 px). Rasio lain tetap dapat diunggah.</small>
                 <ul class="gallery-admin-upload-files" data-gallery-upload-files="poster" aria-label="Poster baru yang dipilih" hidden></ul>
                 <small class="gallery-admin-upload-status" data-gallery-upload-status="poster" aria-live="polite">Belum ada poster baru dipilih.</small>
             </div>
