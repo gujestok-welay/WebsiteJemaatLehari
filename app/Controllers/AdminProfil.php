@@ -7,9 +7,9 @@ use App\Models\MajelisPeriodeModel;
 use App\Models\ProfilJemaatModel;
 use App\Libraries\PublicProfileContent;
 use App\Libraries\ProfileDashboardModules;
-use App\Models\JadwalIbadahModel;
 use CodeIgniter\HTTP\Files\UploadedFile;
 use CodeIgniter\HTTP\ResponseInterface;
+use CodeIgniter\Exceptions\PageNotFoundException;
 use InvalidArgumentException;
 use JsonException;
 
@@ -17,6 +17,15 @@ class AdminProfil extends BaseController
 {
     private const MAX_MODULE_JSON_BYTES = 60 * 1024;
     private const MAX_SERVICE_MAP_BYTES = 5 * 1024 * 1024;
+    private const MANAGEMENT_MODULES = [
+        'territory' => 'Gambaran Umum Wilayah',
+        'census' => 'Jumlah Kepala Keluarga dan Jiwa',
+        'worship' => 'Pelayanan Peribadahan',
+        'map' => 'Peta Pelayanan',
+        'content' => 'Konten Profil Publik',
+        'data' => 'Data Jemaat',
+        'leadership' => 'Pengelolaan Majelis',
+    ];
 
     protected ProfilJemaatModel $profileModel;
     protected MajelisPeriodeModel $periodeModel;
@@ -30,6 +39,28 @@ class AdminProfil extends BaseController
     }
 
     public function index(): string
+    {
+        return $this->renderAdminPage('admin/profil/index', $this->profilePageData() + [
+            'success' => session()->getFlashdata('success'),
+            'error' => session()->getFlashdata('error'),
+        ], 'Profil & Majelis');
+    }
+
+    public function manage(string $module): string
+    {
+        if (! array_key_exists($module, self::MANAGEMENT_MODULES)) {
+            throw PageNotFoundException::forPageNotFound();
+        }
+
+        return $this->renderAdminPage('admin/profil/manage', $this->profilePageData() + [
+            'editorModule' => $module,
+            'editorTitle' => self::MANAGEMENT_MODULES[$module],
+            'success' => session()->getFlashdata('success'),
+            'error' => session()->getFlashdata('error'),
+        ], 'Kelola ' . self::MANAGEMENT_MODULES[$module]);
+    }
+
+    private function profilePageData(): array
     {
         $profile = $this->profileModel->first() ?? [
             'id' => 0,
@@ -81,7 +112,7 @@ class AdminProfil extends BaseController
             $editMember = null;
         }
 
-        return $this->renderAdminPage('admin/profil/index', [
+        return [
             'profile' => $profile,
             'pageContent' => $pageContent,
             'periods' => $periods,
@@ -93,16 +124,13 @@ class AdminProfil extends BaseController
             'householdCount' => $censusSummary['householdCount'],
             'totalJiwa' => $censusSummary['totalJiwa'],
             'largestAgeGroups' => $censusSummary['largestAgeGroups'],
-            'scheduleCount' => count((new JadwalIbadahModel())->findPublicSchedules()),
             'serviceMapPath' => $serviceMapPath,
             'serviceMapTitle' => $serviceMapTitle,
             'serviceMapAlt' => $serviceMapAlt,
             'serviceMapSaved' => ! empty($profile['service_map_path']),
             'editPeriod' => $editPeriod,
             'editMember' => $editMember,
-            'success' => session()->getFlashdata('success'),
-            'error' => session()->getFlashdata('error'),
-        ], 'Profil & Majelis');
+        ];
     }
 
     public function saveTerritoryModule(): ResponseInterface
@@ -308,16 +336,13 @@ class AdminProfil extends BaseController
         $mapsUrl = trim((string) $this->request->getPost('maps_url'));
         $contactInfo = trim((string) $this->request->getPost('contact_info'));
 
-        if ($history === '' || $visionMission === '' || $address === '' || $contactInfo === '') {
+        if ($address === '') {
             if ($this->request->isAJAX()) {
-                return $this->profileAjaxError('Lengkapi sejarah, visi-misi, alamat, dan kontak resmi.', 422, [
-                    'history' => 'Sejarah wajib diisi.',
-                    'vision_mission' => 'Visi dan misi wajib diisi.',
+                return $this->profileAjaxError('Alamat wajib diisi.', 422, [
                     'address' => 'Alamat wajib diisi.',
-                    'contact_info' => 'Kontak resmi wajib diisi.',
                 ]);
             }
-            return redirect()->back()->withInput()->with('error', 'Semua field profil Jemaat wajib diisi.');
+            return redirect()->back()->withInput()->with('error', 'Alamat Jemaat wajib diisi.');
         }
 
         $adminId = (int) session()->get('admin_id');
@@ -363,11 +388,7 @@ class AdminProfil extends BaseController
 
         $profile = $this->profileModel->first();
         $currentContent = PublicProfileContent::fromProfile($profile ?? []);
-        foreach (['territory', 'seasons', 'census'] as $moduleKey) {
-            if (! array_key_exists($moduleKey, $input)) {
-                $input[$moduleKey] = $currentContent[$moduleKey];
-            }
-        }
+        $input = array_replace($currentContent, $input);
 
         try {
             $content = PublicProfileContent::normalize($input);
@@ -581,6 +602,8 @@ class AdminProfil extends BaseController
 
     private function profileAjaxSuccess(string $message): ResponseInterface
     {
+        session()->setFlashdata('success', $message);
+
         return $this->response->setStatusCode(200)->setJSON([
             'success' => true,
             'message' => $message,

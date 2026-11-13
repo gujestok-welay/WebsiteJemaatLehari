@@ -4,7 +4,13 @@ declare(strict_types=1);
 
 $root = dirname(__DIR__);
 $writableDirectory = $root . DIRECTORY_SEPARATOR . 'writable';
-$expectedDirectory = $root . DIRECTORY_SEPARATOR . 'writable' . DIRECTORY_SEPARATOR . 'playwright-test-data';
+$dataDirectoryName = getenv('PLAYWRIGHT_TEST_DATA_DIRECTORY') ?: 'playwright-test-data';
+$port = (int) (getenv('PLAYWRIGHT_PORT') ?: 8091);
+if (! preg_match('/\Aplaywright-test-data(?:-[a-z0-9]+(?:-[a-z0-9]+)*)?\z/', $dataDirectoryName)) {
+    fwrite(STDERR, "Nama folder database tes tidak valid.\n");
+    exit(1);
+}
+$expectedDirectory = $writableDirectory . DIRECTORY_SEPARATOR . $dataDirectoryName;
 
 if (! is_dir($expectedDirectory)) {
     fwrite(STDOUT, "Belum ada database tes Playwright untuk dibersihkan.\n");
@@ -19,7 +25,7 @@ if (is_link($writableDirectory)
 }
 
 $databasePath = realpath($expectedDirectory) . DIRECTORY_SEPARATOR . 'profile-modules.sqlite';
-$socket = @fsockopen('127.0.0.1', 8091, $errorCode, $errorMessage, 0.2);
+$socket = @fsockopen('127.0.0.1', $port, $errorCode, $errorMessage, 0.2);
 if (is_resource($socket)) {
     fclose($socket);
     fwrite(STDERR, "Hentikan server Playwright sebelum menghapus database tes.\n");

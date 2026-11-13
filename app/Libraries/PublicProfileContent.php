@@ -237,10 +237,10 @@ class PublicProfileContent
             'value' => 'Nilai',
             'section_badge' => 'Label bagian',
             'administration_title' => 'Judul status administrasi',
-            'administration_text' => 'Teks status administrasi',
+            'administration_text' => 'Uraian status administrasi',
             'topography_title' => 'Judul topografi',
-            'topography_text' => 'Teks topografi',
-            'community_text' => 'Teks kehidupan masyarakat',
+            'topography_text' => 'Uraian topografi',
+            'community_text' => 'Uraian kehidupan masyarakat',
             'boundaries_title' => 'Judul batas wilayah',
             'boundary_prefix' => 'Awalan arah batas',
             'boundaries' => 'Batas wilayah',
@@ -387,11 +387,11 @@ class PublicProfileContent
             }
 
             if (is_bool($default)) {
-                if (! in_array((string) $value, ['0', '1'], true)) {
+                if (! is_bool($value) && ! in_array((string) $value, ['0', '1'], true)) {
                     throw new InvalidArgumentException('Pilihan ' . self::fieldLabel((string) $key) . ' tidak valid.');
                 }
 
-                $normalized[$key] = (string) $value === '1';
+                $normalized[$key] = $value === true || (string) $value === '1';
                 continue;
             }
 

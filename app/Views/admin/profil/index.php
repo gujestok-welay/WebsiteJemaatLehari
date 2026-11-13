@@ -7,7 +7,7 @@ $pageContent = is_array($pageContent ?? null)
     ? \App\Libraries\PublicProfileContent::mergeForDisplay($pageDefaults, $pageContent)
     : $pageDefaults;
 $legacyContent = $pageContent;
-unset($legacyContent['territory'], $legacyContent['seasons'], $legacyContent['census']);
+unset($legacyContent['territory'], $legacyContent['seasons'], $legacyContent['census'], $legacyContent['worship']);
 $largestAgeGroups = is_array($largestAgeGroups ?? null) ? $largestAgeGroups : [];
 $serviceMapPath = (string) ($serviceMapPath ?? 'assets/images/gereja/Peta Pelayanan.png');
 $serviceMapTitle = (string) ($serviceMapTitle ?? 'Peta Pelayanan');
@@ -58,7 +58,7 @@ $readOnlyFields = [
                 <div class="profile-module-detail">
                     <span data-profile-value="territorySummary"><?= esc($territorySummary) ?></span>
                 </div>
-                <button class="button button-secondary" type="button" data-rm-open="#profile-territory-modal">Kelola wilayah</button>
+                <a class="button button-secondary" href="<?= site_url('admin/profil/kelola/territory') ?>">Kelola wilayah</a>
             </article>
 
             <article class="profile-module-card profile-module-census" aria-labelledby="census-module-title">
@@ -69,7 +69,6 @@ $readOnlyFields = [
                 <p>Rekapitulasi jemaat berdasarkan kelompok usia.</p>
                 <div class="profile-census-summary" aria-label="Ringkasan data tersimpan">
                     <div><strong data-profile-value="householdCount"><?= number_format($householdCount) ?></strong><span>KK</span></div>
-                    <span class="profile-census-divider" aria-hidden="true"></span>
                     <div><strong data-profile-value="totalJiwa"><?= number_format($totalJiwa) ?></strong><span>jiwa</span></div>
                 </div>
                 <p class="profile-module-note">
@@ -80,19 +79,16 @@ $readOnlyFields = [
                         Belum ada kelompok usia yang terisi.
                     <?php endif; ?>
                 </p>
-                <button class="button button-secondary" type="button" data-rm-open="#profile-census-modal">Kelola data jemaat</button>
+                <a class="button button-secondary" href="<?= site_url('admin/profil/kelola/census') ?>">Kelola data jemaat</a>
             </article>
 
             <article class="profile-module-card profile-module-worship" aria-labelledby="worship-module-title">
                 <div class="profile-module-heading">
                     <h2 id="worship-module-title">Pelayanan Peribadahan</h2>
-                    <span class="profile-module-count"><?= number_format($scheduleCount) ?> jadwal</span>
+                    <span class="profile-module-count"><?= number_format(count($pageContent['worship']['items'])) ?> jenis pelayanan</span>
                 </div>
-                <p>Jadwal yang tersimpan dan aktif dikelola melalui modul Jadwal Ibadah.</p>
-                <div class="profile-module-detail">
-                    <span>Daftar jadwal pelayanan</span>
-                </div>
-                <a class="button button-secondary" href="<?= site_url('admin/jadwal') ?>">Buka Jadwal Ibadah</a>
+                <p>Kelola jenis pelayanan, hari, tempat, dan keterangannya yang tampil di halaman Profil publik.</p>
+                <a class="button button-secondary" href="<?= site_url('admin/profil/kelola/worship') ?>">Kelola pelayanan</a>
             </article>
 
             <article class="profile-module-card profile-module-map" aria-labelledby="map-module-title">
@@ -110,7 +106,7 @@ $readOnlyFields = [
                         <span class="profile-module-status" data-profile-value="serviceMapStatus"><?= ! empty($serviceMapSaved) ? 'Tersimpan' : 'Peta awal' ?></span>
                     </div>
                     <p>Ganti gambar peta atau perbarui keterangan aksesibilitasnya.</p>
-                    <button class="button button-secondary" type="button" data-rm-open="#profile-map-modal">Kelola peta</button>
+                    <a class="button button-secondary" href="<?= site_url('admin/profil/kelola/map') ?>">Kelola peta</a>
                 </div>
             </article>
 
@@ -122,9 +118,9 @@ $readOnlyFields = [
                     <p>Edit judul dan teks halaman publik, data jemaat, serta susunan dan periode Majelis. Profil Akun Admin dikelola terpisah.</p>
                 </div>
                 <div class="profile-module-actions">
-                    <button class="button button-secondary" type="button" data-rm-open="#profile-content-modal">Edit konten Profil</button>
-                    <button class="button button-secondary" type="button" data-rm-open="#profile-data-modal">Edit data jemaat</button>
-                    <button class="button button-primary" type="button" data-rm-open="#profile-leadership-modal">Kelola kartu Majelis</button>
+                    <a class="button button-secondary" href="<?= site_url('admin/profil/kelola/content') ?>">Edit konten Profil</a>
+                    <a class="button button-secondary" href="<?= site_url('admin/profil/kelola/data') ?>">Edit data jemaat</a>
+                    <a class="button button-primary" href="<?= site_url('admin/profil/kelola/leadership') ?>">Kelola kartu Majelis</a>
                 </div>
             </article>
         </div>
@@ -134,19 +130,4 @@ $readOnlyFields = [
 </div>
 <!-- impeccable-variants-end 827b792b -->
 
-<?= view('admin/profil/_module-modals', [
-    'profile' => $profile,
-    'pageContent' => $pageContent,
-    'legacyContent' => $legacyContent,
-    'pageDefaults' => $pageDefaults,
-    'readOnlyFields' => $readOnlyFields,
-    'periods' => $periods,
-    'selectedPeriod' => $selectedPeriod,
-    'members' => $members,
-    'editPeriod' => $editPeriod ?? null,
-    'editMember' => $editMember ?? null,
-    'serviceMapPath' => $serviceMapPath,
-    'serviceMapTitle' => $serviceMapTitle,
-    'serviceMapAlt' => $serviceMapAlt,
-]) ?>
 <?= $this->endSection() ?>

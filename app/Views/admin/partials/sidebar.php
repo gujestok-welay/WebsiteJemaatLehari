@@ -17,6 +17,11 @@
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h12a2 2 0 0 1 2 2v14H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z"/><path d="M7 8h8M7 12h8M7 16h5"/></svg>
             <span>Berita</span>
         </a>
+        <a class="sidebar-link <?= str_starts_with($currentPath, 'admin/galeri') ? 'is-active' : '' ?>"
+           href="<?= site_url('admin/galeri') ?>" <?= str_starts_with($currentPath, 'admin/galeri') ? 'aria-current="page"' : '' ?>>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9" r="1.5"/><path d="m21 15-5-5L5 20"/></svg>
+            <span>Galeri kegiatan</span>
+        </a>
         <a class="sidebar-link <?= str_starts_with($currentPath, 'admin/jadwal') ? 'is-active' : '' ?>"
            href="<?= site_url('admin/jadwal') ?>" <?= str_starts_with($currentPath, 'admin/jadwal') ? 'aria-current="page"' : '' ?>>
             <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18M8 14h3M8 17h7"/></svg>
@@ -27,12 +32,13 @@
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V5a2 2 0 0 1 2-2h8l6 6v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z"/><path d="M14 3v6h6M8 13h8M8 17h8"/></svg>
             <span>Profil &amp; Majelis</span>
         </a>
-        <a class="sidebar-link <?= str_starts_with($currentPath, 'admin/statistik') ? 'is-active' : '' ?>"
-           href="<?= site_url('admin/statistik') ?>" <?= str_starts_with($currentPath, 'admin/statistik') ? 'aria-current="page"' : '' ?>>
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V4M4 20h17"/><rect x="7" y="12" width="3" height="5" rx="1"/><rect x="13" y="8" width="3" height="9" rx="1"/><rect x="19" y="5" width="3" height="12" rx="1"/></svg>
-            <span>Statistik</span>
-        </a>
     </nav>
 
-    <div class="sidebar-note">Kelola informasi dan publikasi Jemaat dari satu tempat.</div>
+    <div class="sidebar-footer">
+        <div class="sidebar-note">Kelola informasi dan publikasi Jemaat dari satu tempat.</div>
+        <div class="sidebar-theme-control">
+            <span class="sidebar-theme-label">Tema tampilan</span>
+            <?= view('components/theme-toggle') ?>
+        </div>
+    </div>
 </aside>

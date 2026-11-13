@@ -2,11 +2,9 @@
 
 $requiredFiles = [
     __DIR__ . '/../../app/Controllers/AdminProfil.php',
-    __DIR__ . '/../../app/Controllers/AdminStatistik.php',
     __DIR__ . '/../../app/Models/ProfilJemaatModel.php',
     __DIR__ . '/../../app/Models/MajelisPeriodeModel.php',
     __DIR__ . '/../../app/Models/MajelisAnggotaModel.php',
-    __DIR__ . '/../../app/Models/StatistikAgregatModel.php',
     __DIR__ . '/../../app/Config/Routes.php',
 ];
 
@@ -23,7 +21,7 @@ if ($routeContent === false) {
     exit(1);
 }
 
-foreach (['admin/profil', 'admin/statistik', 'admin/users', 'adminAuth', 'superAdmin'] as $needle) {
+foreach (['admin/profil', 'admin/users', 'adminAuth', 'superAdmin'] as $needle) {
     if (strpos($routeContent, $needle) === false) {
         fwrite(STDERR, "RBAC ERROR: missing route assertion for {$needle}\n");
         exit(1);
@@ -32,11 +30,9 @@ foreach (['admin/profil', 'admin/statistik', 'admin/users', 'adminAuth', 'superA
 
 $filesToCheck = [
     __DIR__ . '/../../app/Controllers/AdminProfil.php',
-    __DIR__ . '/../../app/Controllers/AdminStatistik.php',
     __DIR__ . '/../../app/Models/ProfilJemaatModel.php',
     __DIR__ . '/../../app/Models/MajelisPeriodeModel.php',
     __DIR__ . '/../../app/Models/MajelisAnggotaModel.php',
-    __DIR__ . '/../../app/Models/StatistikAgregatModel.php',
 ];
 
 foreach ($filesToCheck as $path) {

@@ -9,12 +9,17 @@
     <link rel="preload" href="<?= base_url('assets/fonts/dm-sans/latin-400-normal.woff2') ?>" as="font" type="font/woff2" crossorigin>
     <link href="<?= base_url('assets/vendor/bootstrap/bootstrap.min.css') ?>" rel="stylesheet">
     <link href="<?= base_url('assets/css/admin-login.css') ?>" rel="stylesheet">
+    <link href="<?= base_url('assets/css/theme.css') ?>?v=<?= filemtime(FCPATH . 'assets/css/theme.css') ?>" rel="stylesheet">
+    <script src="<?= base_url('assets/js/theme.js') ?>?v=<?= filemtime(FCPATH . 'assets/js/theme.js') ?>"></script>
     <script src="<?= base_url('assets/js/admin-login.js') ?>" defer></script>
 </head>
 <body class="login-page admin-login">
 <main class="login-shell row g-0 min-vh-100">
     <section class="login-content col-12 col-md-6 d-flex align-items-center justify-content-center bg-body p-4 p-md-5" aria-labelledby="page-title">
         <div class="login-form-wrap w-100">
+            <div class="theme-control login-theme-control">
+                <?= view('components/theme-toggle') ?>
+            </div>
             <div class="login-identity">
                 <img class="login-logo" src="<?= base_url('assets/images/logo/LogoGPM.png') ?>" width="56" height="56" alt="Logo Gereja Protestan Maluku">
                 <p>Media Center<br>Jemaat Leahari</p>

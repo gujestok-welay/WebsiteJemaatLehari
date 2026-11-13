@@ -16,7 +16,6 @@ test('Jadwal menyesuaikan layar ponsel tanpa halaman melebar', async ({ page }) 
             </nav>
             <form class="schedule-search">
               <input type="search" aria-label="Cari jadwal" placeholder="Cari jadwal...">
-              <button class="button" type="submit">Cari</button>
             </form>
           </div>
           <div class="schedule-table-wrap">
@@ -43,7 +42,6 @@ test('Jadwal menyesuaikan layar ponsel tanpa halaman melebar', async ({ page }) 
       const table = document.querySelector('.schedule-table');
       const wrap = document.querySelector('.schedule-table-wrap');
       const input = document.querySelector('.schedule-search input').getBoundingClientRect();
-      const submit = document.querySelector('.schedule-search button').getBoundingClientRect();
       const action = document.querySelector('.schedule-action-link').getBoundingClientRect();
       const firstCellLabel = getComputedStyle(document.querySelector('.schedule-table td'), '::before').content;
 
@@ -53,9 +51,8 @@ test('Jadwal menyesuaikan layar ponsel tanpa halaman melebar', async ({ page }) 
         tableDisplay: getComputedStyle(table).display,
         tableWidth: table.getBoundingClientRect().width,
         wrapWidth: wrap.clientWidth,
-        searchInputTop: input.top,
-        searchSubmitTop: submit.top,
-        searchSubmitHeight: submit.height,
+        searchInputHeight: input.height,
+        searchButtonCount: document.querySelectorAll('.schedule-search button[type="submit"]').length,
         actionHeight: action.height,
         firstCellLabel,
       };
@@ -64,8 +61,8 @@ test('Jadwal menyesuaikan layar ponsel tanpa halaman melebar', async ({ page }) 
     expect(layout.documentWidth).toBeLessThanOrEqual(layout.viewport);
     expect(layout.tableDisplay).toBe('block');
     expect(layout.tableWidth).toBeLessThanOrEqual(layout.wrapWidth);
-    expect(Math.abs(layout.searchSubmitTop - layout.searchInputTop)).toBeLessThanOrEqual(1);
-    expect(layout.searchSubmitHeight).toBeGreaterThanOrEqual(44);
+    expect(layout.searchInputHeight).toBeGreaterThanOrEqual(42);
+    expect(layout.searchButtonCount).toBe(0);
     expect(layout.actionHeight).toBeGreaterThanOrEqual(44);
     expect(layout.firstCellLabel).toBe('"Ibadah"');
   }

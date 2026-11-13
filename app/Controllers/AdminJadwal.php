@@ -154,7 +154,7 @@ class AdminJadwal extends BaseController
         }
 
         $fields = [];
-        foreach (['jenis_ibadah', 'tanggal', 'waktu', 'lokasi', 'pelayan'] as $field) {
+        foreach (['jenis_ibadah', 'tanggal', 'waktu', 'lokasi', 'pelayan', 'keterangan'] as $field) {
             $value = $this->request->getPost($field);
             if ($value !== null && ! is_string($value)) {
                 return $this->redirectWithSaveError('Data jadwal tidak valid. Periksa kembali isian formulir.', $id, $returnTo);
@@ -183,12 +183,16 @@ class AdminJadwal extends BaseController
             return $this->redirectWithSaveError('Jenis ibadah, tanggal, waktu, dan lokasi wajib diisi.', $id, $returnTo);
         }
 
-        foreach (['jenis_ibadah', 'lokasi', 'pelayan'] as $field) {
-            if (preg_match('/[\x00-\x1F\x7F]/', $fields[$field]) === 1) {
+        foreach (['jenis_ibadah', 'lokasi', 'pelayan', 'keterangan'] as $field) {
+            $pattern = $field === 'keterangan'
+                ? '/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/'
+                : '/[\x00-\x1F\x7F]/';
+            if (preg_match($pattern, $fields[$field]) === 1) {
                 $labels = [
                     'jenis_ibadah' => 'Jenis ibadah',
                     'lokasi' => 'Lokasi',
                     'pelayan' => 'Pelayan',
+                    'keterangan' => 'Keterangan',
                 ];
 
                 return $this->redirectWithSaveError(
@@ -222,6 +226,7 @@ class AdminJadwal extends BaseController
             'waktu' => $fields['waktu'],
             'lokasi' => $fields['lokasi'],
             'pelayan' => $fields['pelayan'] !== '' ? $fields['pelayan'] : null,
+            'keterangan' => $fields['keterangan'] !== '' ? $fields['keterangan'] : null,
             'is_cancelled' => $cancelled,
             'updated_by' => (int) session()->get('admin_id'),
         ];

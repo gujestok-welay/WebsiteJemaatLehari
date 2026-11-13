@@ -10,8 +10,12 @@
     <meta name="robots" content="noindex, nofollow">
     <title><?= esc($title ?? 'Dashboard') ?> · Media Center Jemaat Leahari</title>
     <link href="<?= base_url('assets/vendor/bootstrap/bootstrap.min.css') ?>" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <link href="<?= base_url('assets/css/admin.css') ?>?v=<?= filemtime(FCPATH . 'assets/css/admin.css') ?>" rel="stylesheet">
+    <link href="<?= base_url('assets/css/galeri.css') ?>?v=<?= filemtime(FCPATH . 'assets/css/galeri.css') ?>" rel="stylesheet">
     <link href="<?= base_url('assets/css/responsive-modal.css') ?>" rel="stylesheet">
+    <link href="<?= base_url('assets/css/theme.css') ?>?v=<?= filemtime(FCPATH . 'assets/css/theme.css') ?>" rel="stylesheet">
+    <script src="<?= base_url('assets/js/theme.js') ?>?v=<?= filemtime(FCPATH . 'assets/js/theme.js') ?>"></script>
 </head>
 <body>
 <a class="skip-link" href="#main-content">Langsung ke konten utama</a>

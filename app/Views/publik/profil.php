@@ -6,6 +6,18 @@ $territory = $content['territory'];
 $census = $content['census'];
 $leadership = $content['leadership'];
 $worship = $content['worship'];
+$history = trim((string) ($profile['history'] ?? ''));
+$visionMission = trim((string) ($profile['vision_mission'] ?? ''));
+$address = trim((string) ($profile['address'] ?? ''));
+$mapsUrl = trim((string) ($profile['maps_url'] ?? ''));
+$contactInfo = trim((string) ($profile['contact_info'] ?? ''));
+$mapsScheme = strtolower((string) parse_url($mapsUrl, PHP_URL_SCHEME));
+if (
+    filter_var($mapsUrl, FILTER_VALIDATE_URL) === false
+    || ! in_array($mapsScheme, ['http', 'https'], true)
+) {
+    $mapsUrl = '';
+}
 $leaders = ! empty($showMembers) && ! empty($members)
     ? array_map(static fn (array $member): array => [
         'name' => $member['name'],
@@ -17,14 +29,8 @@ $leaders = ! empty($showMembers) && ! empty($members)
 <div class="profil-page">
     <section class="profil-hero text-white">
         <div class="container py-5 position-relative">
-            <span class="badge rounded-pill badge-soft mb-3"><?= esc($hero['badge']) ?></span>
             <h1 class="display-5 fw-bold mb-3"><?= esc($hero['title']) ?></h1>
             <p class="lead col-lg-7 mb-4"><?= esc($hero['description']) ?></p>
-            <div class="d-flex flex-wrap gap-2">
-                <?php foreach ($hero['links'] as $index => $link): ?>
-                    <a href="#<?= esc($link['target'], 'attr') ?>" class="btn <?= $index === 0 ? 'btn-light' : 'btn-outline-light' ?> rounded-pill px-4"><?= esc($link['label']) ?></a>
-                <?php endforeach; ?>
-            </div>
         </div>
     </section>
 
@@ -44,7 +50,57 @@ $leaders = ! empty($showMembers) && ! empty($members)
         </div>
     </section>
 
-    <section class="container py-5 service-map-section" aria-labelledby="service-map-title">
+    <?php if ($history !== '' || $visionMission !== ''): ?>
+        <section id="sejarah-visi-misi" class="container py-5 profile-story-section" aria-labelledby="profile-story-title">
+            <div class="profile-story-panel">
+                <h2 id="profile-story-title">Mengenal Jemaat Leahari</h2>
+                <div class="profile-story-grid">
+                    <?php if ($history !== ''): ?>
+                        <article class="profile-story-block">
+                            <h3>Sejarah</h3>
+                            <div class="profile-story-copy"><?= nl2br(esc($history), false) ?></div>
+                        </article>
+                    <?php endif; ?>
+                    <?php if ($visionMission !== ''): ?>
+                        <article class="profile-story-block">
+                            <h3>Visi dan Misi</h3>
+                            <div class="profile-story-copy"><?= nl2br(esc($visionMission), false) ?></div>
+                        </article>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </section>
+    <?php endif; ?>
+
+    <?php if ($address !== '' || $mapsUrl !== '' || $contactInfo !== ''): ?>
+        <section id="profil-kontak" class="container py-4 profile-contact-section" aria-labelledby="profile-contact-title">
+            <h2 class="fw-bold mb-4" id="profile-contact-title">Informasi Jemaat</h2>
+            <dl class="row g-3 mb-0">
+                <?php if ($address !== ''): ?>
+                    <div class="col-md-6">
+                        <dt>Alamat</dt>
+                        <dd class="mb-0"><address><?= nl2br(esc($address), false) ?></address></dd>
+                    </div>
+                <?php endif; ?>
+                <?php if ($contactInfo !== ''): ?>
+                    <div class="col-md-6">
+                        <dt>Kontak resmi</dt>
+                        <dd class="mb-0"><?= nl2br(esc($contactInfo), false) ?></dd>
+                    </div>
+                <?php endif; ?>
+                <?php if ($mapsUrl !== ''): ?>
+                    <div class="col-12">
+                        <dt>Lokasi</dt>
+                        <dd class="mb-0">
+                            <a href="<?= esc($mapsUrl, 'attr') ?>" target="_blank" rel="noopener noreferrer">Lihat lokasi di Google Maps</a>
+                        </dd>
+                    </div>
+                <?php endif; ?>
+            </dl>
+        </section>
+    <?php endif; ?>
+
+    <section id="peta-pelayanan" class="container py-5 service-map-section" aria-labelledby="service-map-title">
         <div class="mb-4">
             <h2 class="fw-bold" id="service-map-title"><?= esc($serviceMapTitle) ?></h2>
         </div>
@@ -58,12 +114,12 @@ $leaders = ! empty($showMembers) && ! empty($members)
             decoding="async">
     </section>
 
-    <div class="container-xl pb-4 pb-lg-5">
+    <div id="majelis-jemaat" class="container-xl pb-4 pb-lg-5">
         <div class="section-heading leadership-heading">
             <h2 id="leadership-title"><?= esc($leadership['members_title']) ?></h2>
         </div>
         <?php if ($leaders !== []): ?>
-            <div class="leadership-carousel" data-leadership-carousel role="region" aria-roledescription="carousel" aria-label="Susunan Majelis Jemaat" data-autoplay-interval="5000">
+            <div class="leadership-carousel" data-leadership-carousel role="region" aria-roledescription="carousel" aria-label="Susunan Majelis Jemaat">
                 <div class="leadership-grid" data-carousel-track>
                     <?php foreach ($leaders as $index => $leader): ?>
                         <article class="leader-card" data-carousel-slide aria-roledescription="slide" aria-label="<?= esc(($index + 1) . ' dari ' . count($leaders) . ': ' . $leader['name'], 'attr') ?>">
@@ -89,9 +145,6 @@ $leaders = ! empty($showMembers) && ! empty($members)
                                 </button>
                             <?php endforeach; ?>
                         </div>
-                        <button class="leadership-carousel-toggle" type="button" data-carousel-toggle aria-label="Jeda pergantian otomatis">
-                            <span data-carousel-toggle-label>Jeda</span>
-                        </button>
                     </div>
                     <button class="leadership-carousel-arrow" type="button" data-carousel-next aria-label="Anggota berikutnya">
                         <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m9 18 6-6-6-6m6 6H3" /></svg>
@@ -200,8 +253,8 @@ $leaders = ! empty($showMembers) && ! empty($members)
                 <span class="badge rounded-pill badge-soft"><?= esc($census['section_badge']) ?></span>
                 <h2 class="fw-bold mt-2"><?= esc($census['title']) ?></h2>
                 <p class="text-body-secondary col-lg-8">
-                    <?= esc($census['description']) ?> <?= (int) $census['household_count'] ?><?= esc($census['household_suffix']) ?>
-                    <?= number_format($totalJiwa) ?><?= esc($census['population_suffix']) ?>
+                    <?= esc($census['description']) ?> <?= (int) $census['household_count'] ?> <?= esc(trim((string) ($census['household_suffix'] ?? ''))) ?>
+                    <?= number_format($totalJiwa) ?> <?= esc(trim((string) ($census['population_suffix'] ?? ''))) ?>
                     <?php if (($largestAgeGroups ?? []) !== [] && (int) ($largestAgeGroupCount ?? 0) > 0): ?>
                         <strong class="d-block mt-2">Kelompok terbanyak: <?= esc(implode(', ', $largestAgeGroups)) ?> (<?= number_format((int) $largestAgeGroupCount) ?> jiwa)</strong>
                     <?php endif; ?>

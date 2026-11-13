@@ -263,8 +263,8 @@ a:hover {
   min-width: 44px;
   min-height: 44px;
   transition:
-    color 180ms ease-out,
-    transform 180ms ease-out;
+    color 150ms ease-out,
+    transform 150ms ease-out;
 }
 .navbar .nav-link::after {
   position: absolute;
@@ -276,11 +276,13 @@ a:hover {
   content: "";
   transform: scaleX(0);
   transform-origin: left;
-  transition: transform 180ms ease-out;
+  transition: transform 150ms ease-out;
 }
 .navbar .nav-link:hover,
 .navbar .nav-link:focus-visible {
   color: var(--purple);
+  transition-duration: 220ms;
+  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
 }
 .navbar .nav-link:not(.active):hover,
 .navbar .nav-link:not(.active):focus-visible {
@@ -291,8 +293,84 @@ a:hover {
 .navbar .nav-link.active::after {
   transform: scaleX(1);
 }
+.navbar .nav-link:hover::after,
+.navbar .nav-link:focus-visible::after {
+  transition: transform 220ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.navbar-nav:hover .nav-link.active:not(:hover)::after,
+.navbar-nav:focus-within .nav-link.active:not(:focus-visible)::after {
+  transform: scaleX(0);
+}
 .navbar .nav-link.active {
   text-decoration: none;
+}
+.navbar .admin-entry-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0.5rem;
+  border-radius: 50%;
+}
+.navbar .admin-entry-link::after {
+  display: none;
+}
+.navbar .admin-entry-link .bi {
+  font-size: 1.25rem;
+  line-height: 1;
+}
+.navbar .admin-entry-link:hover,
+.navbar .admin-entry-link:focus-visible {
+  background: rgba(102, 63, 114, 0.1);
+}
+.profile-dropdown-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+.profile-dropdown-toggle::after {
+  display: none;
+}
+.profile-dropdown-chevron {
+  width: 0.9rem;
+  height: 0.9rem;
+  flex: 0 0 auto;
+  transition: transform 180ms ease-out;
+}
+.profile-dropdown-toggle[aria-expanded="true"] .profile-dropdown-chevron {
+  transform: rotate(180deg);
+}
+.navbar .profile-dropdown-menu {
+  --bs-dropdown-bg: var(--paper);
+  --bs-dropdown-color: var(--ink);
+  --bs-dropdown-border-color: rgba(102, 63, 114, 0.14);
+  --bs-dropdown-border-radius: 1rem;
+  --bs-dropdown-box-shadow: 0 0.75rem 1.75rem rgba(41, 35, 44, 0.14);
+  min-width: 20rem;
+  max-width: min(24rem, calc(100vw - 2rem));
+  padding: 0.5rem;
+}
+.profile-dropdown-menu .dropdown-item {
+  min-height: 44px;
+  padding: 0.65rem 0.75rem;
+  border-radius: 0.65rem;
+  color: var(--ink);
+  font-size: 1rem;
+  line-height: 1.35;
+  white-space: normal;
+}
+.profile-dropdown-menu .dropdown-item:hover,
+.profile-dropdown-menu .dropdown-item:focus-visible {
+  color: var(--purple-dark);
+  background: var(--surface);
+}
+.profile-dropdown-menu .dropdown-divider {
+  border-color: rgba(102, 63, 114, 0.14);
 }
 @media (max-width: 991.98px) {
   .public-nav-drawer {
@@ -317,6 +395,14 @@ a:hover {
     font-size: 1.25rem;
     font-weight: 600;
   }
+  .public-nav-drawer .admin-entry-item {
+    align-self: flex-end;
+  }
+  .public-nav-drawer .admin-entry-link {
+    width: 52px;
+    height: 52px;
+    padding: 0;
+  }
   .public-nav-drawer .offcanvas-body {
     align-items: stretch;
     padding: 1rem 3.25rem 2rem 1.25rem;
@@ -336,6 +422,23 @@ a:hover {
   .public-nav-drawer .nav-link.active {
     background: rgba(102, 63, 114, 0.1);
   }
+  .public-nav-drawer .profile-dropdown-toggle {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .public-nav-drawer .profile-dropdown-menu {
+    width: 100%;
+    min-width: 0;
+    max-width: none;
+    margin: 0;
+    border: 0;
+    border-radius: 1rem;
+    background: rgba(245, 241, 246, 0.65);
+    box-shadow: none;
+  }
+  .public-nav-drawer .profile-dropdown-menu .dropdown-item {
+    padding-left: 1rem;
+  }
 }
 @media (min-width: 992px) {
   .navbar-expand-lg .public-nav-drawer .offcanvas-body {
@@ -350,6 +453,13 @@ a:hover {
   align-items: center;
   min-width: 44px;
   min-height: 44px;
+}
+#peta-pelayanan,
+#majelis-jemaat,
+#wilayah,
+#jemaat,
+#ibadah {
+  scroll-margin-top: 6.5rem;
 }
 .footer-bottom > * {
   min-width: 0;
@@ -473,6 +583,41 @@ a:hover {
   z-index: 2;
 }
 
+.profil-page .profile-story-section {
+  padding-top: clamp(2.5rem, 5vw, 4.5rem) !important;
+}
+.profil-page .profile-story-panel {
+  padding: clamp(1.5rem, 4vw, 3.25rem);
+  border-radius: 1rem;
+  background: var(--surface);
+}
+.profil-page .profile-story-panel > h2 {
+  max-width: 16ch;
+  margin: 0 0 clamp(1.5rem, 3vw, 2.5rem);
+  font-size: clamp(2rem, 4vw, 3.5rem);
+}
+.profil-page .profile-story-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+  gap: clamp(1.5rem, 4vw, 3.5rem);
+}
+.profil-page .profile-story-block {
+  min-width: 0;
+  padding-top: 1rem;
+  border-top: 1px solid var(--bs-border-color);
+}
+.profil-page .profile-story-block h3 {
+  margin-bottom: 0.75rem;
+  font-size: clamp(1.4rem, 2vw, 1.8rem);
+}
+.profil-page .profile-story-copy {
+  max-width: 68ch;
+  color: var(--ink);
+  font-size: 1.0625rem;
+  line-height: 1.75;
+  overflow-wrap: anywhere;
+}
+
 .card-lift {
   transition:
     transform 0.2s ease,
@@ -481,6 +626,13 @@ a:hover {
 .card-lift:hover {
   transform: scale(1.03);
   box-shadow: 0 0.75rem 1.5rem rgba(0, 0, 0, 0.12) !important;
+}
+
+@media (max-width: 767.98px) {
+  .profil-page .profile-story-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.5rem;
+  }
 }
 
 .profil-page .batas-item {
@@ -611,6 +763,11 @@ a:hover {
 }
 .berita-page .berita-hero h1 {
   color: #fff;
+  font-size: var(--font-size-page);
+  text-shadow: 0 2px 12px rgba(72, 41, 80, 0.72);
+}
+.berita-page .berita-hero p {
+  text-shadow: 0 2px 12px rgba(72, 41, 80, 0.72);
 }
 .berita-page .btn-primary {
   --bs-btn-color: #fff;
@@ -642,7 +799,15 @@ a:hover {
   --bs-btn-disabled-border-color: #4b2a6b;
 }
 .berita-page .berita-hero {
-  background: linear-gradient(135deg, #2e1a45 0%, #4b2a6b 55%, #3c2157 100%);
+  display: flex;
+  align-items: center;
+  min-height: clamp(20rem, 32vw, 28rem);
+  background-color: var(--purple-dark);
+  background-image:
+    linear-gradient(90deg, rgba(72, 41, 80, 0.94) 0%, rgba(72, 41, 80, 0.92) 75%, rgba(72, 41, 80, 0.62) 100%),
+    url("../images/gereja/Papan-nama.png");
+  background-position: center 61%;
+  background-size: cover;
 }
 .berita-page .badge-soft {
   background: rgba(255, 255, 255, 0.18);
@@ -1244,8 +1409,15 @@ details[open] summary {
 .site-footer .footer-bottom a {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
+  min-width: 44px;
   min-height: 44px;
   color: var(--paper);
+}
+.site-footer .footer-return-icon {
+  flex: none;
+  width: 1.25rem;
+  height: 1.25rem;
 }
 .site-footer .footer-bottom a:hover {
   color: var(--gold);
@@ -1364,6 +1536,9 @@ details[open] summary {
   }
 }
 @media (prefers-reduced-motion: reduce) {
+  .navbar .nav-link::after {
+    transition: none;
+  }
   .navbar .nav-link:not(.active):hover,
   .navbar .nav-link:not(.active):focus-visible {
     transform: none;
@@ -2231,20 +2406,8 @@ details[open] summary {
   background: var(--purple, #4b2a6b);
 }
 
-.leadership-carousel-toggle {
-  padding: 0.35rem 0.5rem;
-  border: 0;
-  color: var(--purple, #4b2a6b);
-  background: transparent;
-  font: inherit;
-  font-size: 0.8rem;
-  font-weight: 600;
-  white-space: nowrap;
-}
-
 .leadership-carousel-arrow:focus-visible,
-.leadership-carousel-indicator:focus-visible,
-.leadership-carousel-toggle:focus-visible {
+.leadership-carousel-indicator:focus-visible {
   outline: 3px solid rgba(75, 42, 107, 0.35);
   outline-offset: 3px;
 }

@@ -10,7 +10,7 @@ $todayLabelText = is_array($todayLabelValue)
 <section class="welcome-panel" aria-labelledby="welcome-title" style="background-image: linear-gradient(to right, rgba(46, 26, 69, .95) 0%, rgba(46, 26, 69, .8) 55%, rgba(46, 26, 69, .58) 100%), url('<?= esc(base_url('assets/images/gereja/Gereja-tampak-dalam.jpg'), 'attr') ?>');">
     <div class="welcome-copy">
         <h1 id="welcome-title">Selamat datang, <?= esc($name) ?></h1>
-        <p>Kelola berita, jadwal ibadah, profil, dan statistik jemaat dari satu tempat.</p>
+        <p>Kelola berita, jadwal ibadah, dan profil jemaat dari satu tempat.</p>
         <div class="welcome-actions">
             <a class="button button-outline-light" href="<?= site_url('admin/berita/create') ?>" data-rm-open="#news-create-modal">Tulis berita</a>
             <a class="button button-outline-light" href="<?= site_url('admin/jadwal/create') ?>" data-rm-open="#schedule-create-modal">Tambah jadwal</a>
@@ -53,17 +53,14 @@ $todayLabelText = is_array($todayLabelValue)
     <div class="metric">
         <span class="metric-label">Berita terbit</span>
         <strong class="metric-value"><?= number_format($publishedNewsCount, 0, ',', '.') ?></strong>
-        <a href="<?= site_url('admin/berita?status=Terbit') ?>">Lihat berita terbit</a>
     </div>
     <div class="metric">
         <span class="metric-label">Draf berita</span>
         <strong class="metric-value"><?= number_format($draftNewsCount, 0, ',', '.') ?></strong>
-        <a href="<?= site_url('admin/berita?status=Draft') ?>">Lanjutkan penyuntingan</a>
     </div>
     <div class="metric">
         <span class="metric-label">Jadwal mendatang</span>
         <strong class="metric-value"><?= number_format($upcomingScheduleCount, 0, ',', '.') ?></strong>
-        <a href="<?= site_url('admin/jadwal') ?>">Kelola jadwal</a>
     </div>
 </section>
 
@@ -93,21 +90,7 @@ $todayLabelText = is_array($todayLabelValue)
                     <?php $status = (string) ($item['status'] ?? ''); ?>
                     <li class="news-item">
                         <div class="news-item-copy">
-                            <button
-                                class="news-title"
-                                type="button"
-                                data-rm-open="#news-create-modal"
-                                aria-label="Ubah berita: <?= esc($item['title'] ?? '', 'attr') ?>"
-                                data-news-edit="<?= esc(json_encode([
-                                    'id' => (int) ($item['id'] ?? 0),
-                                    'title' => (string) ($item['title'] ?? ''),
-                                    'slug' => (string) ($item['slug'] ?? ''),
-                                    'summary' => (string) ($item['summary'] ?? ''),
-                                    'content' => (string) ($item['content'] ?? ''),
-                                    'status' => (string) ($item['status'] ?? ''),
-                                    'cover_image' => (string) ($item['cover_image'] ?? ''),
-                                ], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_THROW_ON_ERROR), 'attr') ?>"
-                            ><?= esc($item['title']) ?></button>
+                            <h3 class="news-title"><?= esc($item['title']) ?></h3>
                             <span class="news-date"><?= esc($item['date_label'] ?? 'Tanggal belum tersedia') ?></span>
                         </div>
                         <span class="status-badge status-<?= strtolower(esc($status, 'attr')) ?>"><?= esc($status) ?></span>

@@ -6,10 +6,15 @@ const { adminEmail, adminPassword } = require('./test-credentials');
 
 const projectRoot = path.resolve(__dirname, '..');
 const writableDirectory = path.join(projectRoot, 'writable');
-const testDataDirectory = path.join(writableDirectory, 'playwright-test-data');
+const testDataDirectoryName = process.env.PLAYWRIGHT_TEST_DATA_DIRECTORY || 'playwright-test-data';
+if (!/^playwright-test-data(?:-[a-z0-9]+(?:-[a-z0-9]+)*)?$/.test(testDataDirectoryName)) {
+  console.error('Direktori data tes harus memakai nama aman berawalan playwright-test-data.');
+  process.exit(1);
+}
+const testDataDirectory = path.join(writableDirectory, testDataDirectoryName);
 const sessionDirectory = path.join(writableDirectory, 'playwright-session');
 const databasePath = path.join(testDataDirectory, 'profile-modules.sqlite');
-const port = 8091;
+const port = Number(process.env.PLAYWRIGHT_PORT || 8091);
 const baseURL = `http://127.0.0.1:${port}/`;
 
 const serverEnvironment = {
@@ -27,6 +32,7 @@ const serverEnvironment = {
   'database.tests.foreignKeys': 'true',
   'session.savePath': sessionDirectory,
   'session.cookieName': 'playwright_session',
+  PLAYWRIGHT_TEST_DATA_DIRECTORY: testDataDirectoryName,
   PLAYWRIGHT_TEST_DATABASE_PATH: databasePath,
   PLAYWRIGHT_TEST_ADMIN_EMAIL: adminEmail,
   PLAYWRIGHT_TEST_ADMIN_PASSWORD: adminPassword,
@@ -73,7 +79,13 @@ reservation.listen(port, '127.0.0.1', () => {
   }
 
   reservation.close(() => {
-    const server = spawn('php', ['spark', 'serve', '--host', '127.0.0.1', '--port', String(port)], {
+    const server = spawn('php', [
+      '-d', 'max_file_uploads=31',
+      '-d', 'post_max_size=320M',
+      '-S', `127.0.0.1:${port}`,
+      '-t', 'public',
+      'system/rewrite.php',
+    ], {
       cwd: projectRoot,
       env: serverEnvironment,
       stdio: 'inherit',

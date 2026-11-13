@@ -79,6 +79,7 @@ final class AdminAuthSecurityTest extends CIUnitTestCase
             'waktu' => ['type' => 'TIME'],
             'lokasi' => ['type' => 'VARCHAR', 'constraint' => 255],
             'pelayan' => ['type' => 'VARCHAR', 'constraint' => 255, 'null' => true],
+            'keterangan' => ['type' => 'TEXT', 'null' => true],
             'is_cancelled' => ['type' => 'TINYINT', 'default' => 0],
             'created_by' => ['type' => 'INTEGER', 'null' => true],
             'updated_by' => ['type' => 'INTEGER', 'null' => true],

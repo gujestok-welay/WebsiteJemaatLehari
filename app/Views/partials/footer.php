@@ -1,7 +1,7 @@
 <footer class="site-footer">
     <div class="container-xl footer-inner">
         <div class="row g-4">
-            <section class="col-12 col-md-6 col-lg-4" aria-labelledby="footer-brand">
+            <section class="col-12 col-md-6 col-lg-5" aria-labelledby="footer-brand">
                 <h2 class="footer-brand" id="footer-brand">
                     <img
                         class="footer-brand-logo"
@@ -14,20 +14,16 @@
 
             </section>
 
-            <nav class="col-6 col-md-3 col-lg-2 footer-links" aria-labelledby="footer-links">
+            <nav class="col-6 col-md-3 col-lg-3 footer-links" aria-labelledby="footer-links">
                 <h2 class="footer-heading" id="footer-links">Tautan cepat</h2>
                 <a class="css-link home-inline-link" href="<?= site_url('/') ?>">Beranda</a>
                 <a class="css-link home-inline-link" href="<?= site_url('profil') ?>">Profil</a>
                 <a class="css-link home-inline-link" href="<?= site_url('berita') ?>">Berita</a>
+                <a class="css-link home-inline-link" href="<?= site_url('galeri') ?>">Galeri</a>
                 <a class="css-link home-inline-link" href="<?= site_url('jadwal-ibadah') ?>">Jadwal ibadah</a>
             </nav>
 
-            <section class="col-6 col-md-3 col-lg-3" aria-labelledby="footer-contact">
-                <h2 class="footer-heading" id="footer-contact">Kontak</h2>
-                <p class="footer-contact-note">Kontak dan alamat resmi menunggu konfirmasi.</p>
-            </section>
-
-            <section class="col-12 col-md-6 col-lg-3" aria-labelledby="footer-social">
+            <section class="col-12 col-md-6 col-lg-4" aria-labelledby="footer-social">
                 <h2 class="footer-heading" id="footer-social">Ikuti kami</h2>
                 <a
                     class="footer-social-link"
@@ -44,8 +40,12 @@
         </div>
 
         <div class="footer-bottom">
-            <p>Fondasi website publik <span aria-hidden="true">·</span> Konten dummy</p>
-            <a href="#konten">Kembali ke konten</a>
+            <p>Gereja Protestan Maluku Jemaat Leahari</p>
+            <a href="#konten" aria-label="Kembali ke konten">
+                <svg class="footer-return-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 19V5m-7 7 7-7 7 7"/>
+                </svg>
+            </a>
         </div>
     </div>
 </footer>

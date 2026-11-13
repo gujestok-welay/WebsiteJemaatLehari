@@ -10,6 +10,38 @@ final class PublicProfileContentIntegrationTest extends CIUnitTestCase
 
     private string $originalDatabaseGroup;
 
+    private function renderProfileManagementPage(string $module): string
+    {
+        $titles = [
+            'territory' => 'Gambaran Umum Wilayah',
+            'census' => 'Jumlah Kepala Keluarga dan Jiwa',
+            'worship' => 'Pelayanan Peribadahan',
+            'map' => 'Peta Pelayanan',
+            'content' => 'Konten Profil Publik',
+            'data' => 'Data Jemaat',
+            'leadership' => 'Pengelolaan Majelis',
+        ];
+
+        return view('admin/profil/manage', [
+            'profile' => ['id' => 0, 'history' => '', 'vision_mission' => '', 'address' => '', 'maps_url' => '', 'contact_info' => ''],
+            'pageContent' => \App\Libraries\PublicProfileContent::defaults(),
+            'editorModule' => $module,
+            'editorTitle' => $titles[$module],
+            'title' => 'Kelola Profil',
+            'name' => 'Admin',
+            'partial' => false,
+            'periods' => [],
+            'selectedPeriod' => 0,
+            'members' => [],
+            'totalJiwa' => 0,
+            'serviceMapPath' => 'assets/images/gereja/Peta Pelayanan.png',
+            'serviceMapTitle' => 'Peta Pelayanan',
+            'serviceMapAlt' => 'Peta pelayanan Jemaat Leahari',
+            'success' => null,
+            'error' => null,
+        ]);
+    }
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -25,7 +57,7 @@ final class PublicProfileContentIntegrationTest extends CIUnitTestCase
 
         $db = db_connect('tests');
         $forge = \Config\Database::forge('tests');
-        foreach (['profil_jemaat', 'majelis_periode', 'majelis_anggota'] as $table) {
+        foreach (['profil_jemaat', 'majelis_periode', 'majelis_anggota', 'admin_users'] as $table) {
             if ($db->tableExists($table)) {
                 $forge->dropTable($table);
             }
@@ -82,6 +114,15 @@ final class PublicProfileContentIntegrationTest extends CIUnitTestCase
         ]);
         $forge->addKey('id', true);
         $forge->createTable('majelis_anggota');
+
+        $forge->addField([
+            'id' => ['type' => 'INTEGER', 'auto_increment' => true],
+            'role' => ['type' => 'VARCHAR', 'constraint' => 30],
+            'is_active' => ['type' => 'INTEGER', 'default' => 1],
+            'deleted_at' => ['type' => 'DATETIME', 'null' => true],
+        ]);
+        $forge->addKey('id', true);
+        $forge->createTable('admin_users');
     }
 
     protected function tearDown(): void
@@ -117,6 +158,135 @@ final class PublicProfileContentIntegrationTest extends CIUnitTestCase
             '<h1 class="display-5 fw-bold mb-3">Jemaat GPM Leahari</h1>',
             $response->getBody()
         );
+    }
+
+    public function testPublicCensusSummarySeparatesNumbersFromDisplayText(): void
+    {
+        $census = \App\Libraries\PublicProfileContent::defaults()['census'];
+        $census['household_suffix'] = 'KK dan';
+        $census['population_suffix'] = 'jiwa.';
+        db_connect('tests')->table('profil_jemaat')->insert([
+            'census_content' => json_encode($census, JSON_THROW_ON_ERROR),
+        ]);
+
+        $response = $this->get('/profil');
+        $summary = strip_tags($response->getBody());
+
+        $response->assertStatus(200);
+        $this->assertMatchesRegularExpression('/199\s+KK dan\s+624\s+jiwa\./', $summary);
+    }
+
+    public function testProfileDisplaysSavedHistoryAndVisionMissionAfterStatsAndPreservesParagraphs(): void
+    {
+        db_connect('tests')->table('profil_jemaat')->insert([
+            'history' => "Sejarah jemaat paragraf pertama.\nSejarah jemaat paragraf kedua.",
+            'vision_mission' => "Visi jemaat.\nMisi jemaat.",
+        ]);
+
+        $response = $this->get('/profil');
+        $body = $response->getBody();
+
+        $response->assertStatus(200);
+        $response->assertSee('Mengenal Jemaat Leahari');
+        $response->assertSee('Sejarah jemaat paragraf pertama.');
+        $response->assertSee('Visi jemaat.');
+        $response->assertSee('Misi jemaat.');
+        $this->assertMatchesRegularExpression(
+            '/Sejarah jemaat paragraf pertama\.<br\s*\/?>\s*Sejarah jemaat paragraf kedua\./',
+            $body
+        );
+        $this->assertTrue(
+            strpos($body, 'id="sejarah-visi-misi"') < strpos($body, 'id="peta-pelayanan"'),
+            'Sejarah and vision-mission should appear before the service map.'
+        );
+    }
+
+    public function testProfileDoesNotRenderHistorySectionWhenSavedContentIsBlank(): void
+    {
+        db_connect('tests')->table('profil_jemaat')->insert([
+            'history' => '  ',
+            'vision_mission' => '',
+        ]);
+
+        $response = $this->get('/profil');
+
+        $response->assertStatus(200);
+        $response->assertDontSee('id="sejarah-visi-misi"');
+        $response->assertDontSee('Mengenal Jemaat Leahari');
+    }
+
+    public function testProfileDoesNotRenderOfficialContactSectionWhenFieldsAreBlank(): void
+    {
+        db_connect('tests')->table('profil_jemaat')->insert([
+            'address' => '',
+            'maps_url' => '',
+            'contact_info' => '',
+        ]);
+
+        $response = $this->get('/profil');
+        $body = $response->getBody();
+
+        $response->assertStatus(200);
+        $response->assertDontSee('id="profil-kontak"');
+        $response->assertDontSee('Kontak dan alamat resmi menunggu konfirmasi.');
+        $response->assertDontSee('Lihat lokasi di Google Maps');
+    }
+
+    public function testProfileRendersOfficialContactFieldsWhenTheyAreAvailable(): void
+    {
+        db_connect('tests')->table('profil_jemaat')->insert([
+            'address' => 'Alamat Jemaat yang sudah disetujui.',
+            'maps_url' => 'https://maps.google.com/?q=Leahari',
+            'contact_info' => 'kontak-resmi@example.org',
+        ]);
+
+        $response = $this->get('/profil');
+        $body = $response->getBody();
+
+        $response->assertStatus(200);
+        $response->assertSee('id="profil-kontak"');
+        $response->assertSee('Alamat Jemaat yang sudah disetujui.');
+        $response->assertSee('kontak-resmi@example.org');
+        $response->assertSee('href="https://maps.google.com/?q=Leahari"');
+        $response->assertSee('Lihat lokasi di Google Maps');
+    }
+
+    public function testAdminCanSaveProfileWithoutUnsubmittedHistoryVisionMissionOrContact(): void
+    {
+        $db = db_connect('tests');
+        $db->table('profil_jemaat')->insert([
+            'history' => 'Sejarah sementara yang belum disetujui.',
+            'vision_mission' => 'Visi-misi sementara yang belum disetujui.',
+            'address' => 'Alamat Jemaat yang sudah disetujui.',
+            'contact_info' => 'kontak-lama@example.org',
+        ]);
+        $profileId = (int) $db->insertID();
+        $request = service('request');
+        $request->setGlobal('post', [
+            'id' => $profileId,
+            'history' => '',
+            'vision_mission' => '',
+            'address' => 'Alamat Jemaat yang sudah disetujui.',
+            'maps_url' => '',
+            'contact_info' => '',
+        ]);
+        session()->set('admin_id', 7);
+        $controller = new AdminProfil();
+        $controller->initController($request, service('response'), service('logger'));
+
+        $response = $controller->saveProfile();
+        $savedProfile = $db->table('profil_jemaat')->where('id', $profileId)->get()->getRowArray();
+
+        $this->assertSame(site_url('admin/profil'), $response->getHeaderLine('Location'));
+        $this->assertSame('', $savedProfile['history']);
+        $this->assertSame('', $savedProfile['vision_mission']);
+        $this->assertSame('', $savedProfile['contact_info']);
+
+        $publicPage = $this->get('/profil');
+        $publicPage->assertDontSee('id="sejarah-visi-misi"');
+        $publicPage->assertSee('id="profil-kontak"');
+        $publicPage->assertSee('Alamat Jemaat yang sudah disetujui.');
+        $publicPage->assertDontSee('kontak-lama@example.org');
     }
 
     public function testProfileShowsTheHomeLeadershipGridBeforeTheTerritoryWithoutASectionWrapper(): void
@@ -264,36 +434,71 @@ final class PublicProfileContentIntegrationTest extends CIUnitTestCase
         $publicPage->assertSee('Paragraf profil hasil suntingan admin');
     }
 
+    public function testSavingWorshipServicesPreservesOtherPublicProfileContent(): void
+    {
+        $storedContent = \App\Libraries\PublicProfileContent::defaults();
+        $storedContent['hero']['title'] = 'Judul profil tetap tersimpan';
+        $db = db_connect('tests');
+        $db->table('profil_jemaat')->insert([
+            'page_content' => json_encode($storedContent, JSON_THROW_ON_ERROR),
+        ]);
+        $request = service('request');
+        $request->setGlobal('post', ['content' => [
+            'worship' => [
+                'section_badge' => '2.2.2',
+                'title' => 'Pelayanan yang diperbarui',
+                'description' => 'Deskripsi pelayanan yang diperbarui',
+                'items' => [[
+                    'day' => 'Sabtu',
+                    'name' => 'Ibadah Pelayanan Baru',
+                    'place' => 'Gedung gereja',
+                    'note' => 'Catatan pelayanan baru',
+                ]],
+            ],
+        ]]);
+        session()->set('admin_id', 7);
+        $controller = new AdminProfil();
+        $controller->initController($request, service('response'), service('logger'));
+
+        $response = $controller->savePageContent();
+
+        $savedContent = json_decode($db->table('profil_jemaat')->get()->getRowArray()['page_content'], true, 512, JSON_THROW_ON_ERROR);
+        $this->assertSame('Judul profil tetap tersimpan', $savedContent['hero']['title']);
+        $this->assertSame('Ibadah Pelayanan Baru', $savedContent['worship']['items'][0]['name']);
+        $this->assertSame(site_url('admin/profil'), $response->getHeaderLine('Location'));
+
+        $publicPage = $this->get('/profil');
+        $publicPage->assertStatus(200);
+        $publicPage->assertSee('Pelayanan yang diperbarui');
+        $publicPage->assertSee('Ibadah Pelayanan Baru');
+    }
+
     public function testAdminEditorExposesCopyAndRepeatablePublicProfileFields(): void
     {
-        $content = \App\Libraries\PublicProfileContent::defaults();
-        $html = view('admin/profil/index', [
-            'profile' => ['id' => 0, 'history' => '', 'vision_mission' => '', 'address' => '', 'maps_url' => '', 'contact_info' => ''],
-            'pageContent' => $content,
-            'title' => 'Profil & Majelis',
-            'name' => 'Admin',
-            'partial' => false,
-            'periods' => [],
-            'selectedPeriod' => 0,
-            'members' => [],
-            'success' => null,
-            'error' => null,
-        ]);
+        $html = '';
+        foreach (['territory', 'census', 'worship', 'map', 'content', 'data', 'leadership'] as $module) {
+            $html .= $this->renderProfileManagementPage($module);
+        }
 
         $this->assertStringContainsString('Judul tab browser', $html);
         $this->assertStringContainsString('content&#x5B;hero&#x5D;&#x5B;title&#x5D;', $html);
         $this->assertStringContainsString('Batas wilayah', $html);
         $this->assertStringContainsString('Rentang usia', $html);
-        $this->assertStringContainsString('Pelayanan peribadahan', $html);
+        $this->assertStringContainsString('id="profile-worship-editor"', $html);
+        $this->assertStringContainsString('content&#x5B;worship&#x5D;&#x5B;items&#x5D;', $html);
         $this->assertStringContainsString('data-add-item', $html);
         $this->assertStringContainsString('Tampilkan anggota Majelis di publik', $html);
-        $this->assertStringContainsString('Kelola kartu Majelis', $html);
+        $this->assertStringContainsString('Pengelolaan Majelis', $html);
         $this->assertStringContainsString('id="member-form"', $html);
         $this->assertStringContainsString('id="profile-content-leadership"', $html);
-        $this->assertStringContainsString('data-rm-open="#profile-leadership-modal"', $html);
+        $this->assertStringNotContainsString('data-rm', $html);
+        $dataEditor = $this->renderProfileManagementPage('data');
+        $this->assertStringNotContainsString('name="history" required', $dataEditor);
+        $this->assertStringNotContainsString('name="vision_mission" required', $dataEditor);
+        $this->assertStringNotContainsString('name="contact_info" required', $dataEditor);
     }
 
-    public function testAdminProfileUsesCompactModuleCardsAndResponsiveDialogs(): void
+    public function testAdminProfileUsesCompactModuleCardsAndDedicatedManagementLinks(): void
     {
         $html = view('admin/profil/index', [
             'profile' => ['id' => 0, 'history' => '', 'vision_mission' => '', 'address' => '', 'maps_url' => '', 'contact_info' => ''],
@@ -321,13 +526,13 @@ final class PublicProfileContentIntegrationTest extends CIUnitTestCase
         $this->assertStringContainsString('Peta Pelayanan', $html);
         $this->assertStringContainsString('Konten Profil &amp; Majelis', $html);
         $this->assertStringContainsString('admin/jadwal', $html);
-        $this->assertStringContainsString('data-profile-ajax-form', $html);
-        $this->assertStringContainsString('data-rm', $html);
+        $this->assertStringContainsString('admin/profil/kelola/territory', $html);
+        $this->assertStringNotContainsString('data-rm', $html);
         $this->assertStringNotContainsString('profile-section-nav', $html);
         $this->assertStringNotContainsString('id="public-content"', $html);
     }
 
-    public function testTerritoryEditorGroupsRelatedFieldsAndHidesTechnicalIconLabels(): void
+    public function testProfileModuleCardsNavigateToDedicatedManagementPages(): void
     {
         $html = view('admin/profil/index', [
             'profile' => ['id' => 0, 'history' => '', 'vision_mission' => '', 'address' => '', 'maps_url' => '', 'contact_info' => ''],
@@ -344,107 +549,189 @@ final class PublicProfileContentIntegrationTest extends CIUnitTestCase
             'error' => null,
         ]);
 
-        $this->assertTrue(str_contains($html, 'Informasi umum wilayah'), 'The territory form should group its general information.');
+        foreach (['territory', 'census', 'worship', 'map', 'content', 'data', 'leadership'] as $module) {
+            $this->assertStringContainsString('admin/profil/kelola/' . $module, $html);
+        }
+
+        $this->assertStringNotContainsString('data-rm-open="#profile-', $html);
+    }
+
+    public function testManagementPageRendersOnlyItsEditorAndProvidesReturnNavigation(): void
+    {
+        $html = $this->renderProfileManagementPage('territory');
+
+        $this->assertStringContainsString('data-profile-editor-page', $html);
+        $this->assertStringContainsString('Kembali ke Profil', $html);
+        $this->assertStringContainsString('id="profile-territory-editor"', $html);
+        $this->assertStringContainsString('action="http://example.com/index.php/admin/profil/modules/territory"', $html);
+        $this->assertStringNotContainsString('profile-census-editor', $html);
+        $this->assertStringNotContainsString('data-rm', $html);
+    }
+
+    public function testManagementPageOmitsItsTitleAndDescriptionWhileKeepingAnAccessibleName(): void
+    {
+        $html = $this->renderProfileManagementPage('content');
+
+        $this->assertStringNotContainsString('id="profile-manage-title"', $html);
+        $this->assertStringNotContainsString('Perubahan yang disimpan akan tampil di halaman Profil publik.', $html);
+        $this->assertStringContainsString('aria-label="Pengelolaan profil jemaat"', $html);
+        $this->assertStringContainsString('Kembali ke Profil', $html);
+    }
+
+    public function testManagementRoutesRenderEachEditorAndRejectUnknownModules(): void
+    {
+        db_connect('tests')->table('admin_users')->insert([
+            'id' => 1,
+            'role' => 'operator',
+            'is_active' => 1,
+        ]);
+
+        foreach (['territory', 'census', 'worship', 'map', 'content', 'data', 'leadership'] as $module) {
+            $response = $this->withSession(['admin_id' => 1])->get('/admin/profil/kelola/' . $module);
+
+            $response->assertStatus(200);
+            $response->assertSee('data-profile-editor-page');
+            $response->assertSee('Kembali ke Profil');
+            $response->assertSee('profile-' . $module . '-editor');
+            $response->assertDontSee('data-rm');
+        }
+
+        $this->expectException(\CodeIgniter\Exceptions\PageNotFoundException::class);
+        $this->withSession(['admin_id' => 1])->get('/admin/profil/kelola/unknown');
+    }
+
+    public function testWorshipModuleEditsPublicProfileServicesInsteadOfSchedules(): void
+    {
+        $html = $this->renderProfileManagementPage('worship');
+
+        $this->assertStringContainsString('name="content&#x5B;worship&#x5D;&#x5B;items&#x5D;&#x5B;0&#x5D;&#x5B;day&#x5D;"', $html);
+        $this->assertStringContainsString('name="content&#x5B;worship&#x5D;&#x5B;items&#x5D;&#x5B;0&#x5D;&#x5B;name&#x5D;"', $html);
+        $this->assertStringContainsString('action="http://example.com/index.php/admin/profil/save-page-content"', $html);
+        $this->assertStringNotContainsString('data-rm', $html);
+    }
+
+    public function testTerritoryEditorGroupsRelatedFieldsAndHidesTechnicalIconLabels(): void
+    {
+        $html = $this->renderProfileManagementPage('territory');
+
+        $this->assertTrue(str_contains($html, 'Informasi wilayah'), 'The territory form should group its general information.');
         $this->assertTrue(str_contains($html, 'Batas wilayah'), 'The territory form should have a dedicated boundaries group.');
         $this->assertTrue(str_contains($html, 'Sektor pelayanan'), 'The territory form should have a dedicated sectors group.');
-        $this->assertTrue(str_contains($html, 'Jarak ke layanan penting'), 'The territory form should have a dedicated destinations group.');
-        $this->assertTrue(str_contains($html, 'Musim'), 'The territory form should retain its seasons section.');
+        $this->assertTrue(str_contains($html, 'Jarak ke lokasi penting'), 'The territory form should have a dedicated destinations group.');
+        $this->assertTrue(str_contains($html, 'Musim wilayah'), 'The territory form should retain its seasons section.');
         $this->assertTrue(str_contains($html, 'Judul bagian wilayah'), 'Territory titles should explain what they change.');
-        $this->assertTrue(str_contains($html, 'Kata sebelum arah batas'), 'Boundary prefix settings should be explained in plain language.');
+        $this->assertTrue(str_contains($html, 'Uraian status administrasi'), 'Administration text fields should describe the content expected.');
+        $this->assertTrue(str_contains($html, 'Uraian topografi'), 'Topography text fields should describe the content expected.');
+        $this->assertTrue(str_contains($html, 'Uraian kehidupan masyarakat'), 'Community text fields should describe the content expected.');
+        $this->assertTrue(str_contains($html, 'Teks sebelum arah batas'), 'Boundary prefix settings should be explained in plain language.');
         $this->assertTrue(str_contains($html, 'Nama wilayah'), 'Boundary names should be distinct from sector names.');
         $this->assertTrue(str_contains($html, 'Nama sektor'), 'Sector names should be distinct from boundary names.');
-        $this->assertTrue(str_contains($html, 'Kata sebelum nama sektor'), 'Sector prefix settings should be explained in plain language.');
-        $this->assertTrue(str_contains($html, 'Judul jarak dan tujuan'), 'Orbit section titles should use familiar terms.');
+        $this->assertTrue(str_contains($html, 'Teks sebelum nama sektor'), 'Sector prefix settings should be explained in plain language.');
+        $this->assertTrue(str_contains($html, 'Judul bagian jarak'), 'Distance section titles should use familiar terms.');
         $this->assertTrue(str_contains($html, 'Tambah tujuan'), 'Destination rows should have a concise add action.');
         $this->assertTrue(str_contains($html, 'Tambah musim'), 'Season rows should have a concise add action.');
         $this->assertTrue(str_contains($html, 'Daftar musim'), 'The season list should use a specific label.');
         $this->assertTrue(str_contains($html, 'name="territory&#x5B;boundaries&#x5D;&#x5B;0&#x5D;&#x5B;icon&#x5D;"'), 'Boundary icon settings should retain their save contract.');
-        $this->assertTrue(str_contains($html, 'Arah penunjuk'), 'Boundary icons should be presented as a simple direction choice.');
-        $this->assertTrue(str_contains($html, 'Panah ke atas'), 'The direction choice should use plain-language options.');
+        $this->assertStringContainsString('Satuan jumlah unit', $html);
+        $this->assertStringContainsString('Teks setelah persentase luas', $html);
+        $this->assertStringContainsString('<option value="Utara" selected>Utara</option>', $html);
+        $this->assertStringContainsString('<option value="Barat"', $html);
+        $this->assertStringNotContainsString('Ikon yang sedang digunakan', $html);
         $this->assertFalse(str_contains($html, '<label for="profile-territory-boundaries-0-icon">Ikon Bootstrap</label>'), 'Technical icon settings should not be shown to content editors.');
         $this->assertFalse(str_contains($html, '<label for="profile-territory-section_badge">Label bagian</label>'), 'Internal section numbering should not be shown to content editors.');
     }
 
-    public function testTerritoryEditorUsesFlatAccordionItems(): void
+    public function testTerritoryEditorKeepsDisplayFormattingInItsOwnStepAndPreviewsSavedData(): void
     {
-        $html = view('admin/profil/index', [
-            'profile' => ['id' => 0, 'history' => '', 'vision_mission' => '', 'address' => '', 'maps_url' => '', 'contact_info' => ''],
-            'pageContent' => \App\Libraries\PublicProfileContent::defaults(),
-            'title' => 'Profil Jemaat',
-            'name' => 'Admin',
-            'partial' => false,
-            'periods' => [],
-            'selectedPeriod' => 0,
-            'members' => [],
-            'serviceMapPath' => 'assets/images/gereja/Peta Pelayanan.png',
-            'serviceMapAlt' => 'Peta pelayanan Jemaat Leahari',
-            'success' => null,
-            'error' => null,
-        ]);
+        $html = $this->renderProfileManagementPage('territory');
 
-        $modalStart = strpos($html, 'id="profile-territory-modal"');
-        $modalEnd = strpos($html, 'id="profile-census-modal"');
-        $this->assertNotFalse($modalStart);
-        $this->assertNotFalse($modalEnd);
-        $modalHtml = substr($html, $modalStart, $modalEnd - $modalStart);
-
-        $this->assertSame(5, substr_count($modalHtml, 'class="profile-content-accordion"'));
-        $this->assertSame(1, preg_match_all('/<details class="profile-content-accordion"[^>]*open/', $modalHtml));
-        $this->assertStringNotContainsString('class="profile-content-section"', $modalHtml);
-        $this->assertStringNotContainsString('class="profile-content-subsection"', $modalHtml);
+        $this->assertSame(6, substr_count($html, 'data-profile-step-panel'));
+        $this->assertStringContainsString('Tampilan publik', $html);
+        $this->assertStringContainsString('Jarak ke lokasi penting', $html);
+        $this->assertStringContainsString('Musim wilayah', $html);
+        preg_match('/<section class="profile-step-panel" id="profile-territory-step-0"[^>]*>(.*?)<\/section>/s', $html, $firstStep);
+        preg_match('/<section class="profile-step-panel" id="profile-territory-step-5"[^>]*>(.*?)<\/section>/s', $html, $displayStep);
+        $this->assertArrayHasKey(1, $firstStep);
+        $this->assertArrayHasKey(1, $displayStep);
+        foreach (['boundary_prefix', 'sector_prefix', 'unit_suffix', 'area_share_suffix'] as $setting) {
+            $field = 'territory&#x5B;' . $setting . '&#x5D;';
+            $this->assertStringNotContainsString($field, implode('', array_slice(explode('</section>', $html), 0, 5)));
+            $this->assertStringContainsString($field, $displayStep[1]);
+        }
+        $this->assertStringContainsString('Contoh batas wilayah', $displayStep[1]);
+        $this->assertStringContainsString('Contoh sektor pelayanan', $displayStep[1]);
+        $this->assertStringContainsString('Sebelah Utara — Jemaat GPM Soya', $displayStep[1]);
+        $this->assertStringContainsString('Sektor Koinonia · 3 unit · 34.15 Ha · 64% dari total wilayah', $displayStep[1]);
+        $this->assertStringContainsString('name="territory&#x5B;boundaries&#x5D;&#x5B;0&#x5D;&#x5B;direction&#x5D;"', $html);
+        $this->assertMatchesRegularExpression('/<input\b(?=[^>]*type="hidden")(?=[^>]*name="territory&#x5B;boundaries&#x5D;&#x5B;0&#x5D;&#x5B;icon&#x5D;")/', $html);
     }
 
-    public function testCensusEditorGroupsFieldsIntoFlatAccordionItems(): void
+    public function testTerritoryEditorUsesSelectableFormSteps(): void
     {
-        $html = view('admin/profil/index', [
-            'profile' => ['id' => 0, 'history' => '', 'vision_mission' => '', 'address' => '', 'maps_url' => '', 'contact_info' => ''],
-            'pageContent' => \App\Libraries\PublicProfileContent::defaults(),
-            'title' => 'Profil Jemaat',
-            'name' => 'Admin',
-            'partial' => false,
-            'periods' => [],
-            'selectedPeriod' => 0,
-            'members' => [],
-            'serviceMapPath' => 'assets/images/gereja/Peta Pelayanan.png',
-            'serviceMapAlt' => 'Peta pelayanan Jemaat Leahari',
-            'success' => null,
-            'error' => null,
-        ]);
+        $html = $this->renderProfileManagementPage('territory');
 
-        $modalStart = strpos($html, 'id="profile-census-modal"');
-        $modalEnd = strpos($html, 'id="profile-map-modal"');
-        $this->assertNotFalse($modalStart);
-        $this->assertNotFalse($modalEnd);
-        $modalHtml = substr($html, $modalStart, $modalEnd - $modalStart);
+        $this->assertStringContainsString('data-profile-step-nav aria-label="Langkah pengisian"', $html);
+        $this->assertSame(6, substr_count($html, 'data-profile-step-target='));
+        $this->assertSame(6, substr_count($html, 'data-profile-step-panel'));
+        $this->assertStringContainsString('data-profile-step-controls hidden', $html);
+        $this->assertStringContainsString('formnovalidate data-profile-submit', $html);
+        $this->assertStringNotContainsString('<details class="profile-content-accordion"', $html);
+        $this->assertStringNotContainsString('class="profile-content-subsection"', $html);
+    }
 
-        $this->assertStringContainsString('data-census-step-nav', $modalHtml);
-        $this->assertStringContainsString('aria-label="Navigasi bagian formulir"', $modalHtml);
-        $this->assertStringContainsString('data-census-step-target="census-step-main"', $modalHtml);
-        $this->assertStringContainsString('data-census-step-target="census-step-ages"', $modalHtml);
-        $this->assertStringContainsString('data-census-step-target="census-step-labels"', $modalHtml);
-        $this->assertSame(3, substr_count($modalHtml, 'data-census-step-panel'));
-        $this->assertStringContainsString('data-census-step-controls hidden', $modalHtml);
-        $this->assertSame(3, preg_match_all('/<section class="profile-census-step-panel"[^>]*data-census-step-panel/', $modalHtml));
-        $this->assertSame(0, preg_match_all('/<summary\b/', $modalHtml));
-        $this->assertStringContainsString('Jumlah kepala keluarga', $modalHtml);
-        $this->assertStringContainsString('aria-labelledby="census-step-main-nav"', $modalHtml);
-        $this->assertStringContainsString('aria-labelledby="census-step-ages-nav"', $modalHtml);
-        $this->assertStringContainsString('aria-labelledby="census-step-labels-nav"', $modalHtml);
+    public function testProfileContentEditorUsesSelectableFormSteps(): void
+    {
+        $html = $this->renderProfileManagementPage('content');
+
+        $this->assertStringContainsString('data-profile-step-nav aria-label="Langkah pengisian"', $html);
+        $this->assertStringContainsString('data-profile-step-target="profile-content-hero"', $html);
+        $this->assertSame(count(\App\Libraries\PublicProfileContent::defaults()) - 4, substr_count($html, 'data-profile-step-panel'));
+        $this->assertStringContainsString('formnovalidate data-profile-submit', $html);
+    }
+
+    public function testCensusEditorUsesSelectableWizardSteps(): void
+    {
+        $html = $this->renderProfileManagementPage('census');
+
+        $this->assertStringContainsString('data-census-step-nav', $html);
+        $this->assertStringContainsString('aria-label="Navigasi bagian formulir"', $html);
+        $this->assertStringContainsString('data-census-step-target="census-step-main"', $html);
+        $this->assertStringContainsString('data-census-step-target="census-step-ages"', $html);
+        $this->assertStringContainsString('data-census-step-target="census-step-labels"', $html);
+        $this->assertStringContainsString('Tampilan publik', $html);
+        $this->assertStringNotContainsString('Label &amp; aksesibilitas', $html);
+        $this->assertSame(3, substr_count($html, 'data-census-step-panel'));
+        $this->assertStringContainsString('data-census-step-controls hidden', $html);
+        $this->assertSame(3, preg_match_all('/<section class="profile-census-step-panel"[^>]*data-census-step-panel/', $html));
+        $this->assertSame(0, preg_match_all('/<summary\b/', $html));
+        $this->assertStringContainsString('Jumlah kepala keluarga', $html);
+        $this->assertStringContainsString('aria-labelledby="census-step-main-nav"', $html);
+        $this->assertStringContainsString('aria-labelledby="census-step-ages-nav"', $html);
+        $this->assertStringContainsString('aria-labelledby="census-step-labels-nav"', $html);
+        preg_match('/<section class="profile-census-step-panel" id="census-step-main"[^>]*>(.*?)<\/section>/s', $html, $mainStep);
+        preg_match('/<section class="profile-census-step-panel" id="census-step-labels"[^>]*>(.*?)<\/section>/s', $html, $publicDisplayStep);
+        $this->assertArrayHasKey(1, $mainStep);
+        $this->assertArrayHasKey(1, $publicDisplayStep);
+        $this->assertStringNotContainsString('census&#x5B;household_suffix&#x5D;', $mainStep[1]);
+        $this->assertStringNotContainsString('census&#x5B;population_suffix&#x5D;', $mainStep[1]);
+        $this->assertStringContainsString('census&#x5B;household_suffix&#x5D;', $publicDisplayStep[1]);
+        $this->assertStringContainsString('census&#x5B;population_suffix&#x5D;', $publicDisplayStep[1]);
+        $this->assertStringContainsString('Pratinjau tampilan di halaman publik', $publicDisplayStep[1]);
         foreach (array_keys(\App\Libraries\PublicProfileContent::defaults()['census']) as $field) {
             if ($field !== 'age_rows') {
                 $this->assertStringContainsString(
                     'name="' . esc('census[' . $field . ']', 'attr') . '"',
-                    $modalHtml,
+                    $html,
                     'The census form should retain the save contract for ' . $field . '.'
                 );
             }
         }
-        $this->assertStringContainsString('name="census&#x5B;household_count&#x5D;"', $modalHtml);
-        $this->assertStringContainsString('name="census&#x5B;age_rows&#x5D;&#x5B;0&#x5D;&#x5B;label&#x5D;"', $modalHtml);
-        $this->assertStringContainsString('name="census&#x5B;age_rows&#x5D;&#x5B;0&#x5D;&#x5B;male&#x5D;"', $modalHtml);
-        $this->assertStringContainsString('name="census&#x5B;age_rows&#x5D;&#x5B;0&#x5D;&#x5B;female&#x5D;"', $modalHtml);
-        $this->assertStringContainsString('type="hidden" name="census&#x5B;section_badge&#x5D;"', $modalHtml);
-        $this->assertStringNotContainsString('<label for="profile-census-section_badge">Label bagian</label>', $modalHtml);
+        $this->assertStringContainsString('name="census&#x5B;household_count&#x5D;"', $html);
+        $this->assertStringContainsString('name="census&#x5B;age_rows&#x5D;&#x5B;0&#x5D;&#x5B;label&#x5D;"', $html);
+        $this->assertStringContainsString('name="census&#x5B;age_rows&#x5D;&#x5B;0&#x5D;&#x5B;male&#x5D;"', $html);
+        $this->assertStringContainsString('name="census&#x5B;age_rows&#x5D;&#x5B;0&#x5D;&#x5B;female&#x5D;"', $html);
+        $this->assertStringContainsString('type="hidden" name="census&#x5B;section_badge&#x5D;"', $html);
+        $this->assertStringNotContainsString('<label for="profile-census-section_badge">Label bagian</label>', $html);
     }
 
     public function testSavingCensusModuleKeepsLegacyContentAndCalculatesPublicTotals(): void

@@ -26,12 +26,13 @@ Menurut temuan wawancara yang dilaporkan dalam PRD, jemaat menggunakan WhatsApp 
 
 ## Capabilities and Constraints
 
-- Implementasi saat ini merupakan prototipe empat halaman publik: `/`, `/profil`, `/berita`, dan `/jadwal-ibadah`.
+- Implementasi saat ini memiliki lima halaman publik: `/`, `/profil`, `/berita`, `/galeri`, dan `/jadwal-ibadah`; berita dan kegiatan memiliki halaman detail berdasarkan slug.
 - Stack implementasi saat ini: CodeIgniter 4.7.5, PHP Views, Bootstrap 5, CSS, JavaScript, dan MySQL melalui XAMPP. Koneksi ke database `jemaat_leahari` serta tabel admin dan konten sudah diverifikasi pada lingkungan lokal; status deployment lain belum diverifikasi.
 - Berita dan jadwal bersumber dari data contoh di `app/Libraries/PublicSampleContent.php`. Berita dapat dibuka melalui elemen `details`; jadwal memiliki filter jenis ibadah dan tetap tersedia tanpa JavaScript.
-- Keempat halaman publik masih memakai data contoh. Login/logout admin, dashboard, dan modul pengelolaan Berita, Jadwal Ibadah, Profil/Majelis, serta Statistik sudah tersedia dengan route admin terlindungi. Dashboard merangkum data berita dan jadwal yang tersimpan; isi publik tetap harus diverifikasi sebelum diperlakukan sebagai informasi resmi.
+- Berita dan jadwal masih dapat memakai data contoh pada lingkungan tanpa database; galeri tidak membuat konten contoh. Login/logout admin, dashboard, dan modul pengelolaan Berita, Galeri Kegiatan, Jadwal Ibadah, Profil/Majelis, serta Statistik tersedia dengan route admin terlindungi. Galeri menampilkan kegiatan terbit; pilihan khusus menentukan pratinjau galeri di beranda. Konten publik tetap harus diverifikasi sebelum diperlakukan sebagai informasi resmi.
+- Perluasan Galeri Kegiatan diminta pada 7 November 2026: admin mengelola poster/flayer, maksimal 30 foto tambahan per kegiatan, keterangan/tanggal opsional, dan tautan video eksternal HTTP(S). Jika dokumentasi berjumlah lebih dari 10 foto, detail menampilkan satu pratinjau dan memuat foto satu per satu dalam modal geser. Permintaan implementasi ini tidak dengan sendirinya mengubah status persetujuan mitra atau baseline PRD.
 - Keputusan implementasi terbaru: admin Media Center dapat menerbitkan konten secara langsung. Berita internal dan eksternal akan didukung. Rincian Rich Text Editor ditunda.
-- Stack di atas menjelaskan kondisi implementasi terkini. Status draft PRD, persetujuan mitra, rincian fitur admin lainnya, prioritas rilis, domain/hosting, dan tata kelola tetap mengikuti proses validasi; jangan menganggapnya sebagai keputusan final.
+- Stack di atas menjelaskan kondisi implementasi terkini. PRD v4.1 adalah baseline internal berdasarkan kesepakatan lisan yang dilaporkan, bukan bukti persetujuan tertulis; Galeri Kegiatan dicatat sebagai perluasan implementasi terpisah. Rincian operasional lain, prioritas rilis, domain/hosting, dan tata kelola tetap mengikuti proses yang berlaku.
 - Bahasa antarmuka adalah Bahasa Indonesia. Waktu ibadah menggunakan WIT.
 - Pengunjung mengakses informasi publik tanpa login. Kemudahan penggunaan lintas usia menjadi batasan produk.
 - Konten prototipe harus tetap dikenali sebagai contoh, bukan informasi resmi. Pemberitahuan dummy dan `noindex, nofollow` tidak boleh dihapus sebelum konten dan kesiapan publikasi diperiksa.
@@ -44,7 +45,7 @@ Gunakan Bahasa Indonesia yang jelas dan mudah dipahami. Jangan mengarang sejarah
 
 ## Evidence on Hand
 
-- `docs/PRD.md`: PRD versi 3.0, berstatus **draft untuk validasi**. Memisahkan temuan yang dilaporkan (T), usulan desain (D), dan kebutuhan konfirmasi (K); bukan persetujuan final mitra.
+- `docs/PRD.md`: PRD versi 4.1, berstatus **baseline kerja internal** berdasarkan validasi dan kesepakatan lisan yang dilaporkan; bukan persetujuan tertulis mitra. Perluasan Galeri Kegiatan dicatat terpisah dan tidak mengubah baseline tersebut.
 - `docs/UI-PUBLIK.md`: catatan lingkup prototipe, struktur implementasi, cara menjalankan, hasil pemeriksaan yang pernah dilaporkan, serta prasyarat publikasi. Hasil pemeriksaan tersebut merupakan catatan historis, bukan verifikasi ulang pada setiap perubahan.
 - `app/Views/publik/` dan `app/Libraries/PublicSampleContent.php`: implementasi serta konten contoh, bukan bukti berita atau jadwal aktual.
 - Dokumentasi implementasi menyatakan logo, foto berizin, sejarah, susunan Majelis, alamat, dan kontak resmi belum tersedia. Lengkapi dari materi yang disahkan mitra; jangan menggantinya dengan fakta atau bukti sosial rekaan.

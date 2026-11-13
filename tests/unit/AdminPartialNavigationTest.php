@@ -14,6 +14,7 @@ final class TestableAdminPageController extends BaseController
             'term' => '',
             'status' => '',
             'statusOptions' => [],
+            'formStatusOptions' => [],
             'success' => null,
             'error' => null,
         ], 'Berita');
@@ -66,16 +67,6 @@ final class TestableAdminPageController extends BaseController
             'success' => null,
             'error' => null,
         ], 'Profil & Majelis');
-    }
-
-    public function showStatistics(array $items = [], ?array $editItem = null): string
-    {
-        return $this->renderAdminPage('admin/statistik/index', [
-            'items' => $items,
-            'editItem' => $editItem,
-            'success' => null,
-            'error' => null,
-        ], 'Statistik');
     }
 }
 
@@ -184,7 +175,7 @@ final class AdminPartialNavigationTest extends CIUnitTestCase
         $this->assertStringNotContainsString('adminSidebar', $form);
     }
 
-    public function testPartialProfilePageKeepsTheSharedAdminShellOutOfTheResponse(): void
+    public function testPartialProfilePageKeepsTheSharedAdminShellOutAndLinksToDedicatedEditors(): void
     {
         $request = service('request');
         $request->setHeader('X-Partial', '1');
@@ -196,36 +187,20 @@ final class AdminPartialNavigationTest extends CIUnitTestCase
         $profile = $controller->showProfile();
 
         $this->assertStringContainsString('profile-page-title', $profile);
-        $this->assertStringContainsString('periode-panel', $profile);
-        $this->assertStringContainsString('anggota-panel', $profile);
-        $this->assertStringContainsString('Tambahkan atau pilih periode Majelis', $profile);
+        $this->assertStringContainsString('admin/profil/kelola/leadership', $profile);
+        $this->assertStringNotContainsString('profile-leadership-editor', $profile);
+        $this->assertStringNotContainsString('periode-panel', $profile);
         $this->assertStringNotContainsString('<!doctype html>', strtolower($profile));
         $this->assertStringNotContainsString('adminSidebar', $profile);
         $this->assertSame('Profil & Majelis', rawurldecode($response->getHeaderLine('X-Page-Title')));
     }
 
-    public function testPartialStatisticsPageUsesSharedAdminShellAndSupportsEditing(): void
+    public function testAdminSidebarDoesNotExposeTheRemovedStatisticsModule(): void
     {
-        $request = service('request');
-        $request->setHeader('X-Partial', '1');
+        $sidebar = view('admin/partials/sidebar');
 
-        $response = service('response');
-        $controller = new TestableAdminPageController();
-        $controller->initController($request, $response, service('logger'));
-
-        $body = $controller->showStatistics(
-            [['id' => 7, 'metric_label' => 'Jumlah sektor', 'metric_value' => 4, 'unit_label' => 'sektor', 'updated_at' => '2026-11-03 10:00:00']],
-            ['id' => 7, 'metric_label' => 'Jumlah sektor', 'metric_value' => 4, 'unit_label' => 'sektor']
-        );
-
-        $this->assertStringContainsString('statistics-page-title', $body);
-        $this->assertStringContainsString('name="id" value="7"', $body);
-        $this->assertStringContainsString('name="metric_label"', $body);
-        $this->assertStringContainsString('value="Jumlah&#x20;sektor"', $body);
-        $this->assertStringContainsString('admin/statistik?edit=7', $body);
-        $this->assertStringContainsString('Batal mengubah', $body);
-        $this->assertStringNotContainsString('<!doctype html>', strtolower($body));
-        $this->assertStringNotContainsString('adminSidebar', $body);
-        $this->assertSame('Statistik', rawurldecode($response->getHeaderLine('X-Page-Title')));
+        $this->assertStringNotContainsString('admin/statistik', $sidebar);
+        $this->assertStringContainsString('Profil &amp; Majelis', $sidebar);
     }
+
 }

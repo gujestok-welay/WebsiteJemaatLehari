@@ -16,10 +16,18 @@ $hiddenFields = is_array($hiddenFields ?? null) ? $hiddenFields : [];
     $addLabel = strtolower($label);
     if ($prefix === 'territory' && $key === 'title') {
         $label = 'Judul bagian wilayah';
+    } elseif ($prefix === 'census' && $key === 'household_suffix') {
+        $label = 'Teks setelah jumlah KK';
+    } elseif ($prefix === 'census' && $key === 'population_suffix') {
+        $label = 'Teks setelah jumlah jiwa';
     } elseif ($prefix === 'territory' && $key === 'boundary_prefix') {
-        $label = 'Kata sebelum arah batas';
+        $label = 'Teks sebelum arah batas';
     } elseif ($prefix === 'territory' && $key === 'sector_prefix') {
-        $label = 'Kata sebelum nama sektor';
+        $label = 'Teks sebelum nama sektor';
+    } elseif ($prefix === 'territory' && $key === 'unit_suffix') {
+        $label = 'Satuan jumlah unit';
+    } elseif ($prefix === 'territory' && $key === 'area_share_suffix') {
+        $label = 'Teks setelah persentase luas';
     } elseif (str_starts_with($prefix, 'territory[boundaries]') && $key === 'name') {
         $label = 'Nama wilayah';
     } elseif (str_starts_with($prefix, 'territory[sectors]') && $key === 'name') {
@@ -29,7 +37,20 @@ $hiddenFields = is_array($hiddenFields ?? null) ? $hiddenFields : [];
         $itemLabel = 'Tujuan';
         $addLabel = 'tujuan';
     } elseif ($prefix === 'territory' && $key === 'orbit_title') {
-        $label = 'Judul jarak dan tujuan';
+        $label = 'Judul bagian jarak';
+    } elseif (str_starts_with($prefix, 'seasons[items]') && $key === 'period') {
+        $label = 'Periode musim';
+    } elseif ($prefix === 'content[worship]' && $key === 'items') {
+        $label = 'Daftar pelayanan';
+        $itemLabel = 'Pelayanan';
+        $addLabel = 'pelayanan';
+    } elseif (str_starts_with($prefix, 'content[worship][items]')) {
+        $label = [
+            'day' => 'Hari',
+            'name' => 'Nama pelayanan',
+            'place' => 'Tempat',
+            'note' => 'Keterangan',
+        ][$key] ?? $label;
     } elseif (str_starts_with($prefix, 'territory[orbitations]') && $key === 'label') {
         $label = 'Tujuan';
     } elseif (str_starts_with($prefix, 'territory[orbitations]') && $key === 'value') {
@@ -112,23 +133,20 @@ $hiddenFields = is_array($hiddenFields ?? null) ? $hiddenFields : [];
         <?php $readOnly = in_array($fieldName, $readOnlyFields, true); ?>
         <div class="profile-field <?= in_array($key, ['description', 'administration_text', 'topography_text', 'community_text', 'members_empty', 'members_permission_note'], true) ? 'profile-field-wide' : '' ?>">
             <label for="<?= esc($fieldId, 'attr') ?>"><?= esc($label) ?></label>
-            <?php if ($key === 'icon' && str_starts_with($prefix, 'territory[boundaries]')): ?>
+            <?php if ($key === 'direction' && str_starts_with($prefix, 'territory[boundaries]')): ?>
                 <?php
-                $directionIcons = [
-                    'bi-arrow-up-circle' => 'Panah ke atas',
-                    'bi-arrow-right-circle' => 'Panah ke kanan',
-                    'bi-arrow-down-circle' => 'Panah ke bawah',
-                    'bi-arrow-left-circle' => 'Panah ke kiri',
-                ];
+                $directions = ['Utara', 'Timur', 'Selatan', 'Barat'];
                 ?>
                 <select class="form-select" id="<?= esc($fieldId, 'attr') ?>" name="<?= esc($fieldName, 'attr') ?>" required>
-                    <?php if (! array_key_exists((string) $value, $directionIcons)): ?>
-                        <option value="<?= esc((string) $value, 'attr') ?>" selected>Ikon yang sedang digunakan</option>
+                    <?php if (! in_array((string) $value, $directions, true)): ?>
+                        <option value="<?= esc((string) $value, 'attr') ?>" selected>Arah saat ini: <?= esc((string) $value) ?></option>
                     <?php endif; ?>
-                    <?php foreach ($directionIcons as $iconValue => $iconLabel): ?>
-                        <option value="<?= esc($iconValue, 'attr') ?>" <?= $value === $iconValue ? 'selected' : '' ?>><?= esc($iconLabel) ?></option>
+                    <?php foreach ($directions as $direction): ?>
+                        <option value="<?= esc($direction, 'attr') ?>" <?= $value === $direction ? 'selected' : '' ?>><?= esc($direction) ?></option>
                     <?php endforeach; ?>
                 </select>
+            <?php elseif ($key === 'icon' && str_starts_with($prefix, 'territory[boundaries]')): ?>
+                <input type="hidden" id="<?= esc($fieldId, 'attr') ?>" name="<?= esc($fieldName, 'attr') ?>" value="<?= esc((string) $value, 'attr') ?>" data-boundary-icon>
             <?php elseif (is_bool($value) || is_bool($fieldTemplate)): ?>
                 <input type="hidden" name="<?= esc($fieldName, 'attr') ?>" value="0">
                 <div class="profile-toggle">
@@ -172,9 +190,23 @@ $hiddenFields = is_array($hiddenFields ?? null) ? $hiddenFields : [];
                     id="<?= esc($fieldId, 'attr') ?>"
                     name="<?= esc($fieldName, 'attr') ?>"
                     value="<?= esc((string) $value, 'attr') ?>"
+                    <?= $prefix === 'census' && in_array($key, ['household_suffix', 'population_suffix'], true) ? 'aria-describedby="' . esc($fieldId . '-hint', 'attr') . '"' : '' ?>
+                    <?= $prefix === 'territory' && in_array($key, ['boundary_prefix', 'sector_prefix', 'unit_suffix', 'area_share_suffix'], true) ? 'aria-describedby="' . esc($fieldId . '-hint', 'attr') . '"' : '' ?>
                     <?= $readOnly ? 'readonly aria-describedby="' . esc($fieldId . '-note', 'attr') . '"' : '' ?>
                     maxlength="3000"
                 >
+            <?php endif; ?>
+            <?php if ($prefix === 'territory' && in_array($key, ['boundary_prefix', 'sector_prefix', 'unit_suffix', 'area_share_suffix'], true)): ?>
+                <small class="profile-field-readonly-note" id="<?= esc($fieldId . '-hint', 'attr') ?>">
+                    <?php if ($key === 'boundary_prefix'): ?>Ditampilkan sebelum arah mata angin, misalnya “Sebelah Utara”.
+                    <?php elseif ($key === 'sector_prefix'): ?>Ditampilkan sebelum nama sektor, misalnya “Sektor Koinonia”.
+                    <?php elseif ($key === 'unit_suffix'): ?>Ditampilkan setelah jumlah unit, misalnya “3 unit”.
+                    <?php else: ?>Ditampilkan setelah persentase luas, misalnya “64% dari total wilayah”.
+                    <?php endif; ?>
+                </small>
+            <?php endif; ?>
+            <?php if ($prefix === 'census' && in_array($key, ['household_suffix', 'population_suffix'], true)): ?>
+                <small class="profile-field-readonly-note" id="<?= esc($fieldId . '-hint', 'attr') ?>">Kata ini muncul setelah angka di halaman publik. Contoh: <?= $key === 'household_suffix' ? 'KK dan' : 'jiwa.' ?></small>
             <?php endif; ?>
             <?php if ($readOnly): ?>
                 <small class="profile-field-readonly-note" id="<?= esc($fieldId . '-note', 'attr') ?>">Dihitung dari modul jumlah KK dan jiwa.</small>

@@ -51,6 +51,10 @@ $defaultOpen = ($defaultOpen ?? false) || $scheduleError !== '';
             <input class="form-control" id="schedule-create-pelayan" name="pelayan" value="<?= esc(old('pelayan') ?? '') ?>" placeholder="Kosongkan bila belum ditentukan">
         </div>
         <div class="rm-field">
+            <label for="schedule-create-keterangan">Keterangan (opsional)</label>
+            <textarea class="form-control" id="schedule-create-keterangan" name="keterangan" rows="4" maxlength="2000"><?= esc(old('keterangan') ?? '') ?></textarea>
+        </div>
+        <div class="rm-field">
             <label for="schedule-create-status">Status jadwal</label>
             <select class="form-select" id="schedule-create-status" name="is_cancelled">
                 <option value="0" <?= (old('is_cancelled') ?? '0') == '0' ? 'selected' : '' ?>>Aktif</option>

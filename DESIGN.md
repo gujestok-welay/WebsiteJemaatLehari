@@ -75,3 +75,18 @@ Gunakan warna melalui token CSS pada `:root` agar elemen publik tetap konsisten.
 - **Carousel Majelis:** hanya ditampilkan setelah konten anggota diaktifkan untuk publikasi; menyediakan kontrol untuk jeda dan navigasi.
 
 Konten, nama personel, tanggal, statistik, dan materi visual resmi harus berasal dari informasi yang telah disahkan atau diizinkan. Jangan mengisi kekosongan dengan klaim atau identitas rekaan.
+
+## 6. Halaman Kelola admin Profil
+
+- Setiap tindakan Kelola dari halaman Profil membuka halaman editor tersendiri, dengan navigasi kembali yang terlihat.
+- Editor berbagian panjang (Wilayah, Sensus, dan Konten Profil) memakai langkah yang dapat dipilih langsung, satu kelompok isian pada satu waktu, serta tombol Sebelumnya/Berikutnya. Editor ringkas tetap tampil utuh.
+- Editor mengisi seluruh lebar konten admin yang tersedia tanpa bingkai kartu; judul, langkah, isian, dan aksi simpan berada dalam satu bidang kerja.
+- Setelah simpan, editor tetap berada di halaman modul dan menampilkan status berhasil. Navigasi keluar memperingatkan bila ada perubahan yang belum disimpan.
+- Pada layar sempit, panel editor memakai padding yang lebih rapat dan tetap mengikuti alur gulir halaman.
+
+## 7. Tema tampilan
+
+- Halaman publik, admin, login, dan halaman pengguna menyediakan sakelar tema **Terang/Gelap**. Sebelum pengguna memilih, tema mengikuti preferensi sistem; setelah sakelar digunakan, pilihannya disimpan pada browser dan dibagikan antarhalaman pada origin yang sama.
+- Tema gelap memakai latar utama `#211D25`, permukaan `#2B2530`, teks `#F4EDF5`, teks sekunder `#C7BACD`, serta aksen ungu muda `#E4C9EF`. Aksen tombol ungu tetap gelap agar label tombol putih terbaca; emas disesuaikan ke `#E2C97F`.
+- Komponen sakelar bersama berada di `app/Views/components/theme-toggle.php`; warna dan geraknya diterapkan melalui `public/assets/css/theme.css`. Perilaku, penyimpanan, dan sinkronisasi preferensi sistem ditangani `public/assets/js/theme.js`.
+- Sakelar memakai semantik switch, label aksesibel, indikator fokus, dan gerak yang menghormati `prefers-reduced-motion`. Tema hanya mengubah presentasi; konten, autentikasi, navigasi, dan alur kerja tetap sama.

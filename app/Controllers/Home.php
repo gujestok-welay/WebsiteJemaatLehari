@@ -6,6 +6,8 @@ use App\Libraries\PublicSampleContent;
 use App\Libraries\PublicProfileContent;
 use App\Libraries\ProfileDashboardModules;
 use App\Models\BeritaModel;
+use App\Models\KegiatanMediaModel;
+use App\Models\KegiatanModel;
 use App\Models\JadwalIbadahModel;
 use App\Models\MajelisAnggotaModel;
 use App\Models\MajelisPeriodeModel;
@@ -26,12 +28,16 @@ class Home extends BaseController
         $majelis = $databaseConfigured && $showMembers && $majelisPeriode !== null
             ? (new MajelisAnggotaModel())->findByPeriode((int) $majelisPeriode['id'])
             : [];
+        $featuredActivities = $databaseConfigured
+            ? $this->formatGalleryActivities((new KegiatanModel())->findFeaturedForHome())
+            : [];
 
         return view('publik/beranda', [
             'title' => 'Beranda',
             'activePage' => 'beranda',
             'isSample' => $this->usesSampleNews(),
             'news' => $this->normalizeNews(array_slice($news, 0, 3)),
+            'featuredActivities' => $featuredActivities,
             'schedules' => array_slice($upcomingSchedules, 0, 4),
             'nextService' => $upcomingSchedules[0] ?? null,
             'majelis' => $majelis,
@@ -110,6 +116,157 @@ class Home extends BaseController
         ]);
     }
 
+    public function galeri(): string
+    {
+        $activities = $this->usesSampleNews() ? [] : (new KegiatanModel())->findPublished();
+
+        return view('publik/galeri', [
+            'title' => 'Galeri Kegiatan',
+            'activePage' => 'galeri',
+            'activities' => $this->formatGalleryActivities($activities),
+        ]);
+    }
+
+    public function galeriDetail(string $slug): string
+    {
+        $activity = $this->usesSampleNews()
+            ? null
+            : (new KegiatanModel())->findPublishedBySlug($slug);
+
+        if ($activity === null) {
+            $this->response->setStatusCode(404);
+
+            return view('publik/galeri_tidak_ditemukan', [
+                'title' => 'Kegiatan tidak ditemukan',
+                'activePage' => 'galeri',
+            ]);
+        }
+
+        $media = (new KegiatanMediaModel())->findByKegiatan((int) $activity['id']);
+        $activity = $this->formatGalleryActivities([$activity])[0];
+        $activity['media'] = $this->formatGalleryMedia($media);
+
+        return view('publik/galeri_detail', [
+            'title' => $activity['title'],
+            'activePage' => 'galeri',
+            'activity' => $activity,
+        ]);
+    }
+
+    public function galeriMedia(string $filename): \CodeIgniter\HTTP\ResponseInterface
+    {
+        if (
+            $this->usesSampleNews()
+            || preg_match('~\A[A-Za-z0-9._-]+\.(?:jpe?g|png|webp)\z~i', $filename) !== 1
+        ) {
+            return $this->response->setStatusCode(404);
+        }
+
+        $storedPath = 'uploads/galeri/' . $filename;
+        $activity = (new KegiatanModel())
+            ->where('status', 'Terbit')
+            ->where('poster_path', $storedPath)
+            ->first();
+        $media = $activity === null
+            ? (new KegiatanMediaModel())->findPublishedByPath($storedPath)
+            : true;
+
+        if ($media === null || $media === false) {
+            return $this->response->setStatusCode(404);
+        }
+
+        $filePath = WRITEPATH . 'uploads' . DIRECTORY_SEPARATOR . 'galeri' . DIRECTORY_SEPARATOR . $filename;
+        if (! is_file($filePath) || ! is_readable($filePath)) {
+            log_message('error', 'Gambar galeri terbit tidak tersedia: {filename}', ['filename' => $filename]);
+
+            return $this->response->setStatusCode(404);
+        }
+
+        $mimeType = (new \finfo(FILEINFO_MIME_TYPE))->file($filePath);
+        if (! in_array($mimeType, ['image/jpeg', 'image/png', 'image/webp'], true)) {
+            log_message('error', 'Tipe gambar galeri tidak didukung: {filename}', ['filename' => $filename]);
+
+            return $this->response->setStatusCode(404);
+        }
+
+        $image = @file_get_contents($filePath);
+        if ($image === false) {
+            log_message('error', 'Gagal membaca gambar galeri terbit: {filename}', ['filename' => $filename]);
+
+            return $this->response->setStatusCode(500);
+        }
+
+        return $this->response
+            ->setHeader('Content-Type', $mimeType)
+            ->setHeader('X-Content-Type-Options', 'nosniff')
+            ->setHeader('Cache-Control', 'public, max-age=3600')
+            ->setBody($image);
+    }
+
+    private function formatGalleryActivities(array $activities): array
+    {
+        return array_map(function (array $activity): array {
+            $activity['poster_url'] = $this->galleryMediaUrl((string) ($activity['poster_path'] ?? ''));
+            $activity['date_label'] = $this->formatGalleryDate($activity['event_date'] ?? null);
+            $activity['video_url'] = $this->safeExternalUrl((string) ($activity['video_url'] ?? ''));
+
+            return $activity;
+        }, $activities);
+    }
+
+    private function formatGalleryMedia(array $media): array
+    {
+        return array_values(array_filter(array_map(function (array $item): array {
+            $item['url'] = $this->galleryMediaUrl((string) ($item['file_path'] ?? ''));
+            $item['label'] = KegiatanModel::mediaTypeOptions()[$item['media_type'] ?? ''] ?? 'Foto';
+
+            return $item;
+        }, $media), static fn(array $item): bool => $item['url'] !== null));
+    }
+
+    private function galleryMediaUrl(string $storedPath): ?string
+    {
+        if (preg_match('~\Auploads/galeri/([A-Za-z0-9._-]+\.(?:jpe?g|png|webp))\z~i', $storedPath, $matches) !== 1) {
+            return null;
+        }
+
+        return site_url('galeri/media/' . rawurlencode($matches[1]));
+    }
+
+    private function formatGalleryDate(?string $date): ?string
+    {
+        if ($date === null || trim($date) === '') {
+            return null;
+        }
+
+        $value = new \DateTimeImmutable($date);
+        $months = [
+            1 => 'Januari',
+            2 => 'Februari',
+            3 => 'Maret',
+            4 => 'April',
+            5 => 'Mei',
+            6 => 'Juni',
+            7 => 'Juli',
+            8 => 'Agustus',
+            9 => 'September',
+            10 => 'Oktober',
+            11 => 'November',
+            12 => 'Desember',
+        ];
+
+        return $value->format('j') . ' ' . $months[(int) $value->format('n')] . ' ' . $value->format('Y');
+    }
+
+    private function safeExternalUrl(string $url): ?string
+    {
+        if (filter_var($url, FILTER_VALIDATE_URL) === false) {
+            return null;
+        }
+
+        return in_array(parse_url($url, PHP_URL_SCHEME), ['http', 'https'], true) ? $url : null;
+    }
+
     public function beritaDetail(string $slug): string
     {
         $item = $this->usesSampleNews()
@@ -129,10 +286,7 @@ class Home extends BaseController
         }
 
         $date = $item['created_at'] ?? $item['updated_at'] ?? null;
-        $coverImageUrl = null;
-        if (preg_match('~\Auploads/berita/([A-Za-z0-9._-]+\.(?:jpe?g|png|webp))\z~i', (string) ($item['cover_image'] ?? ''), $matches) === 1) {
-            $coverImageUrl = site_url('berita/gambar/' . $matches[1]);
-        }
+        $coverImageUrl = $this->newsCoverImageUrl($item['cover_image'] ?? null);
 
         return view('publik/berita_detail', [
             'title' => $item['title'],
@@ -222,9 +376,19 @@ class Home extends BaseController
             'category' => null,
             'date' => $this->formatNewsDate($row['updated_at'] ?? $row['created_at'] ?? null),
             'summary' => (string) ($row['summary'] ?? ''),
+            'image' => $this->newsCoverImageUrl($row['cover_image'] ?? null),
             'url' => site_url('berita/' . $row['slug']),
             'is_sample' => $this->containsPlaceholderCopy($row),
         ], $rows);
+    }
+
+    private function newsCoverImageUrl(?string $storedPath): ?string
+    {
+        if (preg_match('~\Auploads/berita/([A-Za-z0-9._-]+\.(?:jpe?g|png|webp))\z~i', $storedPath ?? '', $matches) !== 1) {
+            return null;
+        }
+
+        return site_url('berita/gambar/' . rawurlencode($matches[1]));
     }
 
     private function containsPlaceholderCopy(array $row): bool
@@ -282,7 +446,7 @@ class Home extends BaseController
             'date' => $row['date'],
             'category' => $row['category'] ?? null,
             'url' => $row['url'] ?? site_url('berita/' . ($row['slug'] ?? $row['id'])),
-            'image' => null,
+            'image' => $row['image'] ?? null,
             'is_sample' => ! empty($row['is_sample']),
         ], $rows);
     }
@@ -325,7 +489,7 @@ class Home extends BaseController
                 'location' => $row['lokasi'],
                 'minister' => $minister !== '' ? $minister : null,
                 'type' => 'umum',
-                'note' => '',
+                'note' => $row['keterangan'] ?? '',
                 'cancelled' => false,
             ];
         }, $model->findPublicSchedules());

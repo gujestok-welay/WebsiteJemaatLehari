@@ -31,6 +31,40 @@ final class PublicPagesTest extends CIUnitTestCase
         } else {
             $db->table('berita')->truncate();
         }
+
+        $this->createGalleryTable();
+    }
+
+    private function createGalleryTable(): void
+    {
+        $db = db_connect('tests');
+        if ($db->tableExists('kegiatan')) {
+            $db->table('kegiatan')->truncate();
+
+            return;
+        }
+
+        $forge = \Config\Database::forge('tests');
+        $forge->addField([
+            'id' => ['type' => 'INTEGER', 'auto_increment' => true],
+            'title' => ['type' => 'VARCHAR', 'constraint' => 255],
+            'slug' => ['type' => 'VARCHAR', 'constraint' => 255],
+            'description' => ['type' => 'TEXT', 'null' => true],
+            'event_date' => ['type' => 'DATE', 'null' => true],
+            'video_url' => ['type' => 'VARCHAR', 'constraint' => 2048, 'null' => true],
+            'poster_path' => ['type' => 'VARCHAR', 'constraint' => 255],
+            'poster_type' => ['type' => 'VARCHAR', 'constraint' => 20],
+            'status' => ['type' => 'VARCHAR', 'constraint' => 20],
+            'show_on_home' => ['type' => 'INTEGER', 'default' => 0],
+            'archived_from_status' => ['type' => 'VARCHAR', 'constraint' => 20, 'null' => true],
+            'created_by' => ['type' => 'INTEGER', 'null' => true],
+            'updated_by' => ['type' => 'INTEGER', 'null' => true],
+            'created_at' => ['type' => 'DATETIME', 'null' => true],
+            'updated_at' => ['type' => 'DATETIME', 'null' => true],
+        ]);
+        $forge->addKey('id', true);
+        $forge->addUniqueKey('slug');
+        $forge->createTable('kegiatan');
     }
 
     private function createProfileTables(): void
@@ -98,7 +132,7 @@ final class PublicPagesTest extends CIUnitTestCase
         $this->createScheduleTable();
         $this->createProfileTables();
 
-        foreach (['/' => 'Beranda', '/profil' => 'Profil', '/berita' => 'Berita', '/jadwal-ibadah' => 'Jadwal Ibadah'] as $path => $label) {
+        foreach (['/' => 'Beranda', '/profil' => 'Profil', '/berita' => 'Berita', '/galeri' => 'Galeri', '/jadwal-ibadah' => 'Jadwal Ibadah'] as $path => $label) {
             $result = $this->get($path);
             $result->assertStatus(200);
             $result->assertDontSee('alert-warning');
@@ -114,9 +148,23 @@ final class PublicPagesTest extends CIUnitTestCase
                 preg_match('/<img class="navbar-brand-wordmark"[^>]*width="50" height="58"/', $navbarBrand[1])
             );
             $this->assertStringContainsString('aria-current="page"', $result->getBody());
-            $result->assertSee($label . ' | Jemaat Leahari');
+            $result->assertSee(($path === '/galeri' ? 'Galeri Kegiatan' : $label) . ' | Jemaat Leahari');
             $this->assertStringContainsString('id="konten"', $result->getBody());
         }
+    }
+
+    public function testNewsPageOmitsTheHeroBadgeAndKeepsItsHeading(): void
+    {
+        config('Database')->defaultGroup = 'tests';
+        $this->createNewsTable();
+        $this->createScheduleTable();
+
+        $result = $this->get('/berita');
+
+        $result->assertStatus(200);
+        $result->assertDontSee('<span class="badge rounded-pill badge-soft mb-3">Berita</span>');
+        $result->assertSee('Berita &amp; Peristiwa');
+        $result->assertSee('Kabar terbaru kegiatan dan pelayanan Jemaat GPM Leahari.');
     }
 
     public function testPublicNavigationUsesResponsiveOffcanvasForMobileAndTablet(): void
@@ -126,7 +174,7 @@ final class PublicPagesTest extends CIUnitTestCase
         $this->createScheduleTable();
         $this->createProfileTables();
 
-        foreach (['/' => 'Beranda', '/profil' => 'Profil', '/berita' => 'Berita', '/jadwal-ibadah' => 'Jadwal Ibadah'] as $path => $label) {
+        foreach (['/' => 'Beranda', '/profil' => 'Profil', '/berita' => 'Berita', '/galeri' => 'Galeri', '/jadwal-ibadah' => 'Jadwal Ibadah'] as $path => $label) {
             $result = $this->get($path);
             $result->assertStatus(200);
             $body = $result->getBody();
@@ -144,20 +192,40 @@ final class PublicPagesTest extends CIUnitTestCase
         }
     }
 
+    public function testProfileDropdownOmitsRedundantProfilePageLink(): void
+    {
+        config('Database')->defaultGroup = 'tests';
+        $this->createProfileTables();
+
+        $html = $this->get('/profil')->getBody();
+
+        $this->assertStringNotContainsString(
+            '<a class="dropdown-item" href="' . site_url('profil') . '" aria-current="page">Profil Jemaat</a>',
+            $html,
+        );
+        foreach (['peta-pelayanan', 'majelis-jemaat', 'wilayah', 'jemaat', 'ibadah'] as $sectionId) {
+            $this->assertStringContainsString('href="' . site_url('profil') . '#' . $sectionId . '"', $html);
+        }
+    }
+
     public function testPublicFooterAnimatesQuickLinksAndKeepsSocialIconAccessible(): void
     {
         config('Database')->defaultGroup = 'tests';
         $this->createNewsTable();
         $this->createScheduleTable();
+        $this->createProfileTables();
 
         $result = $this->get('/');
         $result->assertStatus(200);
         $result->assertSee('assets/images/logo/footer-brand.png');
+        $result->assertSee('Gereja Protestan Maluku Jemaat Leahari');
+        $result->assertDontSee('Fondasi website publik');
         $this->assertSame(
             1,
             preg_match('/<nav[^>]*class="[^"]*footer-links[^"]*"[^>]*>(.*?)<\/nav>/s', $result->getBody(), $footerLinks)
         );
-        $this->assertSame(4, substr_count($footerLinks[1], 'class="css-link home-inline-link"'));
+        $this->assertSame(5, substr_count($footerLinks[1], 'class="css-link home-inline-link"'));
+        $this->assertStringContainsString('>Galeri</a>', $footerLinks[1]);
         $this->assertStringNotContainsString(
             'class="css-link home-inline-link footer-social-link"',
             $result->getBody()
@@ -166,6 +234,16 @@ final class PublicPagesTest extends CIUnitTestCase
             '<svg class="footer-social-icon" viewbox="0 0 24 24" aria-hidden="true"',
             strtolower($result->getBody())
         );
+        $this->assertStringContainsString(
+            '<a href="#konten" aria-label="kembali ke konten">',
+            strtolower($result->getBody())
+        );
+        $this->assertStringContainsString(
+            '<svg class="footer-return-icon" viewbox="0 0 24 24" aria-hidden="true"',
+            strtolower($result->getBody())
+        );
+        $this->assertStringContainsString('m12 19v5m-7 7 7-7 7 7', strtolower($result->getBody()));
+        $this->assertStringNotContainsString('>kembali ke konten</a>', strtolower($result->getBody()));
     }
 
     public function testHomepageUsesTheSameNewsCardAsTheNewsPage(): void
@@ -177,6 +255,7 @@ final class PublicPagesTest extends CIUnitTestCase
         config('Database')->defaultGroup = 'tests';
         $this->createNewsTable();
         $this->createScheduleTable();
+        $this->createProfileTables();
         $this->createProfileTables();
         $db = db_connect('tests');
         $db->table('berita')->insert([
@@ -199,6 +278,42 @@ final class PublicPagesTest extends CIUnitTestCase
         $archiveMarkup = preg_replace('/<!--.*?-->/s', '', $archiveCard[0]);
 
         $this->assertSame($archiveMarkup, $homeMarkup);
+    }
+
+    public function testNewsCardsUseTheUploadedCoverImageShownOnTheArticlePage(): void
+    {
+        if (! extension_loaded('sqlite3')) {
+            $this->markTestSkipped('SQLite is required for the in-memory news database test.');
+        }
+
+        config('Database')->defaultGroup = 'tests';
+        $this->createNewsTable();
+        $this->createScheduleTable();
+        $this->createProfileTables();
+        db_connect('tests')->table('berita')->insert([
+            'title' => 'Berita dengan sampul',
+            'slug' => 'berita-dengan-sampul',
+            'summary' => 'Ringkasan berita dengan sampul',
+            'content' => 'Isi berita dengan sampul',
+            'status' => 'Terbit',
+            'cover_image' => 'uploads/berita/sampul-berita.png',
+            'created_at' => '2026-11-04 09:00:00',
+        ]);
+
+        $expectedImageUrl = 'http://example.com/index.php/berita/gambar/sampul-berita.png';
+
+        foreach (['/', '/berita'] as $path) {
+            $result = $this->get($path);
+            $result->assertStatus(200);
+            $this->assertStringContainsString(
+                "background-image:url('" . $expectedImageUrl . "')",
+                $result->getBody()
+            );
+        }
+
+        $detail = $this->get('/berita/berita-dengan-sampul');
+        $detail->assertStatus(200);
+        $this->assertStringContainsString('src="' . $expectedImageUrl . '"', $detail->getBody());
     }
 
     public function testHomepageHighlightsOnlyTheEarliestUpcomingSchedule(): void
@@ -332,11 +447,14 @@ final class PublicPagesTest extends CIUnitTestCase
         $body = $this->get('/')->getBody();
         $updatesPosition = strpos($body, 'class="container-xl home-updates"');
         $leadershipPosition = strpos($body, 'class="leadership-section"');
+        $galleryPosition = strpos($body, 'class="home-gallery"');
 
         $this->assertNotFalse($updatesPosition);
         $this->assertNotFalse($leadershipPosition);
+        $this->assertNotFalse($galleryPosition);
         $this->assertLessThan($leadershipPosition, $updatesPosition);
-        $this->assertSame(1, substr_count($body, 'Baca profil jemaat'));
+        $this->assertLessThan($galleryPosition, $leadershipPosition);
+        $this->assertStringContainsString('index.php/profil', $body);
     }
 
     public function testRecentlyPublishedOlderDraftAppearsAmongHomepageNews(): void
@@ -513,6 +631,7 @@ final class PublicPagesTest extends CIUnitTestCase
             'waktu' => ['type' => 'TIME'],
             'lokasi' => ['type' => 'VARCHAR', 'constraint' => 255],
             'pelayan' => ['type' => 'VARCHAR', 'constraint' => 255, 'null' => true],
+            'keterangan' => ['type' => 'TEXT', 'null' => true],
             'is_cancelled' => ['type' => 'TINYINT', 'constraint' => 1, 'default' => 0],
             'created_by' => ['type' => 'BIGINT', 'unsigned' => true, 'null' => true],
             'updated_by' => ['type' => 'BIGINT', 'unsigned' => true, 'null' => true],
@@ -537,6 +656,33 @@ final class PublicPagesTest extends CIUnitTestCase
         $result->assertDontSee('class="leader-card"');
         $result->assertDontSee('Lokasi dan kontak');
         $result->assertDontSee('Menunggu konfirmasi resmi.');
+    }
+
+    public function testProfilePageOmitsItsHeroBadgeAndKeepsItsHeading(): void
+    {
+        config('Database')->defaultGroup = 'tests';
+        $this->createProfileTables();
+
+        $result = $this->get('/profil');
+
+        $result->assertStatus(200);
+        $result->assertDontSee('<span class="badge rounded-pill badge-soft mb-3">Profil Jemaat</span>');
+        $result->assertSee('Jemaat GPM Leahari');
+    }
+
+    public function testProfileHeroDoesNotRenderSectionShortcutLinks(): void
+    {
+        config('Database')->defaultGroup = 'tests';
+        $this->createProfileTables();
+
+        $result = $this->get('/profil');
+
+        $html = $result->getBody();
+
+        foreach (['wilayah', 'jemaat', 'ibadah'] as $sectionId) {
+            $this->assertStringNotContainsString('href="#' . $sectionId . '"', $html);
+            $this->assertStringContainsString('id="' . $sectionId . '"', $html);
+        }
     }
 
     public function testHomepageAndProfileSharePublishedMajelisCards(): void
@@ -582,7 +728,7 @@ final class PublicPagesTest extends CIUnitTestCase
             $result->assertSee('data-leadership-carousel');
             $result->assertSee('aria-label="Anggota sebelumnya"');
             $result->assertSee('aria-label="Anggota berikutnya"');
-            $result->assertSee('aria-label="Jeda pergantian otomatis"');
+            $result->assertDontSee('data-carousel-toggle');
         }
 
         $db->table('majelis_anggota')

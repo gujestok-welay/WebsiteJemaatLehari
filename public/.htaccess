@@ -47,3 +47,13 @@ Options -Indexes
 # Disable server signature start
 ServerSignature Off
 # Disable server signature end
+
+<IfModule mod_php.c>
+	php_value max_file_uploads 31
+	php_value post_max_size 320M
+</IfModule>
+
+<IfModule php_module>
+	php_value max_file_uploads 31
+	php_value post_max_size 320M
+</IfModule>

@@ -6,9 +6,9 @@
 
 | Informasi dokumen | Keterangan |
 |---|---|
-| Versi | **4.1 — FINAL BASELINE INTERNAL** |
+| Versi | **4.2 — BASELINE INTERNAL + CATATAN IMPLEMENTASI** |
 | Tanggal penyusunan | **29 Oktober 2026** |
-| Status | **Acuan kerja internal Kelompok 13 berdasarkan validasi A–H dan kesepakatan P0 secara lisan yang dilaporkan.** Tidak dimaksudkan sebagai bukti tanda tangan/pengesahan tertulis mitra. |
+| Status | **Acuan kebutuhan v4.1 berdasarkan validasi A–H dan kesepakatan P0 secara lisan yang dilaporkan; v4.2 menambahkan catatan perubahan implementasi lokal.** Tidak dimaksudkan sebagai bukti tanda tangan/pengesahan tertulis mitra. |
 | Mitra | Jemaat Leahari (GPM) |
 | Pelaksana | KKN Tematik Kelompok 13, FILKOM UKIM |
 | Pengelola setelah KKN | Media Center Jemaat Leahari |
@@ -17,7 +17,7 @@
 | Platform | Website publik dan panel administrasi |
 | Teknologi yang sedang dipakai | PHP, CodeIgniter 4, MySQL, Bootstrap 5, HTML/CSS/JavaScript |
 | Bahan penyusunan | PRD v3.0 tanggal 24 Oktober 2026; PRD v4.0 tanggal 28 Oktober 2026; jawaban validasi kebutuhan Bagian A–H yang diberikan Kelompok 13 |
-| Pemakaian | Acuan pengembangan website, pengujian, demo, dan pemeriksaan kesesuaian proposal KKN |
+| Pemakaian | Acuan kebutuhan v4.1 dan catatan perubahan implementasi lokal; bukan bukti perubahan kebutuhan yang disetujui mitra |
 
 > **Keputusan ruang lingkup:** fitur **P0 dinyatakan tetap (FIX) sebagai baseline internal**, mengikuti penegasan Kelompok 13 bahwa cakupan utama sudah disepakati secara lisan dengan pihak jemaat. **Tidak ada kewajiban mengonfirmasi ulang fitur P0 satu per satu.** Hal yang belum ditentukan (nama operator, kredensial, rincian hosting, kebijakan dukungan) dikelola sebagai keputusan operasional terpisah, bukan alasan membuka ulang ruang lingkup fitur. Dokumen ini tidak merekayasa tanda tangan atau klaim persetujuan tertulis.
 
@@ -131,6 +131,18 @@ Website menyajikan **Beranda, Profil Jemaat, Berita/Kegiatan, dan Jadwal Ibadah*
 Sistem data pribadi anggota/KK, pendataan sakramen pribadi, keuangan jemaat, surat-menyurat administratif, akun login publik, WhatsApp API/pesan otomatis, live streaming bawaan, sistem perizinan/approval online bertingkat, dan modul galeri mandiri. Foto kegiatan dapat ditempatkan dalam berita.
 
 **Aturan perubahan:** P1/P2 tidak otomatis menjadi kewajiban proyek. Penambahan modul harus mempertimbangkan dampak pada target 9 November 2026.
+
+### 4.4 Perluasan implementasi Galeri Kegiatan — 7 November 2026
+
+Atas permintaan implementasi pada proyek ini, galeri kegiatan mandiri dibangun sebagai perluasan di luar baseline P0 v4.1. Catatan ini tidak mengubah status persetujuan mitra maupun menjadikan perluasan tersebut sebagai hasil validasi mitra.
+
+- Publik melihat kartu kegiatan berisi poster/flayer, judul, dan keterangan atau tanggal bila tersedia; detail kegiatan dapat memuat foto tambahan dan tautan video eksternal.
+- Admin Media Center mengelola draft, kegiatan terbit, dan arsip melalui panel admin. Hanya kegiatan terbit yang dapat diakses publik.
+- Poster diberi label Poster, Flayer, atau Spanduk; foto tambahan berlabel Foto. Video tidak diunggah ke server dan hanya disimpan sebagai tautan HTTP(S).
+- Maksimal 30 foto tambahan per kegiatan; tiap gambar JPG, PNG, atau WEBP maksimal 10 MB. Jika jumlahnya lebih dari 10, detail kegiatan menampilkan satu pratinjau yang membuka semua foto dalam modal geser agar halaman tidak merender seluruh foto sekaligus.
+- Konfigurasi PHP hosting perlu mengizinkan minimal 31 file per permintaan (30 foto dan satu poster) serta ukuran permintaan yang cukup untuk seluruh berkas.
+- Beranda hanya menampilkan kegiatan terbit yang dipilih secara khusus. Pemilihan ini menjadi penghubung untuk modul beranda yang direncanakan terpisah; kegiatan galeri lain tidak otomatis ditampilkan di beranda.
+- Konten dan media hanya boleh diterbitkan bila informasi serta izin publikasinya tersedia. Perubahan skema menggunakan tabel baru dan tidak menghapus data yang sudah ada.
 
 ## 5. Detail fungsional dan kriteria penerimaan
 
@@ -255,7 +267,7 @@ Sistem data pribadi anggota/KK, pendataan sakramen pribadi, keuangan jemaat, sur
 | UAT-04 | Statistik | Operator mengubah angka agregat dan periode; data yang tampil hanya yang valid. | 04,09 |
 | UAT-05 | Terbitkan berita | Draft tersembunyi; sesudah terbit memiliki halaman detail dan bisa dibaca publik. | 05,09,10 |
 | UAT-06 | Cari berita lama | Judul lama yang masih terbit ditemukan; berita ditarik/draft tidak muncul. | 05,06,10 |
-| UAT-07 | CRUD jadwal | Tambah/edit jadwal dengan 4 field wajib; pelayan kosong tidak menimbulkan error. | 07,09 |
+| UAT-07 | CRUD jadwal | Tambah/edit jadwal dengan 4 field wajib; pelayan/keterangan opsional; keterangan tersimpan dan tampil pada detail publik. | 07,09 |
 | UAT-08 | Keamanan admin | Pengunjung anonim ditolak; login/logout bekerja; akses lama tidak tetap terbuka setelah logout. | 08,10 |
 | UAT-09 | Media upload | Gambar aman dapat diunggah; file salah ditolak; gambar kosong punya fallback. | 11 |
 | UAT-10 | Layout dan form | Tampilan mobile/desktop, keyboard, tombol, dan pesan error tetap bisa dipakai. | 12 |
@@ -368,6 +380,7 @@ Matriks ini digunakan ketua/koordinator saat tim proposal menggabungkan draf.
 | v3.0 | 24 Oktober 2026 | Draft kebutuhan awal untuk validasi. |
 | v4.0 | 28 Oktober 2026 | Usulan baseline internal dan spesifikasi teknis/pengujian. |
 | **v4.1** | **29 Oktober 2026** | Menyatukan validasi A–H, menetapkan P0 menurut kesepakatan yang dilaporkan, menaikkan pencarian berita, statistik, struktur/riwayat dan CMS terkait ke P0; memindahkan berita eksternal ke P1; menetapkan target 9 November dan matriks proposal. |
+| **v4.2** | **9 November 2026** | Mencatat permintaan pengguna workspace untuk menghapus modul Statistik admin yang belum terhubung ke Profil publik. Rute dan antarmuka admin dihapus; tabel dan data statistik lama dipertahankan. Ini perubahan implementasi lokal, bukan persetujuan perubahan kebutuhan oleh mitra; FR-04 tetap belum terpenuhi dan memerlukan keputusan sebelum modul serupa diaktifkan kembali. |
 
 ### 16.3 Tanda penerimaan saat serah terima (diisi pada waktunya)
 

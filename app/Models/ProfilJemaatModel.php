@@ -32,10 +32,10 @@ class ProfilJemaatModel extends Model
     ];
 
     protected $validationRules = [
-        'history' => 'required|min_length[20]',
-        'vision_mission' => 'required|min_length[20]',
+        'history' => 'permit_empty',
+        'vision_mission' => 'permit_empty',
         'address' => 'required|min_length[10]',
         'maps_url' => 'permit_empty|valid_url',
-        'contact_info' => 'required|min_length[10]',
+        'contact_info' => 'permit_empty',
     ];
 }

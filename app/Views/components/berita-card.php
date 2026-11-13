@@ -2,7 +2,9 @@
 $categoryName = (string) ($item['category'] ?? 'Berita');
 $articleId = 'berita-' . (string) $item['id'];
 $articleUrl = (string) ($item['url'] ?? site_url('berita/' . ($item['slug'] ?? $item['id'])));
-$bgImage = base_url('assets/images/kegiatan/berita' . (($index % 3) + 1) . '.jpeg');
+$bgImage = ! empty($item['image'])
+    ? (string) $item['image']
+    : base_url('assets/images/kegiatan/berita' . (($index % 3) + 1) . '.jpeg');
 ?>
 <article id="<?= esc($articleId, 'attr') ?>" class="card berita-card border-0 shadow-sm rounded-4 h-100 overflow-hidden">
     <a href="<?= esc($articleUrl, 'attr') ?>" class="berita-thumb d-block" aria-label="Buka <?= esc($item['title'], 'attr') ?>">

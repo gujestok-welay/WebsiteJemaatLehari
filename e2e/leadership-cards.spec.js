@@ -27,7 +27,6 @@ async function renderCarouselFixture(page, supportsFaceDetection) {
     const carousel = document.createElement('div');
     carousel.className = 'leadership-carousel';
     carousel.dataset.leadershipCarousel = '';
-    carousel.dataset.autoplayInterval = '5000';
     carousel.innerHTML = `
       <div class="leadership-grid">
         <article class="leader-card" data-carousel-slide>
@@ -42,7 +41,6 @@ async function renderCarouselFixture(page, supportsFaceDetection) {
       <div data-carousel-controls hidden>
         <button data-carousel-previous></button><button data-carousel-next></button>
         <div><button data-carousel-indicator="0"></button><button data-carousel-indicator="1"></button></div>
-        <button data-carousel-toggle><span data-carousel-toggle-label></span></button>
       </div>`;
     document.body.append(carousel);
   }, supportsFaceDetection);
@@ -69,4 +67,21 @@ test('foto Majelis tetap memenuhi kartu tanpa dukungan deteksi wajah', async ({ 
   await expect(image).toHaveAttribute('data-face-tracking', 'fallback');
   await expect(image).toHaveCSS('object-fit', 'cover');
   await expect(image).toHaveCSS('object-position', '50% 18%');
+});
+
+test('carousel Majelis tetap bisa dinavigasi tanpa tombol jeda atau putar otomatis', async ({ page }) => {
+  await renderCarouselFixture(page, false);
+
+  const slides = page.locator('[data-carousel-slide]');
+  await expect(page.locator('[data-carousel-toggle]')).toHaveCount(0);
+  await expect(slides.nth(0)).toBeVisible();
+  await expect(slides.nth(1)).toBeHidden();
+
+  await page.waitForTimeout(1100);
+  await expect(slides.nth(0)).toBeVisible();
+  await expect(slides.nth(1)).toBeHidden();
+
+  await page.locator('[data-carousel-next]').click();
+  await expect(slides.nth(0)).toBeHidden();
+  await expect(slides.nth(1)).toBeVisible();
 });

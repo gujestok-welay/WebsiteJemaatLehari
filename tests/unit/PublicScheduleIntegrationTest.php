@@ -38,6 +38,7 @@ final class PublicScheduleIntegrationTest extends CIUnitTestCase
             'waktu' => ['type' => 'TIME'],
             'lokasi' => ['type' => 'VARCHAR', 'constraint' => 255],
             'pelayan' => ['type' => 'VARCHAR', 'constraint' => 255, 'null' => true],
+            'keterangan' => ['type' => 'TEXT', 'null' => true],
             'is_cancelled' => ['type' => 'TINYINT', 'constraint' => 1, 'default' => 0],
             'created_by' => ['type' => 'BIGINT', 'unsigned' => true, 'null' => true],
             'updated_by' => ['type' => 'BIGINT', 'unsigned' => true, 'null' => true],
@@ -123,6 +124,7 @@ final class PublicScheduleIntegrationTest extends CIUnitTestCase
             'waktu' => '09:30',
             'lokasi' => 'Gedung Gereja',
             'pelayan' => '',
+            'keterangan' => '',
             'is_cancelled' => '0',
             'return_to' => 'admin/jadwal',
         ], $overrides);
@@ -146,10 +148,38 @@ final class PublicScheduleIntegrationTest extends CIUnitTestCase
         $response->assertStatus(200);
         $response->assertSee('Ibadah Minggu');
         $response->assertSee('25 Oktober 2026');
+        $response->assertSee('item-ibadah" data-hari="minggu"');
+        $response->assertSee('badge-hari">Minggu</span>');
         $response->assertSee('09.30 WIT');
         $response->assertSee('Gedung Gereja');
         $response->assertSee('Pdt. Contoh');
         $response->assertDontSee('Lokasi contoh A');
+    }
+
+    public function testScheduleDetailsAreRenderedOnThePublicPage(): void
+    {
+        $this->addSchedule([
+            'keterangan' => "Bawa Alkitab.\nHadir 15 menit lebih awal.",
+        ]);
+
+        $response = $this->get('/jadwal-ibadah');
+
+        $response->assertStatus(200);
+        $this->assertStringContainsString(
+            "Bawa Alkitab.<br>\nHadir 15 menit lebih awal.",
+            $response->getBody(),
+        );
+    }
+
+    public function testPublicScheduleCardsDoNotRenderDecorativeIconContainers(): void
+    {
+        $this->addSchedule();
+
+        $response = $this->get('/jadwal-ibadah');
+
+        $response->assertSee('Ibadah Minggu');
+        $response->assertSee('class="card jadwal-card');
+        $response->assertDontSee('card-ikon');
     }
 
     public function testHomepageUsesDatabaseScheduleInsteadOfScheduleExamples(): void

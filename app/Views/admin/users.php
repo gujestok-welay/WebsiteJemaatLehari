@@ -44,14 +44,19 @@
         .select { width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:8px; background:#fff; }
         @media (max-width: 880px) { .grid { grid-template-columns: 1fr; } .page-head { display:block; } }
     </style>
+    <link href="<?= base_url('assets/css/theme.css') ?>?v=<?= filemtime(FCPATH . 'assets/css/theme.css') ?>" rel="stylesheet">
+    <script src="<?= base_url('assets/js/theme.js') ?>?v=<?= filemtime(FCPATH . 'assets/js/theme.js') ?>"></script>
 </head>
-<body>
+<body class="admin-users">
 <header class="topbar">
     <div class="container-fluid px-4 py-3 d-flex justify-content-between align-items-center">
         <a class="brand" href="<?= site_url('admin/dashboard') ?>">
             <img class="brand-mark" src="<?= base_url('assets/images/logo/LogoGPM.png') ?>" alt="" width="38" height="38">
             <span>Media Center<br>Jemaat Leahari</span>
         </a>
+        <div class="theme-control">
+            <?= view('components/theme-toggle') ?>
+        </div>
         <form method="post" action="<?= site_url('admin/logout') ?>"><?= csrf_field() ?><button class="btn btn-secondary" type="submit">Keluar</button></form>
     </div>
 </header>

@@ -40,6 +40,10 @@
                     <input class="form-control" id="pelayan" name="pelayan" value="<?= esc(old('pelayan') ?? ($item['pelayan'] ?? '')) ?>" maxlength="255" placeholder="Kosongkan bila belum ditentukan">
                 </div>
                 <div class="schedule-form-field">
+                    <label for="keterangan">Keterangan <span>(opsional)</span></label>
+                    <textarea class="form-control" id="keterangan" name="keterangan" rows="4" maxlength="2000"><?= esc(old('keterangan') ?? ($item['keterangan'] ?? '')) ?></textarea>
+                </div>
+                <div class="schedule-form-field">
                     <label for="is_cancelled">Status jadwal</label>
                     <?php $statusJadwal = old('is_cancelled') ?? ($item['is_cancelled'] ?? 0); ?>
                     <select class="form-select" id="is_cancelled" name="is_cancelled">

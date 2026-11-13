@@ -3,11 +3,12 @@
 <?php
 $nextService = $nextService ?? null;
 $latestNews = array_slice($news, 0, 2);
+$featuredActivities = $featuredActivities ?? [];
 ?>
 
 <section class="home-shell">
     <div class="container-xl py-4 py-lg-5">
-        <div class="row align-items-center g-4 g-lg-5">
+        <div class="row align-items-center g-4 g-lg-4">
             <div class="col-lg-7">
                 <h1 class="home-title" id="judul-beranda">Jemaat <span>Leahari</span></h1>
                 <p class="home-intro">Ruang informasi jemaat untuk mengikuti berita, mengenal pelayanan, dan
@@ -73,7 +74,7 @@ $latestNews = array_slice($news, 0, 2);
     </div>
 
     <div class="container-xl home-updates">
-        <div class="row g-4 g-lg-5">
+        <div class="row g-4 g-lg-4">
             <div class="col-lg-7">
                 <section class="home-news" aria-labelledby="warta">
                     <div class="section-heading">
@@ -149,7 +150,7 @@ $latestNews = array_slice($news, 0, 2);
             </div>
 
             <?php if (! empty($majelis)): ?>
-                <div class="leadership-carousel" data-leadership-carousel role="region" aria-roledescription="carousel" aria-label="Susunan Majelis Jemaat" data-autoplay-interval="5000">
+                <div class="leadership-carousel" data-leadership-carousel role="region" aria-roledescription="carousel" aria-label="Susunan Majelis Jemaat">
                     <div class="leadership-grid" data-carousel-track>
                         <?php foreach ($majelis as $index => $member): ?>
                             <article class="leader-card" data-carousel-slide aria-roledescription="slide" aria-label="<?= esc(($index + 1) . ' dari ' . count($majelis) . ': ' . $member['name'], 'attr') ?>">
@@ -175,9 +176,6 @@ $latestNews = array_slice($news, 0, 2);
                                     </button>
                                 <?php endforeach; ?>
                             </div>
-                            <button class="leadership-carousel-toggle" type="button" data-carousel-toggle aria-label="Jeda pergantian otomatis">
-                                <span data-carousel-toggle-label>Jeda</span>
-                            </button>
                         </div>
                         <button class="leadership-carousel-arrow" type="button" data-carousel-next aria-label="Anggota berikutnya">
                             <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m9 18 6-6-6-6m6 6H3" /></svg>
@@ -190,24 +188,60 @@ $latestNews = array_slice($news, 0, 2);
         </section>
     </div>
 
-    <section class="about-preview container-xl" aria-labelledby="kenali">
-        <div class="row g-4 g-lg-5 align-items-center">
-            <div class="col-lg-4">
-                <h2 id="kenali">Mengenal jemaat</h2>
-            </div>
-            <div class="col-lg-8">
+    <section class="home-gallery" aria-labelledby="home-gallery-title">
+        <div class="home-gallery-inner container-xl">
+            <header class="home-gallery-heading">
                 <div>
-                    <p class="intro-text">Profil menjadi tempat mengenal sejarah, pelayanan, dan orang-orang yang
-                        melayani di Jemaat Leahari.</p>
-                    <p>Isi profil masih menunggu data resmi yang disetujui untuk publikasi.</p>
-                    <?= view('components/css-link', [
-                        'url' => site_url('profil'),
-                        'label' => 'Baca profil jemaat',
-                        'icon' => '↗',
-                        'className' => '',
-                    ]) ?>
+                    <h2 id="home-gallery-title">Galeri kegiatan</h2>
+                    <p>Poster dan dokumentasi kegiatan Jemaat Leahari.</p>
                 </div>
-            </div>
+                <a class="home-gallery-link" href="<?= site_url('galeri') ?>">
+                    Jelajahi galeri
+                    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14M13 5l7 7-7 7" /></svg>
+                </a>
+            </header>
+
+            <?php if ($featuredActivities === []): ?>
+                <p class="home-gallery-empty">Belum ada dokumentasi kegiatan yang dipilih untuk beranda.</p>
+            <?php else: ?>
+                <div class="home-gallery-grid">
+                    <?php foreach ($featuredActivities as $activity): ?>
+                        <article class="home-gallery-card">
+                            <a class="home-gallery-card-link" href="<?= site_url('galeri/' . rawurlencode((string) $activity['slug'])) ?>">
+                                <span class="gallery-card-image-wrap">
+                                    <?php if (! empty($activity['poster_url'])): ?>
+                                        <img
+                                            class="gallery-card-image-backdrop"
+                                            src="<?= esc($activity['poster_url'], 'attr') ?>"
+                                            alt=""
+                                            aria-hidden="true"
+                                            loading="lazy"
+                                            decoding="async"
+                                        >
+                                        <img
+                                            class="home-gallery-image gallery-card-image"
+                                            src="<?= esc($activity['poster_url'], 'attr') ?>"
+                                            alt="<?= esc($activity['title'] . ' — ' . ucfirst((string) $activity['poster_type']), 'attr') ?>"
+                                            width="1200"
+                                            height="800"
+                                            loading="lazy"
+                                        >
+                                        <span class="gallery-card-image-fallback" hidden>Poster kegiatan tidak dapat dimuat</span>
+                                    <?php else: ?>
+                                        <span class="home-gallery-image-fallback gallery-card-image-fallback">Poster kegiatan tidak tersedia</span>
+                                    <?php endif; ?>
+                                </span>
+                                <span class="home-gallery-card-copy">
+                                    <?php if (! empty($activity['date_label'])): ?>
+                                        <time datetime="<?= esc($activity['event_date'], 'attr') ?>"><?= esc($activity['date_label']) ?></time>
+                                    <?php endif; ?>
+                                    <strong><?= esc($activity['title']) ?></strong>
+                                </span>
+                            </a>
+                        </article>
+                    <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
         </div>
     </section>
 </section>

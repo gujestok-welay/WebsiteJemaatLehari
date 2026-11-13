@@ -4,7 +4,6 @@
 <div class="berita-page">
     <section class="berita-hero text-white">
         <div class="container py-5">
-            <span class="badge rounded-pill badge-soft mb-3">Berita</span>
             <h1 class="display-6 fw-bold mb-2">Berita &amp; Peristiwa</h1>
             <p class="lead mb-0 col-lg-7">Kabar terbaru kegiatan dan pelayanan Jemaat GPM Leahari.</p>
         </div>

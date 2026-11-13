@@ -1,14 +1,16 @@
 # Fondasi UI publik Jemaat Leahari
 
-Implementasi mengikuti lingkup empat halaman publik. Framework bawaan terverifikasi CodeIgniter **4.7.5**. Menggunakan PHP Views dan Bootstrap **5.3.8** lokal. Beranda dan halaman Berita menampilkan berita berstatus `Terbit` dari database jika koneksi database dikonfigurasi; konten contoh dipakai untuk berita saat database belum dikonfigurasi. Halaman Profil membaca konten dan angka yang dikelola dari panel admin; nilai awal yang ada tetap merupakan konten prototipe dan belum otomatis menjadi fakta resmi.
+Implementasi memiliki halaman Beranda, Profil, Berita, Galeri, dan Jadwal Ibadah. Framework bawaan terverifikasi CodeIgniter **4.7.5**. Menggunakan PHP Views dan Bootstrap **5.3.8** lokal. Beranda dan halaman Berita menampilkan berita berstatus `Terbit` dari database jika koneksi database dikonfigurasi; konten contoh dipakai untuk berita saat database belum dikonfigurasi. Galeri hanya menampilkan kegiatan berstatus `Terbit` dan tidak membuat konten contoh. Halaman Profil membaca konten dan angka yang dikelola dari panel admin; nilai awal yang ada tetap merupakan konten prototipe dan belum otomatis menjadi fakta resmi.
 
 Detail berita tersedia pada `/berita/{slug}` hanya untuk berita berstatus `Terbit`. Slug yang tidak ditemukan atau tidak publik menghasilkan halaman 404 dengan tautan kembali ke daftar berita. Gambar unggahan hanya disajikan melalui route publik ketika masih terhubung ke berita terbit.
+
+Galeri kegiatan tersedia pada `/galeri` dan `/galeri/{slug}`. Kegiatan Draft atau Arsip serta gambarnya tidak tersedia melalui route publik. Beranda menampilkan paling banyak tiga kegiatan terbit yang dipilih secara khusus dari panel admin. Pengelolaan galeri tersedia pada `/admin/galeri`; unggahan gambar disimpan di luar direktori publik dan disajikan melalui route yang memeriksa status publikasi.
 
 ## Editor Profil publik
 
 - Panel `admin/profil` mengelola seluruh teks, angka, label, tautan bagian, dan daftar berulang di halaman Profil; menu utama dan footer dikelola terpisah.
 - Konten halaman disimpan pada kolom `profil_jemaat.page_content`. Migrasi `2026-11-05-000001_AddPublicProfilePageContent` menambahkan kolom teks nullable tanpa mengubah isi kolom profil yang sudah ada.
-- Dashboard Profil Jemaat menampilkan kartu ringkasan untuk Gambaran Umum Wilayah, Jumlah KK dan Jiwa, Pelayanan Peribadahan, Peta Pelayanan, serta editor teks Profil dan Majelis. Setiap kartu membuka modal; penyimpanan wilayah, sensus, peta, dan konten Profil/Majelis berlangsung melalui permintaan terpisah. Jadwal ibadah tetap dikelola melalui `/admin/jadwal`.
+- Dashboard Profil Jemaat menampilkan kartu ringkasan untuk Gambaran Umum Wilayah, Jumlah KK dan Jiwa, Pelayanan Peribadahan, Peta Pelayanan, serta editor teks Profil dan Majelis. Setiap tindakan Kelola membuka halaman khusus modul, dengan navigasi kembali, status penyimpanan, dan perlindungan perubahan yang belum disimpan. Editor Wilayah, Sensus, dan Konten Profil membagi isian panjang menjadi langkah yang dapat dipilih langsung. Jadwal ibadah tetap dikelola melalui `/admin/jadwal`.
 - Kartu Gambaran Umum Wilayah, Jumlah KK dan Jiwa, serta Pelayanan Peribadahan memakai ilustrasi latar yang sesuai modul dengan lapisan gelap dan bayangan teks agar tetap terbaca. Label judul berwarna, status berbentuk pil, ringkasan, dan tombol putih mengikuti hierarki visual yang konsisten; pada HP kartu tersusun satu kolom dengan ukuran teks dan kontrol yang disesuaikan. Gambar latar tersebut merupakan ilustrasi, bukan dokumentasi lokasi atau kegiatan jemaat.
 - Wilayah dan sensus disimpan pada kolom nullable `territory_content` dan `census_content`; migrasi `2026-11-06-000001_AddProfileManagementModules` menambahkan kolom tersebut beserta `service_map_path`, `service_map_title`, dan `service_map_alt` tanpa menghapus atau menulis ulang data lama. Konten publik menggunakan data modul bila tersedia dan mempertahankan fallback konten Profil lama.
 - Total jiwa dan kelompok usia terbesar dihitung dari kategori jumlah yang tersimpan. Nilai angka referensi hanya ditampilkan jika memang ada di data; tidak ada angka contoh yang dikunci dalam kode.
@@ -38,7 +40,7 @@ Beranda hanya menampilkan jadwal yang belum dimulai menurut zona waktu WIT, diur
 - `app/Controllers/Home.php`: menyiapkan data dan merender halaman; mengambil berita publik dari `BeritaModel` saat database dikonfigurasi dan membaca konten Profil dari model profil jemaat. Detail dan gambar berita hanya tersedia untuk berita terbit.
 - `app/Libraries/PublicSampleContent.php`: sumber berita contoh bila database belum dikonfigurasi dan tiga jadwal contoh; tidak melakukan persistence.
 - `app/Views/layouts/publik.php`: dokumen HTML, aset lokal, skip link, pemberitahuan dummy, slot konten.
-- `app/Views/partials/navbar.php`: navigasi responsif dan penanda halaman aktif.
+- `app/Views/partials/navbar.php`: navigasi responsif dengan penanda halaman aktif dan dropdown Profil ke ringkasan Profil Jemaat, Peta Pelayanan, Majelis Jemaat, Gambaran Umum Wilayah Pelayanan, Jumlah Kepala Keluarga dan Jiwa, serta Pelayanan Peribadahan.
 - `app/Views/partials/footer.php`: penutup dan navigasi kembali.
 - `app/Views/publik/beranda.php`: pengantar, berita terbaru, jadwal mendatang, akses profil; bagian berita/jadwal mengikuti hero sebelum bagian Majelis.
 - `app/Views/publik/profil.php`: profil wilayah, statistik, Majelis, kontak, dan peribadahan dari konten yang dapat dikelola melalui panel admin.
@@ -96,12 +98,13 @@ Top three problems (most visible first), each with the screenshot it shows in an
 
 ## Pengujian ulang manual
 
-1. Buka empat route; periksa navbar aktif dan semua tautan beranda/footer.
-2. Pada HP, buka/tutup Menu, gunakan keyboard Tab dan skip link; pastikan fokus terlihat.
+1. Buka lima halaman publik; periksa navbar aktif dan semua tautan beranda/footer.
+2. Pada desktop, arahkan pointer ke Profil untuk membuka dropdown; pada HP, buka/tutup Menu dan dropdown Profil dengan sentuhan. Ikuti tautan bagian, gunakan keyboard Tab dan skip link, lalu pastikan fokus terlihat.
 3. Buka/tutup tiap “Baca isi contoh” di Berita.
 4. Di Jadwal Ibadah pilih Minggu, Keluarga, dan Semua. Periksa jumlah serta jenis hasil.
 5. Matikan JavaScript: navigasi dan seluruh jadwal harus tetap tersedia, berita tetap dapat dibuka.
 6. Uji zoom browser 200%, reduced motion, dan cetak jadwal; lanjutkan UAT bersama pengguna semua usia. Pengujian pembaca layar/perangkat fisik belum dilakukan.
+7. Pada Galeri, periksa empty state, detail kegiatan, status Draft/Arsip, tautan video eksternal, dan lebar layar ponsel. Pada panel admin, uji unggah gambar, batas jumlah/ukuran, edit, arsip, dan pemulihan.
 
 ## Sebelum publikasi
 

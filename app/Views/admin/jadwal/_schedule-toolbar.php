@@ -37,7 +37,6 @@ $statusTerpilih = $archived ? 'arsip' : ($cancelled === null ? 'semua' : ($cance
         <?php if ($hariDipilih !== 'semua'): ?><input type="hidden" name="hari" value="<?= esc($hariDipilih, 'attr') ?>"><?php endif; ?>
         <label class="visually-hidden" for="schedule-search-input">Cari jenis ibadah, lokasi, atau pelayan</label>
         <input id="schedule-search-input" type="search" name="q" value="<?= esc($term, 'attr') ?>" placeholder="Cari jadwal...">
-        <button class="button" type="submit">Cari</button>
         <?php if ($adaFilter): ?>
             <a class="schedule-reset" href="<?= site_url('admin/jadwal') ?>">Hapus filter</a>
         <?php endif; ?>

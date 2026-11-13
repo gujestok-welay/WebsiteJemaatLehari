@@ -13,7 +13,7 @@ const cookies = new Map();
 const login = `${base}/index.php/admin/login`;
 const dashboard = `${base}/index.php/admin/dashboard`;
 const entries = ['/admin', '/index.php/admin'];
-const protectedPages = ['/admin/berita', '/admin/jadwal', '/admin/profil', '/admin/statistik'];
+const protectedPages = ['/admin/berita', '/admin/jadwal', '/admin/profil'];
 
 function sessionPath(id) {
   assert.match(id, /^[a-zA-Z0-9,-]+$/);
@@ -118,9 +118,14 @@ try {
 
   for (const path of ['/', '/profil', '/berita', '/jadwal-ibadah']) {
     const publicHtml = await page(path, 'Jemaat Leahari');
-    assert.ok(!/href=["'][^"']*\/admin(?:[\/"'])/.test(publicHtml));
+    const adminEntry = publicHtml.match(
+      /<a\b(?=[^>]*href=["'][^"']*\/admin["'])(?=[^>]*aria-label=["']Masuk ke panel pengelola["'])[^>]*>([\s\S]*?)<\/a>/
+    );
+    assert.ok(adminEntry, `${path} should provide an accessible admin entry link`);
+    assert.match(adminEntry[1], /bi-box-arrow-in-right/);
+    assert.equal(adminEntry[1].replace(/<[^>]*>/g, '').trim(), '');
   }
-  console.log('PASS four public pages return 200 without an admin link');
+  console.log('PASS four public pages return 200 with an icon-only admin entry');
 } finally {
   for (const id of ownedIds) {
     const file = sessionPath(id);

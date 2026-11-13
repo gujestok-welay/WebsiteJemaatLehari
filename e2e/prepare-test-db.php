@@ -2,7 +2,12 @@
 declare(strict_types=1);
 
 $root = dirname(__DIR__);
-$expectedDirectory = $root . DIRECTORY_SEPARATOR . 'writable' . DIRECTORY_SEPARATOR . 'playwright-test-data';
+$dataDirectoryName = getenv('PLAYWRIGHT_TEST_DATA_DIRECTORY') ?: 'playwright-test-data';
+if (! preg_match('/\Aplaywright-test-data(?:-[a-z0-9]+(?:-[a-z0-9]+)*)?\z/', $dataDirectoryName)) {
+    fwrite(STDERR, "Nama folder database tes tidak valid.\n");
+    exit(1);
+}
+$expectedDirectory = $root . DIRECTORY_SEPARATOR . 'writable' . DIRECTORY_SEPARATOR . $dataDirectoryName;
 $writableDirectory = $root . DIRECTORY_SEPARATOR . 'writable';
 $databasePath = getenv('PLAYWRIGHT_TEST_DATABASE_PATH');
 $email = getenv('PLAYWRIGHT_TEST_ADMIN_EMAIL');
@@ -55,6 +60,8 @@ foreach ([
     'majelis_periode',
     'majelis_anggota',
     'jadwal_ibadah',
+    'kegiatan_media',
+    'kegiatan',
 ] as $table) {
     $db->exec('DROP TABLE IF EXISTS "' . $table . '"');
 }
@@ -143,12 +150,38 @@ $schema = [
         waktu TIME NOT NULL,
         lokasi VARCHAR(255) NOT NULL,
         pelayan VARCHAR(255) NULL,
+        keterangan TEXT NULL,
         is_cancelled INTEGER NOT NULL DEFAULT 0,
         created_by INTEGER NULL,
         updated_by INTEGER NULL,
         created_at DATETIME NULL,
         updated_at DATETIME NULL,
         deleted_at DATETIME NULL
+    )',
+    'CREATE TABLE kegiatan (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        title VARCHAR(255) NOT NULL,
+        slug VARCHAR(255) NOT NULL UNIQUE,
+        description TEXT NULL,
+        event_date DATE NULL,
+        video_url VARCHAR(2048) NULL,
+        poster_path VARCHAR(255) NOT NULL,
+        poster_type VARCHAR(20) NOT NULL DEFAULT "poster",
+        status VARCHAR(20) NOT NULL,
+        show_on_home INTEGER NOT NULL DEFAULT 0,
+        archived_from_status VARCHAR(20) NULL,
+        created_by INTEGER NULL,
+        updated_by INTEGER NULL,
+        created_at DATETIME NULL,
+        updated_at DATETIME NULL
+    )',
+    'CREATE TABLE kegiatan_media (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        kegiatan_id INTEGER NOT NULL,
+        media_type VARCHAR(20) NOT NULL,
+        file_path VARCHAR(255) NOT NULL,
+        created_at DATETIME NULL,
+        FOREIGN KEY (kegiatan_id) REFERENCES kegiatan(id) ON DELETE CASCADE
     )',
 ];
 

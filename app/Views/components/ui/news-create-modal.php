@@ -57,10 +57,22 @@ $defaultOpen = ($defaultOpen ?? false) || $newsError !== '';
                 <?php endforeach; ?>
             </select>
         </div>
-        <div class="rm-field">
-            <label for="news-create-cover-image">Gambar kover</label>
-            <input class="form-control" id="news-create-cover-image" name="cover_image" type="file" accept="image/jpeg,image/png,image/webp">
-            <div class="form-text">JPG, PNG, atau WEBP. Maksimal 10 MB.</div>
+        <div class="rm-field rm-news-cover-field">
+            <label class="gallery-admin-file-title" for="news-create-cover-image">Gambar kover</label>
+            <div class="gallery-admin-file">
+                <label class="gallery-admin-upload-dropzone" data-news-cover-dropzone for="news-create-cover-image">
+                    <input class="gallery-admin-upload-input" id="news-create-cover-image" name="cover_image" type="file" accept="image/jpeg,image/png,image/webp">
+                    <svg class="gallery-admin-upload-icon" viewBox="0 0 48 48" aria-hidden="true" focusable="false">
+                        <path d="M24 31V7m0 0-8 8m8-8 8 8M9 29v10h30V29" />
+                    </svg>
+                    <span class="gallery-admin-upload-copy">
+                        <strong>Seret gambar kover ke sini</strong>
+                        <span>atau <span class="gallery-admin-upload-action">pilih dari perangkat</span></span>
+                    </span>
+                </label>
+                <small class="gallery-admin-upload-hint">JPG, PNG, atau WEBP. Maksimal 10 MB.</small>
+                <ul class="gallery-admin-upload-files" data-news-cover-preview aria-label="Gambar kover yang dipilih" aria-live="polite" hidden></ul>
+            </div>
             <div class="form-text text-danger" data-news-file-error role="alert" hidden></div>
             <div class="form-text" data-news-current-cover hidden>Gambar kover yang ada akan dipertahankan jika tidak memilih gambar baru.</div>
         </div>

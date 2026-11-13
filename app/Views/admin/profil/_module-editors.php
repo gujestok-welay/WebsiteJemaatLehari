@@ -1,5 +1,36 @@
 <?php
 helper('modal');
+$editorModule = (string) ($editorModule ?? '');
+$editorOpen = static function (string $id): void {
+    echo '<div class="profile-editor-surface" id="' . esc($id, 'attr') . '" data-profile-page>'
+        . '<div class="profile-editor-frame"><div class="profile-editor-panel">';
+};
+$editorContentOpen = static function (): void {
+    echo '<div class="profile-editor-content">';
+};
+$editorHeaderOpen = static function (): void {
+    echo '<div class="profile-editor-header">';
+};
+$editorBodyOpen = static function (): void {
+    echo '<div class="profile-modal-body">';
+};
+$editorFooterOpen = static function (): void {
+    echo '<div class="profile-editor-footer">';
+};
+$editorTitle = static function (string $text, string $class = '', array $desktopProps = [], array $mobileProps = []): void {
+    echo '<h2 class="' . esc($class, 'attr') . '"' . modal_attrs($desktopProps + $mobileProps) . '>' . esc($text) . '</h2>';
+};
+$editorDescription = static function (string $text, string $class = '', array $desktopProps = [], array $mobileProps = []): void {
+    echo '<p class="' . esc($class, 'attr') . '"' . modal_attrs($desktopProps + $mobileProps) . '>' . esc($text) . '</p>';
+};
+$editorClose = static function (): void {
+};
+$editorSectionEnd = static function (): void {
+    echo '</div>';
+};
+$editorEnd = static function (): void {
+    echo '</div></div></div>';
+};
 $editPeriod = is_array($editPeriod ?? null) ? $editPeriod : null;
 $editMember = is_array($editMember ?? null) ? $editMember : null;
 $profile = is_array($profile ?? null) ? $profile : [];
@@ -9,8 +40,8 @@ $selectedPeriod = (int) ($selectedPeriod ?? 0);
 $territoryGroups = [
     [
         'section' => 'territory',
-        'title' => 'Informasi umum wilayah',
-        'description' => 'Isi judul dan keterangan status administrasi, topografi, serta kehidupan masyarakat.',
+        'title' => 'Informasi wilayah',
+        'description' => 'Isi informasi wilayah yang sudah dipastikan benar. Perubahan yang disimpan akan tampil di halaman Profil Jemaat.',
         'fields' => array_fill_keys([
             'section_badge',
             'title',
@@ -24,53 +55,91 @@ $territoryGroups = [
     [
         'section' => 'territory',
         'title' => 'Batas wilayah',
-        'description' => 'Cantumkan arah dan nama wilayah yang berbatasan, lalu pilih ikon panah yang sesuai.',
-        'fields' => array_fill_keys(['boundaries_title', 'boundary_prefix', 'boundaries'], true),
+        'description' => 'Pilih arah mata angin dan isi nama wilayah yang berbatasan.',
+        'fields' => array_fill_keys(['boundaries_title', 'boundaries'], true),
     ],
     [
         'section' => 'territory',
         'title' => 'Sektor pelayanan',
-        'description' => 'Masukkan nama sektor, jumlah unit, luas, dan keterangannya.',
-        'fields' => array_fill_keys(['sectors', 'sector_prefix', 'unit_suffix', 'area_share_suffix'], true),
+        'description' => 'Isi nama setiap sektor, jumlah unit, dan luasnya.',
+        'fields' => array_fill_keys(['sectors'], true),
     ],
     [
         'section' => 'territory',
-        'title' => 'Jarak ke layanan penting',
-        'description' => 'Masukkan nama tujuan dan jaraknya berdasarkan informasi yang sudah diperiksa.',
+        'title' => 'Jarak ke lokasi penting',
+        'description' => 'Isi nama lokasi penting dan jaraknya. Tambahkan atau hapus lokasi sesuai kebutuhan.',
         'fields' => array_fill_keys(['orbit_title', 'orbitations'], true),
     ],
     [
         'section' => 'seasons',
-        'title' => 'Musim',
-        'description' => 'Atur rentang waktu, nama, dan keterangan untuk setiap musim.',
+        'title' => 'Musim wilayah',
+        'description' => 'Isi periode, nama musim, dan keterangannya.',
         'fields' => ['items' => true],
+    ],
+    [
+        'section' => 'territory',
+        'title' => 'Tampilan publik',
+        'description' => 'Atur kata dan satuan yang menyertai data di halaman Profil. Data batas, sektor, dan jarak tidak berubah.',
+        'fields' => array_fill_keys(['boundary_prefix', 'sector_prefix', 'unit_suffix', 'area_share_suffix'], true),
     ],
 ];
 ?>
-<?php modal_open('profile-territory-modal', false, ['aria-labelledby' => 'profile-territory-title', 'aria-describedby' => 'profile-territory-description'], ['aria-labelledby' => 'profile-territory-title', 'aria-describedby' => 'profile-territory-description']) ?>
-<?php modal_content_open() ?>
-<form class="rm-form profile-module-form" method="post" action="<?= site_url('admin/profil/modules/territory') ?>" data-profile-ajax-form data-profile-module-form>
+<?php if ($editorModule === 'territory'): ?>
+<?php $editorOpen('profile-territory-editor') ?>
+<?php $editorContentOpen() ?>
+<form class="rm-form profile-module-form" method="post" action="<?= site_url('admin/profil/modules/territory') ?>" data-profile-ajax-form data-profile-module-form data-profile-step-form>
     <?= csrf_field() ?>
-    <?php modal_header_open() ?>
+    <?php $editorHeaderOpen() ?>
     <div class="rm-heading-copy">
-        <?php modal_title('Gambaran Umum Wilayah', 'fw-semibold', ['id' => 'profile-territory-title'], ['id' => 'profile-territory-title']) ?>
-        <?php modal_description('Perbarui status administrasi, topografi, batas wilayah, dan informasi musim.', 'rm-description', ['id' => 'profile-territory-description'], ['id' => 'profile-territory-description']) ?>
+        <?php $editorTitle('Gambaran Umum Wilayah', 'fw-semibold', ['id' => 'profile-territory-title']) ?>
+        <?php $editorDescription('Pilih bagian yang ingin diubah. Pastikan informasi sudah diperiksa; perubahan yang disimpan akan tampil di halaman Profil Jemaat.', 'rm-description', ['id' => 'profile-territory-description']) ?>
     </div>
-    <?php modal_close('Tutup', 'rm-back-button btn btn-link') ?>
-    <?php modal_section_end() ?>
-    <?php modal_body_open() ?>
+    <?php $editorSectionEnd() ?>
+    <?php $editorBodyOpen() ?>
     <div class="profile-form-message" data-profile-form-message role="alert" hidden></div>
+    <nav class="profile-census-step-nav profile-step-nav" data-profile-step-nav aria-label="Langkah pengisian" hidden>
+        <ol class="profile-census-step-list profile-step-list" style="--profile-step-count: <?= count($territoryGroups) ?>">
+            <?php foreach ($territoryGroups as $index => $group): ?>
+                <?php $stepId = 'profile-territory-step-' . $index; ?>
+                <li>
+                    <button class="profile-census-step-link profile-step-link" id="<?= esc($stepId, 'attr') ?>-nav" type="button" data-profile-step-target="<?= esc($stepId, 'attr') ?>" aria-controls="<?= esc($stepId, 'attr') ?>" <?= $index === 0 ? 'aria-current="step"' : '' ?>>
+                        <span class="profile-census-step-number profile-step-number" aria-hidden="true"><?= $index + 1 ?></span>
+                        <span><?= esc($group['title']) ?></span>
+                    </button>
+                </li>
+            <?php endforeach; ?>
+        </ol>
+    </nav>
     <div class="profile-module-form-grid">
         <?php foreach ($territoryGroups as $index => $group): ?>
             <?php
             $sectionKey = $group['section'];
             $groupFields = array_intersect_key($pageContent[$sectionKey], $group['fields']);
             $groupTemplates = array_intersect_key($pageDefaults[$sectionKey], $group['fields']);
+            if ($sectionKey === 'territory' && $group['title'] === 'Tampilan publik') {
+                $firstBoundary = $pageContent['territory']['boundaries'][0] ?? ['direction' => '', 'name' => ''];
+                $firstSector = $pageContent['territory']['sectors'][0] ?? ['name' => '', 'units' => 0, 'area' => 0, 'area_unit' => ''];
+                $sectorAreaTotal = array_sum(array_map(
+                    static fn (array $sector): float => (float) ($sector['area'] ?? 0),
+                    $pageContent['territory']['sectors'],
+                ));
+                $sectorAreaShare = $sectorAreaTotal > 0
+                    ? (int) round((float) ($firstSector['area'] ?? 0) / $sectorAreaTotal * 100)
+                    : 0;
+            }
             ?>
-            <details class="profile-content-accordion" <?= $index === 0 ? 'open' : '' ?>>
-                <summary><?= esc($group['title']) ?></summary>
-                <div class="profile-content-accordion-body">
+            <section class="profile-step-panel" id="profile-territory-step-<?= $index ?>" data-profile-step-panel aria-labelledby="profile-territory-step-<?= $index ?>-nav">
+                <div class="profile-content-accordion-body profile-territory-accordion-body">
+                    <h3 class="profile-step-panel-heading"><?= esc($group['title']) ?></h3>
                     <p><?= esc($group['description']) ?></p>
+                    <?php if ($sectionKey === 'territory' && $group['title'] === 'Tampilan publik'): ?>
+                        <div class="profile-census-calculation profile-census-public-preview profile-territory-public-preview">
+                            <span>Contoh batas wilayah</span>
+                            <output data-territory-preview="boundary"><?= esc(trim((string) $pageContent['territory']['boundary_prefix'] . ' ' . (string) ($firstBoundary['direction'] ?? '') . ' — ' . (string) ($firstBoundary['name'] ?? ''))) ?></output>
+                            <span>Contoh sektor pelayanan</span>
+                            <output data-territory-preview="sector"><?= esc(trim((string) $pageContent['territory']['sector_prefix'] . ' ' . (string) ($firstSector['name'] ?? '') . ' · ' . (int) ($firstSector['units'] ?? 0) . ' ' . (string) $pageContent['territory']['unit_suffix'] . ' · ' . number_format((float) ($firstSector['area'] ?? 0), 2) . ' ' . (string) ($firstSector['area_unit'] ?? '') . ' · ' . $sectorAreaShare . (string) $pageContent['territory']['area_share_suffix'])) ?></output>
+                        </div>
+                    <?php endif; ?>
                     <?= view('admin/profil/_content-fields', [
                         'fields' => $groupFields,
                         'templates' => $groupTemplates,
@@ -78,54 +147,59 @@ $territoryGroups = [
                         'hiddenFields' => $sectionKey === 'territory' ? ['section_badge'] : [],
                     ]) ?>
                 </div>
-            </details>
+            </section>
         <?php endforeach; ?>
     </div>
-    <?php modal_section_end() ?>
-    <?php modal_footer_open() ?>
-    <?php modal_close('Batal', 'btn btn-light') ?>
-    <button class="btn btn-primary" type="submit" data-profile-submit>Simpan wilayah</button>
-    <?php modal_section_end() ?>
+    <div class="profile-census-step-controls profile-step-controls" data-profile-step-controls hidden>
+        <button class="profile-census-step-previous profile-step-previous" type="button" data-profile-step-previous disabled>Sebelumnya</button>
+        <span data-profile-step-count aria-live="polite">Bagian 1 dari <?= count($territoryGroups) ?></span>
+        <button class="profile-census-step-next profile-step-next" type="button" data-profile-step-next>Berikutnya</button>
+    </div>
+    <?php $editorSectionEnd() ?>
+    <?php $editorFooterOpen() ?>
+    <button class="btn btn-primary" type="submit" formnovalidate data-profile-submit>Simpan wilayah</button>
+    <?php $editorSectionEnd() ?>
 </form>
-<?php modal_section_end() ?>
-<?php modal_end() ?>
+<?php $editorSectionEnd() ?>
+<?php $editorEnd() ?>
+<?php endif; ?>
 
-<?php modal_open('profile-census-modal', false, ['aria-labelledby' => 'profile-census-title', 'aria-describedby' => 'profile-census-description'], ['aria-labelledby' => 'profile-census-title', 'aria-describedby' => 'profile-census-description']) ?>
-<?php modal_content_open() ?>
+<?php if ($editorModule === 'census'): ?>
+<?php $editorOpen('profile-census-editor') ?>
+<?php $editorContentOpen() ?>
 <form class="rm-form profile-module-form profile-census-form" method="post" action="<?= site_url('admin/profil/modules/census') ?>" data-profile-ajax-form data-profile-module-form data-profile-census-form>
     <?= csrf_field() ?>
-    <?php modal_header_open() ?>
+    <?php $editorHeaderOpen() ?>
     <div class="rm-heading-copy">
-        <?php modal_title('Jumlah Kepala Keluarga dan Jiwa', 'fw-semibold', ['id' => 'profile-census-title'], ['id' => 'profile-census-title']) ?>
-        <?php modal_description('Masukkan jumlah KK dan rekapitulasi jemaat. Total jiwa dihitung dari jumlah laki-laki dan perempuan.', 'rm-description', ['id' => 'profile-census-description'], ['id' => 'profile-census-description']) ?>
+        <?php $editorTitle('Jumlah Kepala Keluarga dan Jiwa', 'fw-semibold', ['id' => 'profile-census-title']) ?>
+        <?php $editorDescription('Masukkan jumlah KK dan rekapitulasi jemaat. Total jiwa dihitung dari jumlah laki-laki dan perempuan.', 'rm-description', ['id' => 'profile-census-description']) ?>
     </div>
-    <?php modal_close('Tutup', 'rm-back-button btn btn-link') ?>
-    <?php modal_section_end() ?>
-    <?php modal_body_open() ?>
+    <?php $editorSectionEnd() ?>
+    <?php $editorBodyOpen() ?>
     <div class="profile-form-message" data-profile-form-message role="alert" hidden></div>
     <div class="profile-census-calculation" aria-live="polite">
         <span>Total jiwa terhitung</span>
         <strong data-profile-census-total><?= number_format((int) ($totalJiwa ?? 0)) ?></strong>
         <span>jiwa</span>
     </div>
-    <nav class="profile-census-step-nav" data-census-step-nav aria-label="Navigasi bagian formulir" hidden>
-        <ol class="profile-census-step-list">
+    <nav class="profile-census-step-nav profile-step-nav" data-census-step-nav aria-label="Navigasi bagian formulir" hidden>
+        <ol class="profile-census-step-list profile-step-list" style="--profile-step-count: 3">
             <li>
-                <button class="profile-census-step-link" id="census-step-main-nav" type="button" data-census-step-target="census-step-main" aria-controls="census-step-main" aria-current="step">
-                    <span class="profile-census-step-number" aria-hidden="true">1</span>
+                <button class="profile-census-step-link profile-step-link" id="census-step-main-nav" type="button" data-census-step-target="census-step-main" aria-controls="census-step-main" aria-current="step">
+                    <span class="profile-census-step-number profile-step-number" aria-hidden="true">1</span>
                     <span>Data utama</span>
                 </button>
             </li>
             <li>
-                <button class="profile-census-step-link" id="census-step-ages-nav" type="button" data-census-step-target="census-step-ages" aria-controls="census-step-ages">
-                    <span class="profile-census-step-number" aria-hidden="true">2</span>
+                <button class="profile-census-step-link profile-step-link" id="census-step-ages-nav" type="button" data-census-step-target="census-step-ages" aria-controls="census-step-ages">
+                    <span class="profile-census-step-number profile-step-number" aria-hidden="true">2</span>
                     <span>Kelompok usia</span>
                 </button>
             </li>
             <li>
-                <button class="profile-census-step-link" id="census-step-labels-nav" type="button" data-census-step-target="census-step-labels" aria-controls="census-step-labels">
-                    <span class="profile-census-step-number" aria-hidden="true">3</span>
-                    <span>Label &amp; aksesibilitas</span>
+                <button class="profile-census-step-link profile-step-link" id="census-step-labels-nav" type="button" data-census-step-target="census-step-labels" aria-controls="census-step-labels">
+                    <span class="profile-census-step-number profile-step-number" aria-hidden="true">3</span>
+                    <span>Tampilan publik</span>
                 </button>
             </li>
         </ol>
@@ -139,16 +213,12 @@ $territoryGroups = [
                         'title',
                         'description',
                         'household_count',
-                        'household_suffix',
-                        'population_suffix',
                     ])),
                     'templates' => array_intersect_key($pageDefaults['census'], array_flip([
                         'section_badge',
                         'title',
                         'description',
                         'household_count',
-                        'household_suffix',
-                        'population_suffix',
                     ])),
                     'prefix' => 'census',
                     'hiddenFields' => ['section_badge'],
@@ -166,14 +236,20 @@ $territoryGroups = [
         </section>
         <section class="profile-census-step-panel" id="census-step-labels" data-census-step-panel aria-labelledby="census-step-labels-nav" hidden>
             <div class="profile-census-step-panel-body">
+                <h3 class="profile-step-panel-heading">Atur teks yang tampil di halaman Profil</h3>
+                <p>Pengaturan ini hanya mengubah kata-kata di halaman publik. Jumlah KK dan jiwa tetap dihitung dari data sensus.</p>
+                <div class="profile-census-calculation profile-census-public-preview" aria-live="polite">
+                    <span>Pratinjau tampilan di halaman publik</span>
+                    <output data-census-public-preview>
+                        <?= number_format((int) ($pageContent['census']['household_count'] ?? 0)) ?> <?= esc(trim((string) ($pageContent['census']['household_suffix'] ?? ''))) ?> <?= number_format((int) ($totalJiwa ?? 0)) ?> <?= esc(trim((string) ($pageContent['census']['population_suffix'] ?? ''))) ?>
+                    </output>
+                </div>
                 <?= view('admin/profil/_content-fields', [
                     'fields' => array_diff_key($pageContent['census'], array_flip([
                         'section_badge',
                         'title',
                         'description',
                         'household_count',
-                        'household_suffix',
-                        'population_suffix',
                         'age_rows',
                     ])),
                     'templates' => array_diff_key($pageDefaults['census'], array_flip([
@@ -181,8 +257,6 @@ $territoryGroups = [
                         'title',
                         'description',
                         'household_count',
-                        'household_suffix',
-                        'population_suffix',
                         'age_rows',
                     ])),
                     'prefix' => 'census',
@@ -190,35 +264,35 @@ $territoryGroups = [
             </div>
         </section>
     </div>
-    <div class="profile-census-step-controls" data-census-step-controls hidden>
-        <button class="profile-census-step-previous" type="button" data-census-step-previous disabled>Sebelumnya</button>
+    <div class="profile-census-step-controls profile-step-controls" data-census-step-controls hidden>
+        <button class="profile-census-step-previous profile-step-previous" type="button" data-census-step-previous disabled>Sebelumnya</button>
         <span data-census-step-count aria-live="polite">Bagian 1 dari 3</span>
-        <button class="profile-census-step-next" type="button" data-census-step-next>Berikutnya</button>
+        <button class="profile-census-step-next profile-step-next" type="button" data-census-step-next>Berikutnya</button>
     </div>
-    <?php modal_section_end() ?>
-    <?php modal_footer_open() ?>
-    <?php modal_close('Batal', 'btn btn-light') ?>
+    <?php $editorSectionEnd() ?>
+    <?php $editorFooterOpen() ?>
     <button class="btn btn-primary" type="submit" data-profile-submit>Simpan data jemaat</button>
-    <?php modal_section_end() ?>
+    <?php $editorSectionEnd() ?>
 </form>
-<?php modal_section_end() ?>
-<?php modal_end() ?>
+<?php $editorSectionEnd() ?>
+<?php $editorEnd() ?>
+<?php endif; ?>
 
-<?php modal_open('profile-map-modal', false, ['aria-labelledby' => 'profile-map-title', 'aria-describedby' => 'profile-map-description'], ['aria-labelledby' => 'profile-map-title', 'aria-describedby' => 'profile-map-description']) ?>
-<?php modal_content_open() ?>
+<?php if ($editorModule === 'map'): ?>
+<?php $editorOpen('profile-map-editor') ?>
+<?php $editorContentOpen() ?>
 <form class="rm-form profile-module-form" method="post" action="<?= site_url('admin/profil/modules/service-map') ?>" enctype="multipart/form-data" data-profile-ajax-form data-profile-module-form data-profile-map-form>
     <?= csrf_field() ?>
-    <?php modal_header_open() ?>
+    <?php $editorHeaderOpen() ?>
     <div class="rm-heading-copy">
-        <?php modal_title('Peta Pelayanan', 'fw-semibold', ['id' => 'profile-map-title'], ['id' => 'profile-map-title']) ?>
-        <?php modal_description('Pratinjau gambar saat ini. Pilih gambar baru jika ingin menggantinya.', 'rm-description', ['id' => 'profile-map-description'], ['id' => 'profile-map-description']) ?>
+        <?php $editorTitle('Peta Pelayanan', 'fw-semibold', ['id' => 'profile-map-title']) ?>
+        <?php $editorDescription('Pratinjau gambar saat ini. Pilih gambar baru jika ingin menggantinya.', 'rm-description', ['id' => 'profile-map-description']) ?>
     </div>
-    <?php modal_close('Tutup', 'rm-back-button btn btn-link') ?>
-    <?php modal_section_end() ?>
-    <?php modal_body_open() ?>
+    <?php $editorSectionEnd() ?>
+    <?php $editorBodyOpen() ?>
     <div class="profile-form-message" data-profile-form-message role="alert" hidden></div>
     <figure class="profile-map-preview">
-        <img src="<?= esc(base_url($serviceMapPath), 'attr') ?>" alt="<?= esc($serviceMapAlt, 'attr') ?>" data-profile-map-modal-image>
+        <img src="<?= esc(base_url($serviceMapPath), 'attr') ?>" alt="<?= esc($serviceMapAlt, 'attr') ?>" data-profile-map-preview>
         <figcaption>Gambar publik baru aktif setelah file berhasil diunggah dan disimpan.</figcaption>
     </figure>
     <div class="profile-field profile-field-wide">
@@ -234,36 +308,78 @@ $territoryGroups = [
         <label for="service-map-alt">Alt text</label>
         <input class="form-control" id="service-map-alt" name="service_map_alt" value="<?= esc($serviceMapAlt, 'attr') ?>" maxlength="255" required>
     </div>
-    <?php modal_section_end() ?>
-    <?php modal_footer_open() ?>
-    <?php modal_close('Batal', 'btn btn-light') ?>
+    <?php $editorSectionEnd() ?>
+    <?php $editorFooterOpen() ?>
     <button class="btn btn-primary" type="submit" data-profile-submit>Simpan peta</button>
-    <?php modal_section_end() ?>
+    <?php $editorSectionEnd() ?>
 </form>
-<?php modal_section_end() ?>
-<?php modal_end() ?>
+<?php $editorSectionEnd() ?>
+<?php $editorEnd() ?>
+<?php endif; ?>
 
-<?php modal_open('profile-content-modal', false, ['aria-labelledby' => 'profile-content-title', 'aria-describedby' => 'profile-content-description'], ['aria-labelledby' => 'profile-content-title', 'aria-describedby' => 'profile-content-description']) ?>
-<?php modal_content_open() ?>
+<?php if ($editorModule === 'worship'): ?>
+<?php $editorOpen('profile-worship-editor') ?>
+<?php $editorContentOpen() ?>
 <form class="rm-form profile-module-form" method="post" action="<?= site_url('admin/profil/save-page-content') ?>" data-profile-ajax-form data-profile-reload>
     <?= csrf_field() ?>
-    <?php modal_header_open() ?>
+    <?php $editorHeaderOpen() ?>
     <div class="rm-heading-copy">
-        <?php modal_title('Konten Profil Publik', 'fw-semibold', ['id' => 'profile-content-title'], ['id' => 'profile-content-title']) ?>
-        <?php modal_description('Edit semua teks halaman, termasuk judul, paragraf, label, daftar, dan pengaturan publikasi Majelis.', 'rm-description', ['id' => 'profile-content-description'], ['id' => 'profile-content-description']) ?>
+        <?php $editorTitle('Pelayanan Peribadahan', 'fw-semibold', ['id' => 'profile-worship-title']) ?>
+        <?php $editorDescription('Perbarui daftar pelayanan yang tampil di halaman Profil publik. Perubahan ini bukan untuk jadwal ibadah bertanggal.', 'rm-description', ['id' => 'profile-worship-description']) ?>
     </div>
-    <?php modal_close('Tutup', 'rm-back-button btn btn-link') ?>
-    <?php modal_section_end() ?>
-    <?php modal_body_open() ?>
+    <?php $editorSectionEnd() ?>
+    <?php $editorBodyOpen() ?>
+    <div class="profile-content-notice" role="note">Daftar ini menampilkan jenis pelayanan, bukan jadwal ibadah pada tanggal dan jam tertentu.</div>
+    <div class="profile-form-message" data-profile-form-message role="alert" hidden></div>
+    <div class="profile-form-grid">
+        <?= view('admin/profil/_content-fields', [
+            'fields' => $pageContent['worship'],
+            'templates' => $pageDefaults['worship'],
+            'prefix' => 'content[worship]',
+            'hiddenFields' => ['section_badge'],
+        ]) ?>
+    </div>
+    <?php $editorSectionEnd() ?>
+    <?php $editorFooterOpen() ?>
+    <button class="btn btn-primary" type="submit" data-profile-submit>Simpan pelayanan</button>
+    <?php $editorSectionEnd() ?>
+</form>
+<?php $editorSectionEnd() ?>
+<?php $editorEnd() ?>
+<?php endif; ?>
+
+<?php if ($editorModule === 'content'): ?>
+<?php $editorOpen('profile-content-editor') ?>
+<?php $editorContentOpen() ?>
+<form class="rm-form profile-module-form" method="post" action="<?= site_url('admin/profil/save-page-content') ?>" data-profile-ajax-form data-profile-reload data-profile-step-form>
+    <?= csrf_field() ?>
+    <?php $editorHeaderOpen() ?>
+    <div class="rm-heading-copy">
+        <?php $editorTitle('Konten Profil Publik', 'fw-semibold', ['id' => 'profile-content-title']) ?>
+        <?php $editorDescription('Edit semua teks halaman, termasuk judul, paragraf, label, daftar, dan pengaturan publikasi Majelis.', 'rm-description', ['id' => 'profile-content-description']) ?>
+    </div>
+    <?php $editorSectionEnd() ?>
+    <?php $editorBodyOpen() ?>
     <div class="profile-content-notice" role="note">Jumlah KK dan jiwa dikelola di kartu sensus. Nilai pada ringkasan Profil dihitung dari data sensus.</div>
     <div class="profile-form-message" data-profile-form-message role="alert" hidden></div>
+    <nav class="profile-census-step-nav profile-step-nav" data-profile-step-nav aria-label="Langkah pengisian" hidden>
+        <ol class="profile-census-step-list profile-step-list" style="--profile-step-count: <?= count($legacyContent) ?>">
+            <?php foreach ($legacyContent as $sectionKey => $sectionFields): ?>
+                <?php $stepId = 'profile-content-' . $sectionKey; ?>
+                <li>
+                    <button class="profile-census-step-link profile-step-link" id="<?= esc($stepId, 'attr') ?>-nav" type="button" data-profile-step-target="<?= esc($stepId, 'attr') ?>" aria-controls="<?= esc($stepId, 'attr') ?>" <?= $sectionKey === array_key_first($legacyContent) ? 'aria-current="step"' : '' ?>>
+                        <span class="profile-census-step-number profile-step-number" aria-hidden="true"><?= array_search($sectionKey, array_keys($legacyContent), true) + 1 ?></span>
+                        <span><?= esc(\App\Libraries\PublicProfileContent::sectionLabels()[$sectionKey] ?? ucfirst($sectionKey)) ?></span>
+                    </button>
+                </li>
+            <?php endforeach; ?>
+        </ol>
+    </nav>
     <?php foreach ($legacyContent as $sectionKey => $sectionFields): ?>
-        <details class="profile-content-section" id="profile-content-<?= esc($sectionKey, 'attr') ?>" <?= $sectionKey === 'hero' ? 'open' : '' ?>>
-            <summary>
-                <span><?= esc(\App\Libraries\PublicProfileContent::sectionLabels()[$sectionKey] ?? ucfirst($sectionKey)) ?></span>
-                <span class="profile-content-summary-note">Edit semua teks dan pengaturan bagian</span>
-            </summary>
+        <section class="profile-content-section profile-step-panel" id="profile-content-<?= esc($sectionKey, 'attr') ?>" data-profile-step-panel aria-labelledby="profile-content-<?= esc($sectionKey, 'attr') ?>-nav">
             <div class="profile-content-section-body">
+                <h3 class="profile-step-panel-heading"><?= esc(\App\Libraries\PublicProfileContent::sectionLabels()[$sectionKey] ?? ucfirst($sectionKey)) ?></h3>
+                <p class="profile-step-panel-description">Edit semua teks dan pengaturan bagian.</p>
                 <?= view('admin/profil/_content-fields', [
                     'fields' => $sectionFields,
                     'templates' => $pageDefaults[$sectionKey] ?? [],
@@ -271,39 +387,44 @@ $territoryGroups = [
                     'readOnlyFields' => $readOnlyFields,
                 ]) ?>
             </div>
-        </details>
+        </section>
     <?php endforeach; ?>
-    <?php modal_section_end() ?>
-    <?php modal_footer_open() ?>
-    <?php modal_close('Batal', 'btn btn-light') ?>
-    <button class="btn btn-primary" type="submit" data-profile-submit>Simpan konten Profil</button>
-    <?php modal_section_end() ?>
+    <div class="profile-census-step-controls profile-step-controls" data-profile-step-controls hidden>
+        <button class="profile-census-step-previous profile-step-previous" type="button" data-profile-step-previous disabled>Sebelumnya</button>
+        <span data-profile-step-count aria-live="polite">Bagian 1 dari <?= count($legacyContent) ?></span>
+        <button class="profile-census-step-next profile-step-next" type="button" data-profile-step-next>Berikutnya</button>
+    </div>
+    <?php $editorSectionEnd() ?>
+    <?php $editorFooterOpen() ?>
+    <button class="btn btn-primary" type="submit" formnovalidate data-profile-submit>Simpan konten Profil</button>
+    <?php $editorSectionEnd() ?>
 </form>
-<?php modal_section_end() ?>
-<?php modal_end() ?>
+<?php $editorSectionEnd() ?>
+<?php $editorEnd() ?>
+<?php endif; ?>
 
-<?php modal_open('profile-data-modal', false, ['aria-labelledby' => 'profile-data-title', 'aria-describedby' => 'profile-data-description'], ['aria-labelledby' => 'profile-data-title', 'aria-describedby' => 'profile-data-description']) ?>
-<?php modal_content_open() ?>
+<?php if ($editorModule === 'data'): ?>
+<?php $editorOpen('profile-data-editor') ?>
+<?php $editorContentOpen() ?>
 <form class="rm-form profile-module-form" method="post" action="<?= site_url('admin/profil/save-profile') ?>" data-profile-ajax-form data-profile-reload>
     <?= csrf_field() ?>
     <input type="hidden" name="id" value="<?= esc($profile['id'] ?? 0) ?>">
-    <?php modal_header_open() ?>
+    <?php $editorHeaderOpen() ?>
     <div class="rm-heading-copy">
-        <?php modal_title('Data Jemaat', 'fw-semibold', ['id' => 'profile-data-title'], ['id' => 'profile-data-title']) ?>
-        <?php modal_description('Kelola sejarah, visi-misi, alamat, dan kontak yang digunakan oleh halaman Profil.', 'rm-description', ['id' => 'profile-data-description'], ['id' => 'profile-data-description']) ?>
+        <?php $editorTitle('Data Jemaat', 'fw-semibold', ['id' => 'profile-data-title']) ?>
+        <?php $editorDescription('Isi informasi yang sudah tersedia dan disetujui. Kolom opsional yang kosong tidak ditampilkan di halaman publik.', 'rm-description', ['id' => 'profile-data-description']) ?>
     </div>
-    <?php modal_close('Tutup', 'rm-back-button btn btn-link') ?>
-    <?php modal_section_end() ?>
-    <?php modal_body_open() ?>
+    <?php $editorSectionEnd() ?>
+    <?php $editorBodyOpen() ?>
     <div class="profile-form-message" data-profile-form-message role="alert" hidden></div>
     <div class="profile-form-grid">
         <div class="profile-field profile-field-wide">
-            <label for="history">Sejarah</label>
-            <textarea class="form-control" id="history" name="history" required><?= esc(old('history') ?? ($profile['history'] ?? '')) ?></textarea>
+            <label for="history">Sejarah <span>(opsional)</span></label>
+            <textarea class="form-control" id="history" name="history"><?= esc(old('history') ?? ($profile['history'] ?? '')) ?></textarea>
         </div>
         <div class="profile-field profile-field-wide">
-            <label for="vision_mission">Visi dan misi</label>
-            <textarea class="form-control" id="vision_mission" name="vision_mission" required><?= esc(old('vision_mission') ?? ($profile['vision_mission'] ?? '')) ?></textarea>
+            <label for="vision_mission">Visi dan misi <span>(opsional)</span></label>
+            <textarea class="form-control" id="vision_mission" name="vision_mission"><?= esc(old('vision_mission') ?? ($profile['vision_mission'] ?? '')) ?></textarea>
         </div>
         <div class="profile-field profile-field-wide">
             <label for="address">Alamat</label>
@@ -314,29 +435,29 @@ $territoryGroups = [
             <input class="form-control" id="maps_url" name="maps_url" type="url" value="<?= esc(old('maps_url') ?? ($profile['maps_url'] ?? ''), 'attr') ?>" placeholder="https://maps.google.com/...">
         </div>
         <div class="profile-field">
-            <label for="contact_info">Kontak resmi</label>
-            <input class="form-control" id="contact_info" name="contact_info" value="<?= esc(old('contact_info') ?? ($profile['contact_info'] ?? ''), 'attr') ?>" required>
+            <label for="contact_info">Kontak resmi <span>(opsional)</span></label>
+            <input class="form-control" id="contact_info" name="contact_info" value="<?= esc(old('contact_info') ?? ($profile['contact_info'] ?? ''), 'attr') ?>">
         </div>
     </div>
-    <?php modal_section_end() ?>
-    <?php modal_footer_open() ?>
-    <?php modal_close('Batal', 'btn btn-light') ?>
+    <?php $editorSectionEnd() ?>
+    <?php $editorFooterOpen() ?>
     <button class="btn btn-primary" type="submit" data-profile-submit>Simpan data jemaat</button>
-    <?php modal_section_end() ?>
+    <?php $editorSectionEnd() ?>
 </form>
-<?php modal_section_end() ?>
-<?php modal_end() ?>
+<?php $editorSectionEnd() ?>
+<?php $editorEnd() ?>
+<?php endif; ?>
 
-<?php modal_open('profile-leadership-modal', $editPeriod !== null || $editMember !== null, ['aria-labelledby' => 'profile-leadership-title', 'aria-describedby' => 'profile-leadership-description'], ['aria-labelledby' => 'profile-leadership-title', 'aria-describedby' => 'profile-leadership-description']) ?>
-<?php modal_content_open() ?>
-<?php modal_header_open() ?>
+<?php if ($editorModule === 'leadership'): ?>
+<?php $editorOpen('profile-leadership-editor') ?>
+<?php $editorContentOpen() ?>
+<?php $editorHeaderOpen() ?>
 <div class="rm-heading-copy">
-    <?php modal_title('Pengelolaan Majelis', 'fw-semibold', ['id' => 'profile-leadership-title'], ['id' => 'profile-leadership-title']) ?>
-    <?php modal_description('Perbarui periode kepengurusan dan data kartu Majelis secara terpisah.', 'rm-description', ['id' => 'profile-leadership-description'], ['id' => 'profile-leadership-description']) ?>
+    <?php $editorTitle('Pengelolaan Majelis', 'fw-semibold', ['id' => 'profile-leadership-title']) ?>
+    <?php $editorDescription('Perbarui periode kepengurusan dan data kartu Majelis secara terpisah.', 'rm-description', ['id' => 'profile-leadership-description']) ?>
 </div>
-<?php modal_close('Tutup', 'rm-back-button btn btn-link') ?>
-<?php modal_section_end() ?>
-<?php modal_body_open() ?>
+<?php $editorSectionEnd() ?>
+<?php $editorBodyOpen() ?>
 <div class="profile-form-message" data-profile-form-message role="alert" hidden></div>
 <details id="periode-panel" class="profile-content-section" open>
     <summary><span>Periode Majelis</span></summary>
@@ -506,9 +627,9 @@ $territoryGroups = [
         </div>
     </div>
 </details>
-<?php modal_section_end() ?>
-<?php modal_footer_open() ?>
-<?php modal_close('Tutup', 'btn btn-light') ?>
-<?php modal_section_end() ?>
-<?php modal_section_end() ?>
-<?php modal_end() ?>
+<?php $editorSectionEnd() ?>
+<?php $editorFooterOpen() ?>
+<?php $editorSectionEnd() ?>
+<?php $editorSectionEnd() ?>
+<?php $editorEnd() ?>
+<?php endif; ?>

@@ -52,6 +52,7 @@ final class AdminJadwalCrudTest extends CIUnitTestCase
             'waktu' => ['type' => 'TIME'],
             'lokasi' => ['type' => 'VARCHAR', 'constraint' => 255],
             'pelayan' => ['type' => 'VARCHAR', 'constraint' => 255, 'null' => true],
+            'keterangan' => ['type' => 'TEXT', 'null' => true],
             'is_cancelled' => ['type' => 'TINYINT', 'constraint' => 1, 'default' => 0],
             'created_by' => ['type' => 'BIGINT', 'unsigned' => true, 'null' => true],
             'updated_by' => ['type' => 'BIGINT', 'unsigned' => true, 'null' => true],
@@ -97,6 +98,7 @@ final class AdminJadwalCrudTest extends CIUnitTestCase
             'waktu' => '09:00',
             'lokasi' => 'Gedung Gereja',
             'pelayan' => '',
+            'keterangan' => '',
             'is_cancelled' => '0',
             'return_to' => 'admin/jadwal',
         ], $overrides);
@@ -129,6 +131,28 @@ final class AdminJadwalCrudTest extends CIUnitTestCase
         $this->assertCount(1, $rows);
         $this->assertSame('Ibadah Minggu', $rows[0]['jenis_ibadah']);
         $this->assertSame('Jadwal baru berhasil disimpan.', session()->getFlashdata('success'));
+    }
+
+    public function testInsertPersistsOptionalScheduleDetails(): void
+    {
+        $response = $this->controller($this->validPost([
+            'keterangan' => '  Bawa Alkitab dan hadir 15 menit lebih awal.  ',
+        ]))->save();
+        $row = db_connect('tests')->table('jadwal_ibadah')->get()->getRowArray();
+
+        $this->assertSame(site_url('admin/jadwal'), $response->getHeaderLine('Location'));
+        $this->assertSame('Bawa Alkitab dan hadir 15 menit lebih awal.', $row['keterangan']);
+    }
+
+    public function testInsertRejectsScheduleDetailsLongerThanTheFieldLimit(): void
+    {
+        $response = $this->controller($this->validPost([
+            'keterangan' => str_repeat('a', 2001),
+        ]))->save();
+
+        $this->assertSame(site_url('admin/jadwal?create=1'), $response->getHeaderLine('Location'));
+        $this->assertSame(0, db_connect('tests')->table('jadwal_ibadah')->countAllResults());
+        $this->assertStringContainsString('keterangan', strtolower((string) session()->getFlashdata('schedule_error')));
     }
 
     public function testInsertValidationFailureShowsFieldErrorAndDoesNotPersist(): void
@@ -173,11 +197,13 @@ final class AdminJadwalCrudTest extends CIUnitTestCase
         $response = $this->controller($this->validPost([
             'id' => (string) $id,
             'jenis_ibadah' => 'Ibadah Keluarga',
+            'keterangan' => 'Bawa bahan persekutuan.',
         ]))->save();
         $row = db_connect('tests')->table('jadwal_ibadah')->where('id', $id)->get()->getRowArray();
 
         $this->assertSame(site_url('admin/jadwal'), $response->getHeaderLine('Location'));
         $this->assertSame('Ibadah Keluarga', $row['jenis_ibadah']);
+        $this->assertSame('Bawa bahan persekutuan.', $row['keterangan']);
         $this->assertSame('Jadwal berhasil diperbarui.', session()->getFlashdata('success'));
     }
 

@@ -2,9 +2,10 @@ const path = require('node:path');
 const { defineConfig, devices } = require('@playwright/test');
 const { adminEmail, adminPassword } = require('./e2e/test-credentials');
 
-const port = 8091;
+const port = Number(process.env.PLAYWRIGHT_PORT || 8091);
 const baseURL = `http://127.0.0.1:${port}/index.php/`;
-const testDatabase = path.join(__dirname, 'writable', 'playwright-test-data', 'profile-modules.sqlite');
+const testDataDirectory = process.env.PLAYWRIGHT_TEST_DATA_DIRECTORY || 'playwright-test-data';
+const testDatabase = path.join(__dirname, 'writable', testDataDirectory, 'profile-modules.sqlite');
 
 module.exports = defineConfig({
   testDir: './e2e',
@@ -43,6 +44,8 @@ module.exports = defineConfig({
       PLAYWRIGHT_TEST_DATABASE_PATH: testDatabase,
       PLAYWRIGHT_TEST_ADMIN_EMAIL: adminEmail,
       PLAYWRIGHT_TEST_ADMIN_PASSWORD: adminPassword,
+      PLAYWRIGHT_PORT: String(port),
+      PLAYWRIGHT_TEST_DATA_DIRECTORY: testDataDirectory,
     },
   },
 });

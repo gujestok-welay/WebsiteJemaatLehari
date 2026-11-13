@@ -15,7 +15,7 @@ class JadwalIbadahModel extends Model
     protected $createdField = 'created_at';
     protected $updatedField = 'updated_at';
     protected $deletedField = 'deleted_at';
-    protected $allowedFields = ['jenis_ibadah', 'tanggal', 'waktu', 'lokasi', 'pelayan', 'is_cancelled', 'created_by', 'updated_by'];
+    protected $allowedFields = ['jenis_ibadah', 'tanggal', 'waktu', 'lokasi', 'pelayan', 'keterangan', 'is_cancelled', 'created_by', 'updated_by'];
 
     protected $validationRules = [
         'jenis_ibadah' => 'required|min_length[2]|max_length[120]',
@@ -23,6 +23,7 @@ class JadwalIbadahModel extends Model
         'waktu' => 'required',
         'lokasi' => 'required|min_length[3]|max_length[255]',
         'pelayan' => 'permit_empty|max_length[255]',
+        'keterangan' => 'permit_empty|max_length[2000]',
         'is_cancelled' => 'permit_empty|in_list[0,1]',
     ];
 

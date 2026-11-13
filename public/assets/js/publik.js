@@ -1,5 +1,23 @@
 'use strict';
 
+document.addEventListener('error', (event) => {
+    const image = event.target;
+    if (!(image instanceof HTMLImageElement)) return;
+
+    if (image.matches('.gallery-card-image-backdrop')) {
+        image.remove();
+        return;
+    }
+
+    if (!image.matches('.gallery-card-image')) return;
+
+    const fallback = image.parentElement?.querySelector('.gallery-card-image-fallback');
+    if (!fallback) return;
+
+    image.remove();
+    fallback.hidden = false;
+}, true);
+
 const publicNavDrawer = document.querySelector('#navigasi.public-nav-drawer');
 const publicNavToggle = document.querySelector('.site-header [data-bs-toggle="offcanvas"][aria-controls="navigasi"]');
 if (publicNavDrawer && publicNavToggle) {
@@ -10,6 +28,48 @@ if (publicNavDrawer && publicNavToggle) {
     publicNavDrawer.addEventListener('hidden.bs.offcanvas', () => {
         publicNavToggle.setAttribute('aria-expanded', 'false');
         publicNavToggle.setAttribute('aria-label', 'Buka navigasi utama');
+    });
+}
+
+const profileDropdownItem = document.querySelector('#profil-menu-toggle')?.closest('.dropdown');
+const profileDropdownToggle = profileDropdownItem?.querySelector('#profil-menu-toggle');
+const desktopHover = window.matchMedia('(min-width: 992px) and (hover: hover) and (pointer: fine)');
+if (profileDropdownItem && profileDropdownToggle) {
+    const profileDropdown = window.bootstrap.Dropdown.getOrCreateInstance(profileDropdownToggle);
+    const profileDropdownMenu = profileDropdownItem.querySelector('#profil-menu');
+    let pointerInsideProfileDropdown = false;
+    let profileDropdownCloseTimer = 0;
+
+    const scheduleProfileDropdownClose = () => {
+        window.clearTimeout(profileDropdownCloseTimer);
+        profileDropdownCloseTimer = window.setTimeout(() => {
+            profileDropdownCloseTimer = 0;
+            if (!pointerInsideProfileDropdown && !profileDropdownMenu.contains(document.activeElement)) {
+                profileDropdown.hide();
+            }
+        }, 250);
+    };
+
+    profileDropdownItem.addEventListener('pointerenter', (event) => {
+        if (!desktopHover.matches || event.pointerType === 'touch') return;
+        window.clearTimeout(profileDropdownCloseTimer);
+        pointerInsideProfileDropdown = true;
+        profileDropdown.show();
+    });
+    profileDropdownToggle.addEventListener('click', (event) => {
+        if (desktopHover.matches && event.detail > 0) {
+            event.preventDefault();
+            event.stopPropagation();
+            profileDropdown.show();
+        }
+    });
+    profileDropdownItem.addEventListener('pointerleave', () => {
+        if (!desktopHover.matches) return;
+        pointerInsideProfileDropdown = false;
+        scheduleProfileDropdownClose();
+    });
+    profileDropdownItem.addEventListener('focusout', () => {
+        scheduleProfileDropdownClose();
     });
 }
 
@@ -35,8 +95,6 @@ document.querySelectorAll('[data-leadership-carousel]').forEach((carousel) => {
     const controls = carousel.querySelector('[data-carousel-controls]');
     const previousButton = carousel.querySelector('[data-carousel-previous]');
     const nextButton = carousel.querySelector('[data-carousel-next]');
-    const toggleButton = carousel.querySelector('[data-carousel-toggle]');
-    const toggleLabel = carousel.querySelector('[data-carousel-toggle-label]');
     const indicators = Array.from(carousel.querySelectorAll('[data-carousel-indicator]'));
 
     const faceBoxes = new Map();
@@ -100,27 +158,11 @@ document.querySelectorAll('[data-leadership-carousel]').forEach((carousel) => {
 
     carousel.classList.add('is-enhanced');
     if (slides.length < 2) return;
-    if (!controls || !previousButton || !nextButton || !toggleButton || !toggleLabel || indicators.length !== slides.length) {
+    if (!controls || !previousButton || !nextButton || indicators.length !== slides.length) {
         throw new Error('Carousel Majelis membutuhkan kontrol dan indikator untuk setiap anggota.');
     }
 
-    const configuredInterval = Number(carousel.dataset.autoplayInterval);
-    if (!Number.isFinite(configuredInterval) || configuredInterval < 1000) {
-        throw new Error('Interval pergantian carousel Majelis tidak valid.');
-    }
-
-    const motionPreference = window.matchMedia('(prefers-reduced-motion: reduce)');
     let activeIndex = 0;
-    let userPaused = motionPreference.matches;
-    let pointerInside = false;
-    let focusInside = false;
-    let autoplayTimer = 0;
-
-    const updateToggle = () => {
-        const label = userPaused ? 'Lanjutkan pergantian otomatis' : 'Jeda pergantian otomatis';
-        toggleButton.setAttribute('aria-label', label);
-        toggleLabel.textContent = userPaused ? 'Putar' : 'Jeda';
-    };
 
     const updateSlide = (nextIndex) => {
         activeIndex = (nextIndex + slides.length) % slides.length;
@@ -135,64 +177,18 @@ document.querySelectorAll('[data-leadership-carousel]').forEach((carousel) => {
         requestAnimationFrame(() => slides[activeIndex].classList.add('is-entering'));
     };
 
-    const syncAutoplay = () => {
-        window.clearInterval(autoplayTimer);
-        autoplayTimer = 0;
-        if (!userPaused && !pointerInside && !focusInside && !document.hidden) {
-            autoplayTimer = window.setInterval(() => updateSlide(activeIndex + 1), configuredInterval);
-        }
-    };
-
     controls.hidden = false;
     updateSlide(activeIndex);
-    updateToggle();
 
     previousButton.addEventListener('click', () => {
         updateSlide(activeIndex - 1);
-        syncAutoplay();
     });
     nextButton.addEventListener('click', () => {
         updateSlide(activeIndex + 1);
-        syncAutoplay();
     });
     indicators.forEach((indicator) => {
         indicator.addEventListener('click', () => {
             updateSlide(Number(indicator.dataset.carouselIndicator));
-            syncAutoplay();
         });
     });
-    toggleButton.addEventListener('click', () => {
-        userPaused = !userPaused;
-        updateToggle();
-        syncAutoplay();
-    });
-
-    carousel.addEventListener('pointerenter', () => {
-        pointerInside = true;
-        syncAutoplay();
-    });
-    carousel.addEventListener('pointerleave', () => {
-        pointerInside = false;
-        syncAutoplay();
-    });
-    carousel.addEventListener('focusin', () => {
-        focusInside = true;
-        syncAutoplay();
-    });
-    carousel.addEventListener('focusout', () => {
-        window.setTimeout(() => {
-            focusInside = carousel.contains(document.activeElement);
-            syncAutoplay();
-        }, 0);
-    });
-    document.addEventListener('visibilitychange', syncAutoplay);
-    motionPreference.addEventListener('change', (event) => {
-        if (event.matches) {
-            userPaused = true;
-            updateToggle();
-        }
-        syncAutoplay();
-    });
-
-    syncAutoplay();
 });

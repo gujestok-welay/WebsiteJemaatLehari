@@ -8,6 +8,9 @@ $routes->get('profil', 'Home::profil');
 $routes->get('berita', 'Home::berita');
 $routes->get('berita/gambar/(:segment)', 'Home::beritaGambar/$1');
 $routes->get('berita/(:segment)', 'Home::beritaDetail/$1');
+$routes->get('galeri', 'Home::galeri');
+$routes->get('galeri/media/(:segment)', 'Home::galeriMedia/$1');
+$routes->get('galeri/(:segment)', 'Home::galeriDetail/$1');
 $routes->get('jadwal-ibadah', 'Home::jadwal');
 
 $routes->get('admin', 'AdminAuth::index');
@@ -25,6 +28,14 @@ $routes->group('admin', ['filter' => 'adminAuth'], static function ($routes): vo
     $routes->post('berita/restore/(:num)', 'AdminBerita::restore/$1', ['filter' => 'csrf']);
     $routes->post('berita/delete/(:num)', 'AdminBerita::delete/$1', ['filter' => 'csrf']);
 
+    $routes->get('galeri', 'AdminGaleri::index');
+    $routes->get('galeri/create', 'AdminGaleri::create');
+    $routes->get('galeri/edit/(:num)', 'AdminGaleri::edit/$1');
+    $routes->get('galeri/media/(:segment)', 'AdminGaleri::media/$1');
+    $routes->post('galeri/save', 'AdminGaleri::save', ['filter' => 'csrf']);
+    $routes->post('galeri/archive/(:num)', 'AdminGaleri::archive/$1', ['filter' => 'csrf']);
+    $routes->post('galeri/restore/(:num)', 'AdminGaleri::restore/$1', ['filter' => 'csrf']);
+
     $routes->get('jadwal', 'AdminJadwal::index');
     $routes->get('jadwal/create', 'AdminJadwal::create');
     $routes->get('jadwal/edit/(:num)', 'AdminJadwal::edit/$1');
@@ -36,6 +47,7 @@ $routes->group('admin', ['filter' => 'adminAuth'], static function ($routes): vo
     $routes->post('jadwal/delete/(:num)', 'AdminJadwal::delete/$1', ['filter' => 'csrf']);
 
     $routes->get('profil', 'AdminProfil::index');
+    $routes->get('profil/kelola/(:segment)', 'AdminProfil::manage/$1');
     $routes->post('profil/save-profile', 'AdminProfil::saveProfile', ['filter' => 'csrf']);
     $routes->post('profil/save-page-content', 'AdminProfil::savePageContent', ['filter' => 'csrf']);
     $routes->post('profil/modules/territory', 'AdminProfil::saveTerritoryModule', ['filter' => 'csrf']);
@@ -46,7 +58,4 @@ $routes->group('admin', ['filter' => 'adminAuth'], static function ($routes): vo
     $routes->post('profil/save-anggota', 'AdminProfil::saveAnggota', ['filter' => 'csrf']);
     $routes->post('profil/delete-anggota/(:num)', 'AdminProfil::deleteAnggota/$1', ['filter' => 'csrf']);
 
-    $routes->get('statistik', 'AdminStatistik::index');
-    $routes->post('statistik/save', 'AdminStatistik::save', ['filter' => 'csrf']);
-    $routes->post('statistik/delete/(:num)', 'AdminStatistik::delete/$1', ['filter' => 'csrf']);
 });

@@ -72,7 +72,13 @@
                                         <?php if (($item['status'] ?? '') === 'Arsip'): ?>
                                             <form method="post" action="<?= site_url('admin/berita/restore/' . (int) ($item['id'] ?? 0)) ?>" onsubmit="return confirm('Pulihkan berita ini?');">
                                                 <?= csrf_field() ?>
-                                                <button class="news-action-link" type="submit">Pulihkan</button>
+                                                <button class="news-action-link news-action-labeled" type="submit">
+                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                                                        <path d="M3 12a9 9 0 1 0 3-6.7L3 8" />
+                                                        <path d="M3 3v5h5M12 8v4l3 2" />
+                                                    </svg>
+                                                    <span>Pulihkan</span>
+                                                </button>
                                             </form>
                                         <?php else: ?>
                                             <button

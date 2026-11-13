@@ -134,8 +134,7 @@
         display: none;
     }
 
-    .jadwal-page .day-pill,
-    .jadwal-page .kat-chip {
+    .jadwal-page .day-pill {
         border: 1px solid var(--bs-border-color);
         background: transparent;
         color: var(--bs-body-color);
@@ -146,7 +145,6 @@
     }
 
     .jadwal-page .day-pill:focus-visible,
-    .jadwal-page .kat-chip:focus-visible,
     .jadwal-page .detail-toggle:focus-visible,
     .jadwal-page #cari:focus-visible,
     .jadwal-page #reset:focus-visible,
@@ -194,19 +192,12 @@
         font-weight: 600;
     }
 
-    .jadwal-page .kat-chip {
-        padding: .3rem .8rem;
-        font-size: .8rem;
-    }
-
-    .jadwal-page .day-pill:hover,
-    .jadwal-page .kat-chip:hover {
+    .jadwal-page .day-pill:hover {
         border-color: var(--bs-primary);
         transform: translateY(-1px);
     }
 
-    .jadwal-page .day-pill.active,
-    .jadwal-page .kat-chip.active {
+    .jadwal-page .day-pill.active {
         background: var(--bs-primary);
         border-color: var(--bs-primary);
         color: #fff;
@@ -258,12 +249,6 @@
         transform: scaleY(1);
     }
 
-    .jadwal-page .jadwal-card:hover .card-ikon {
-        background: var(--bs-primary);
-        color: #fff;
-        transform: rotate(-6deg) scale(1.05);
-    }
-
     .jadwal-page #grid-ibadah .jadwal-card {
         background: rgba(217, 217, 217, 0.58);
         border: 1px solid white !important;
@@ -282,14 +267,6 @@
 
     .jadwal-page #grid-ibadah .jadwal-card.is-today {
         box-shadow: 0 0 0 2px #10b981, 12px 17px 51px rgba(0, 0, 0, 0.22) !important;
-    }
-
-    .jadwal-page .card-ikon {
-        width: 3rem;
-        height: 3rem;
-        background: rgba(var(--bs-primary-rgb), .1);
-        color: var(--bs-primary);
-        transition: background-color .25s ease, color .25s ease, transform .25s ease;
     }
 
     .jadwal-page .badge-hari {
@@ -374,7 +351,6 @@
         .jadwal-page #banner-hari-ini,
         .jadwal-page .jadwal-card,
         .jadwal-page .jadwal-card:hover,
-        .jadwal-page .jadwal-card:hover .card-ikon,
         .jadwal-page .day-pill.is-today .today-dot {
             animation: none;
         }
@@ -423,7 +399,7 @@
 
         <div class="card border-0 shadow-sm rounded-4 mb-4">
             <div class="card-body p-3 p-md-4">
-                <div class="day-tabs d-flex flex-nowrap flex-md-wrap gap-2 mb-3" role="tablist" aria-label="Pilih hari">
+                <div class="day-tabs d-flex flex-nowrap gap-2 mb-3" role="tablist" aria-label="Pilih hari">
                     <button type="button" class="day-pill active" data-hari="semua" role="tab"
                         aria-selected="true">Semua</button>
                     <?php foreach (['minggu' => 'Minggu', 'senin' => 'Senin', 'selasa' => 'Selasa', 'rabu' => 'Rabu', 'kamis' => 'Kamis', 'jumat' => 'Jumat', 'sabtu' => 'Sabtu'] as $key => $label): ?>
@@ -435,7 +411,7 @@
                 </div>
 
                 <div class="row g-2 align-items-center">
-                    <div class="col-md-5">
+                    <div class="col-12">
                         <div class="search-wrap input-group rounded-pill overflow-hidden">
                             <input type="search" id="cari" class="form-control border-0 shadow-none"
                                 placeholder="Cari ibadah atau tempat..." aria-label="Cari ibadah">
@@ -445,16 +421,6 @@
                                     <path d="M16 16L21 21" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
                                 </svg>
                             </span>
-                        </div>
-                    </div>
-                    <div class="col-md-7">
-                        <div class="d-flex flex-wrap gap-2 justify-content-md-end" id="kat-filter">
-                            <button type="button" class="kat-chip active" data-kat="semua">Semua kategori</button>
-                            <?php $categories = array_values(array_unique(array_map(static fn(array $item): string => strtolower((string) ($item['type'] ?? 'umum')), $schedules))); ?>
-                            <?php foreach ($categories as $category): ?>
-                                <button type="button" class="kat-chip"
-                                    data-kat="<?= esc($category, 'attr') ?>"><?= esc(ucfirst($category)) ?></button>
-                            <?php endforeach; ?>
                         </div>
                     </div>
                 </div>
@@ -468,19 +434,17 @@
                 <?php
                 $dateValue = $item['date'] ?? date('Y-m-d');
                 $type = strtolower((string) ($item['type'] ?? 'umum'));
-                $dayKey = strtolower(date('l', strtotime($dateValue)));
                 $dayNames = ['minggu' => 'Minggu', 'senin' => 'Senin', 'selasa' => 'Selasa', 'rabu' => 'Rabu', 'kamis' => 'Kamis', 'jumat' => 'Jumat', 'sabtu' => 'Sabtu'];
-                $dayLabel = $dayNames[$dayKey] ?? ucfirst($type);
+                $dayIndex = (int) date('w', strtotime($dateValue));
+                $dayKey = array_keys($dayNames)[$dayIndex];
+                $dayLabel = $dayNames[$dayKey];
                 $cari = strtolower(($item['name'] ?? '') . ' ' . ($item['location'] ?? '') . ' ' . ($item['note'] ?? '') . ' ' . $type);
                 ?>
                 <div class="col-md-6 col-lg-4 item-ibadah" data-hari="<?= esc($dayKey, 'attr') ?>"
-                    data-kat="<?= esc($type, 'attr') ?>" data-cari="<?= esc($cari, 'attr') ?>">
+                    data-cari="<?= esc($cari, 'attr') ?>">
                     <article class="card jadwal-card border-0 h-100" style="--i: <?= $n ?>">
                         <div class="card-body p-4">
-                            <div class="d-flex justify-content-between align-items-start mb-3">
-                                <div class="card-ikon rounded-4 d-flex align-items-center justify-content-center">
-                                    <i class="bi bi-calendar-heart fs-4"></i>
-                                </div>
+                            <div class="d-flex justify-content-end align-items-start mb-3">
                                 <span class="badge rounded-pill badge-hari"><?= esc($dayLabel) ?></span>
                             </div>
 
@@ -512,7 +476,7 @@
                             </button>
                             <div class="collapse" id="detail-<?= $n ?>">
                                 <div class="detail-box rounded-3 p-3 mt-2 small">
-                                    <i class="bi bi-info-circle me-1"></i><?= esc($item['note']) ?>
+                                    <i class="bi bi-info-circle me-1"></i><?= nl2br(esc($item['note'])) ?>
                                 </div>
                             </div>
                         </div>
@@ -544,19 +508,17 @@
 <script>
     (function() {
         var pills = document.querySelectorAll('.day-pill');
-        var chips = document.querySelectorAll('.kat-chip');
         var items = document.querySelectorAll('.item-ibadah');
         var cari = document.getElementById('cari');
         var hasil = document.getElementById('hasil');
         var kosong = document.getElementById('kosong');
         var banner = document.getElementById('banner-hari-ini');
-        if (!pills.length || !chips.length || !items.length || !cari || !hasil || !kosong || !banner) {
+        if (!pills.length || !items.length || !cari || !hasil || !kosong || !banner) {
             return;
         }
 
         var state = {
             hari: 'semua',
-            kat: 'semua',
             q: ''
         };
         var namaHari = ['minggu', 'senin', 'selasa', 'rabu', 'kamis', 'jumat', 'sabtu'];
@@ -578,9 +540,8 @@
             var q = state.q.trim().toLowerCase();
             items.forEach(function(el) {
                 var okHari = state.hari === 'semua' || el.dataset.hari.split(' ').indexOf(state.hari) !== -1;
-                var okKat = state.kat === 'semua' || el.dataset.kat === state.kat;
                 var okQ = !q || (el.dataset.cari || '').indexOf(q) !== -1;
-                var tampil = okHari && okKat && okQ;
+                var tampil = okHari && okQ;
                 el.classList.toggle('hide', !tampil);
                 if (tampil) {
                     var card = el.querySelector('.jadwal-card');
@@ -605,14 +566,6 @@
             });
         });
 
-        chips.forEach(function(c) {
-            c.addEventListener('click', function() {
-                state.kat = c.dataset.kat;
-                setActive(chips, 'data-kat', state.kat);
-                render();
-            });
-        });
-
         cari.addEventListener('input', function() {
             state.q = cari.value;
             render();
@@ -621,12 +574,10 @@
         document.getElementById('reset').addEventListener('click', function() {
             state = {
                 hari: 'semua',
-                kat: 'semua',
                 q: ''
             };
             cari.value = '';
             setActive(pills, 'data-hari', 'semua');
-            setActive(chips, 'data-kat', 'semua');
             render();
         });
 

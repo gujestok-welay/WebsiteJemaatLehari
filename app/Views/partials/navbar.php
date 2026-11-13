@@ -12,13 +12,50 @@
         <div class="offcanvas-lg offcanvas-start navbar-collapse public-nav-drawer" tabindex="-1" id="navigasi" aria-labelledby="navigasiLabel">
             <div class="offcanvas-header">
                 <h2 class="offcanvas-title" id="navigasiLabel">Navigasi utama</h2>
-                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Tutup navigasi"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#navigasi" aria-label="Tutup navigasi"></button>
             </div>
             <div class="offcanvas-body">
                 <ul class="navbar-nav ms-auto">
-                    <?php foreach (['beranda' => ['/', 'Beranda'], 'profil' => ['profil', 'Profil'], 'berita' => ['berita', 'Berita'], 'jadwal' => ['jadwal-ibadah', 'Jadwal Ibadah']] as $key => [$path, $label]): ?>
-                        <li class="nav-item"><a class="nav-link<?= $activePage === $key ? ' active' : '' ?>" <?= $activePage === $key ? 'aria-current="page"' : '' ?> href="<?= site_url($path) ?>"><?= esc($label) ?></a></li>
+                    <?php foreach (['beranda' => ['/', 'Beranda'], 'profil' => ['profil', 'Profil'], 'berita' => ['berita', 'Berita'], 'galeri' => ['galeri', 'Galeri'], 'jadwal' => ['jadwal-ibadah', 'Jadwal Ibadah']] as $key => [$path, $label]): ?>
+                        <?php if ($key === 'profil'): ?>
+                            <li class="nav-item dropdown">
+                                <button
+                                    class="nav-link dropdown-toggle profile-dropdown-toggle<?= $activePage === $key ? ' active' : '' ?>"
+                                    type="button"
+                                    id="profil-menu-toggle"
+                                    data-bs-toggle="dropdown"
+                                    <?= $activePage === $key ? 'aria-current="page"' : '' ?>
+                                    aria-expanded="false"
+                                    aria-controls="profil-menu">
+                                    <?= esc($label) ?>
+                                    <svg class="profile-dropdown-chevron" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                                        <path d="m4 6 4 4 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </button>
+                                <ul class="dropdown-menu profile-dropdown-menu" id="profil-menu" aria-labelledby="profil-menu-toggle">
+                                    <?php foreach ([
+                                        'Peta Pelayanan' => 'peta-pelayanan',
+                                        'Majelis Jemaat' => 'majelis-jemaat',
+                                        'Gambaran Umum Wilayah Pelayanan' => 'wilayah',
+                                        'Jumlah Kepala Keluarga dan Jiwa' => 'jemaat',
+                                        'Pelayanan Peribadahan' => 'ibadah',
+                                    ] as $sectionLabel => $sectionId): ?>
+                                        <li><a class="dropdown-item" href="<?= site_url('profil') ?>#<?= esc($sectionId, 'attr') ?>"><?= esc($sectionLabel) ?></a></li>
+                                    <?php endforeach; ?>
+                                </ul>
+                            </li>
+                        <?php else: ?>
+                            <li class="nav-item"><a class="nav-link<?= $activePage === $key ? ' active' : '' ?>" <?= $activePage === $key ? 'aria-current="page"' : '' ?> href="<?= site_url($path) ?>"><?= esc($label) ?></a></li>
+                        <?php endif; ?>
                     <?php endforeach ?>
+                    <li class="nav-item theme-control">
+                        <?= view('components/theme-toggle') ?>
+                    </li>
+                    <li class="nav-item admin-entry-item">
+                        <a class="nav-link admin-entry-link" href="<?= site_url('admin') ?>" aria-label="Masuk ke panel pengelola" title="Masuk ke panel pengelola">
+                            <i class="bi bi-box-arrow-in-right" aria-hidden="true"></i>
+                        </a>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -26,6 +63,20 @@
 </header>
 <noscript>
     <style>
+        .profile-dropdown-toggle {
+            display: none !important;
+        }
+
+        .profile-dropdown-menu {
+            position: absolute !important;
+            inset: 100% auto auto 0 !important;
+            display: block !important;
+        }
+
+        .profile-dropdown-menu .dropdown-divider {
+            display: none !important;
+        }
+
         @media (max-width: 991.98px) {
 
             .navbar-toggler,
@@ -52,6 +103,13 @@
                 display: block !important;
                 padding: 0 !important;
                 overflow: visible !important;
+            }
+
+            .public-nav-drawer .profile-dropdown-menu {
+                position: static !important;
+                inset: auto !important;
+                width: 100% !important;
+                min-width: 0 !important;
             }
         }
     </style>

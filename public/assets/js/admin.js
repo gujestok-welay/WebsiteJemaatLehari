@@ -15,6 +15,62 @@
         field.style.height = field.scrollHeight + 'px';
     }
 
+    function clearNewsCoverPreview(form) {
+        var preview = form.querySelector('[data-news-cover-preview]');
+        if (preview._newsCoverPreviewUrl) {
+            URL.revokeObjectURL(preview._newsCoverPreviewUrl);
+            preview._newsCoverPreviewUrl = '';
+        }
+        preview.replaceChildren();
+        preview.hidden = true;
+    }
+
+    function renderNewsCoverPreview(form, isValid) {
+        var input = form.querySelector('[name="cover_image"]');
+        var preview = form.querySelector('[data-news-cover-preview]');
+        var file = input.files && input.files[0];
+        clearNewsCoverPreview(form);
+
+        if (!file || !isValid) return;
+
+        var item = document.createElement('li');
+        var image = document.createElement('img');
+        var details = document.createElement('span');
+        var name = document.createElement('strong');
+        var size = document.createElement('small');
+        var removeButton = document.createElement('button');
+        var objectUrl = URL.createObjectURL(file);
+
+        preview._newsCoverPreviewUrl = objectUrl;
+        image.src = objectUrl;
+        image.alt = '';
+        image.width = 52;
+        image.height = 52;
+        image.setAttribute('aria-hidden', 'true');
+        name.textContent = file.name;
+        size.textContent = file.size < 1024 * 1024
+            ? Math.max(1, Math.round(file.size / 1024)) + ' KB'
+            : (file.size / (1024 * 1024)).toFixed(1) + ' MB';
+        details.append(name, size);
+
+        removeButton.type = 'button';
+        removeButton.className = 'gallery-admin-upload-remove';
+        removeButton.setAttribute('aria-label', 'Hapus gambar kover');
+        removeButton.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14" /></svg>';
+        removeButton.addEventListener('click', function () {
+            input.value = '';
+            input.setCustomValidity('');
+            var error = form.querySelector('[data-news-file-error]');
+            error.textContent = '';
+            error.hidden = true;
+            renderNewsCoverPreview(form, false);
+        });
+
+        item.append(image, details, removeButton);
+        preview.append(item);
+        preview.hidden = false;
+    }
+
     function resetNewsForm() {
         var form = getNewsForm();
         if (!form) return;
@@ -30,6 +86,7 @@
         var coverInput = form.querySelector('[name="cover_image"]');
         coverInput.value = '';
         coverInput.setCustomValidity('');
+        clearNewsCoverPreview(form);
         var fileError = form.querySelector('[data-news-file-error]');
         fileError.textContent = '';
         fileError.hidden = true;
@@ -70,6 +127,7 @@
         var coverInput = form.querySelector('[name="cover_image"]');
         coverInput.value = '';
         coverInput.setCustomValidity('');
+        clearNewsCoverPreview(form);
         var fileError = form.querySelector('[data-news-file-error]');
         fileError.textContent = '';
         fileError.hidden = true;
@@ -144,9 +202,50 @@
     document.addEventListener('change', function (event) {
         var input = event.target;
         if (input instanceof HTMLInputElement && input.name === 'cover_image' && input.form.matches('[data-news-form]')) {
-            validateCoverFile(input.form);
+            var isValid = validateCoverFile(input.form);
+            renderNewsCoverPreview(input.form, isValid);
         }
     });
+
+    var coverDropzone = document.querySelector('[data-news-cover-dropzone]');
+    if (coverDropzone) {
+        var coverInput = coverDropzone.querySelector('[name="cover_image"]');
+
+        coverDropzone.addEventListener('dragenter', function (event) {
+            event.preventDefault();
+            coverDropzone.classList.add('is-dragging');
+        });
+
+        coverDropzone.addEventListener('dragover', function (event) {
+            event.preventDefault();
+            if (event.dataTransfer) event.dataTransfer.dropEffect = 'copy';
+            coverDropzone.classList.add('is-dragging');
+        });
+
+        coverDropzone.addEventListener('dragleave', function (event) {
+            if (!coverDropzone.contains(event.relatedTarget)) {
+                coverDropzone.classList.remove('is-dragging');
+            }
+        });
+
+        coverDropzone.addEventListener('drop', function (event) {
+            event.preventDefault();
+            coverDropzone.classList.remove('is-dragging');
+            var files = event.dataTransfer ? event.dataTransfer.files : [];
+            if (!files.length) return;
+            if (files.length > 1) {
+                var fileError = coverInput.form.querySelector('[data-news-file-error]');
+                fileError.textContent = 'Pilih satu gambar kover saja.';
+                fileError.hidden = false;
+                return;
+            }
+
+            var transfer = new DataTransfer();
+            transfer.items.add(files[0]);
+            coverInput.files = transfer.files;
+            coverInput.dispatchEvent(new Event('change', { bubbles: true }));
+        });
+    }
 
     document.addEventListener('submit', function (event) {
         var form = event.target;
@@ -286,12 +385,13 @@
 
     var requestController = null;
     var scheduleRequestController = null;
+    var scheduleSearchTimer = 0;
     var lastScheduleUrl = new URL(window.location.href);
     var pageTitleSuffix = ' · Media Center Jemaat Leahari';
 
     function isPartialRoute(url) {
         var path = url.pathname.replace(/\/+$/, '');
-        return /\/admin\/(?:dashboard|berita|jadwal(?:\/(?:create|edit\/\d+))?|profil|statistik)$/.test(path);
+        return /\/admin\/(?:dashboard|berita|galeri|jadwal(?:\/(?:create|edit\/\d+))?|profil|statistik)$/.test(path);
     }
 
     function isScheduleRoute(url) {
@@ -316,7 +416,7 @@
         });
     }
 
-    async function navigate(url, addHistoryEntry) {
+    async function navigate(url, addHistoryEntry, focusSelector) {
         if (scheduleRequestController) scheduleRequestController.abort();
         if (requestController) requestController.abort();
         requestController = new AbortController();
@@ -360,8 +460,11 @@
             }
 
             window.scrollTo(0, 0);
+            var focusTarget = focusSelector ? main.querySelector(focusSelector) : null;
             var heading = main.querySelector('h1');
-            if (heading) {
+            if (focusTarget) {
+                focusTarget.focus({ preventScroll: true });
+            } else if (heading) {
                 heading.setAttribute('tabindex', '-1');
                 heading.focus({ preventScroll: true });
             }
@@ -506,12 +609,32 @@
         navigate(url, true);
     });
 
+    document.addEventListener('input', function (event) {
+        var field = event.target;
+        if (!(field instanceof HTMLInputElement) || !field.matches('[data-schedule-toolbar] input[name="q"]')) return;
+
+        var form = field.form;
+        if (!form) return;
+
+        window.clearTimeout(scheduleSearchTimer);
+        var url = new URL(form.action, window.location.href);
+        url.search = new URLSearchParams(new FormData(form)).toString();
+        scheduleSearchTimer = window.setTimeout(function () {
+            scheduleSearchTimer = 0;
+            if (url.href !== window.location.href) {
+                navigateSchedule(url, false, { type: 'search' });
+            }
+        }, 250);
+    });
+
     document.addEventListener('submit', function (event) {
         var form = event.target;
-        if (form.method.toLowerCase() !== 'get') return;
+        if (!(form instanceof HTMLFormElement) || form.method.toLowerCase() !== 'get') return;
 
         var url = new URL(form.action, window.location.href);
         if (url.origin === window.location.origin && isScheduleRoute(url) && form.closest('[data-schedule-toolbar]')) {
+            window.clearTimeout(scheduleSearchTimer);
+            scheduleSearchTimer = 0;
             var searchParams = new URLSearchParams(new FormData(form));
             url.search = searchParams.toString();
             event.preventDefault();
@@ -524,6 +647,22 @@
         url.search = params.toString();
         event.preventDefault();
         navigate(url, true);
+    });
+
+    document.addEventListener('change', function (event) {
+        var field = event.target;
+        if (!(field instanceof HTMLSelectElement)
+            || !field.matches('.news-search select[name="status"], .gallery-admin-toolbar select[name="status"]')) return;
+
+        var form = field.form;
+        if (!form) return;
+
+        var url = new URL(form.action, window.location.href);
+        url.search = new URLSearchParams(new FormData(form)).toString();
+        var focusSelector = field.matches('.gallery-admin-toolbar select[name="status"]')
+            ? '.gallery-admin-toolbar select[name="status"]'
+            : '.news-search select[name="status"]';
+        navigate(url, true, focusSelector);
     });
 
     window.addEventListener('popstate', function () {
@@ -545,12 +684,16 @@
 (function () {
     var maxServiceMapBytes = 5 * 1024 * 1024;
     var serviceMapTypes = ['image/jpeg', 'image/png', 'image/webp'];
+    function profileEditorUrl() {
+        var editor = document.querySelector('[data-profile-editor-page]');
+        return editor ? editor.dataset.profileEditorUrl : window.location.href;
+    }
 
     function getModal(form) {
         return form.closest('[data-rm]');
     }
 
-    function setFormMessage(form, message) {
+    function setFormMessage(form, message, success) {
         var modal = getModal(form);
         var alert = form.querySelector('[data-profile-form-message]')
             || (modal && modal.querySelector('[data-profile-form-message]'));
@@ -558,7 +701,58 @@
 
         alert.textContent = message;
         alert.hidden = message === '';
+        alert.classList.toggle('is-success', Boolean(message) && Boolean(success));
+        if (message) alert.setAttribute('role', success ? 'status' : 'alert');
     }
+
+    function dirtyProfileForms() {
+        var editor = document.querySelector('[data-profile-editor-page]');
+        if (!editor) return [];
+
+        return Array.prototype.filter.call(
+            editor.querySelectorAll('form[data-profile-ajax-form]'),
+            function (form) { return form.dataset.profileDirty === 'true'; }
+        );
+    }
+
+    document.addEventListener('click', function (event) {
+        var target = event.target instanceof Element ? event.target : null;
+        var link = target && target.closest('a[href]');
+        if (!link || link.target || link.hasAttribute('download')) return;
+
+        var dirtyForms = dirtyProfileForms();
+        if (dirtyForms.length === 0) return;
+
+        var destination = new URL(link.href, window.location.href);
+        if (destination.href === window.location.href) return;
+        if (!window.confirm('Perubahan belum disimpan. Tinggalkan halaman dan buang perubahan?')) {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            return;
+        }
+
+        dirtyForms.forEach(function (form) { form.dataset.profileDirty = 'false'; });
+    }, true);
+
+    window.addEventListener('beforeunload', function (event) {
+        if (dirtyProfileForms().length === 0) return;
+
+        event.preventDefault();
+        event.returnValue = '';
+    });
+
+    window.addEventListener('popstate', function (event) {
+        var dirtyForms = dirtyProfileForms();
+        if (dirtyForms.length === 0) return;
+
+        if (!window.confirm('Perubahan belum disimpan. Tinggalkan halaman dan buang perubahan?')) {
+            window.history.pushState(event.state, '', profileEditorUrl());
+            event.stopImmediatePropagation();
+            return;
+        }
+
+        dirtyForms.forEach(function (form) { form.dataset.profileDirty = 'false'; });
+    }, true);
 
     function clearFieldErrors(form) {
         form.querySelectorAll('[data-profile-inline-error]').forEach(function (error) {
@@ -570,6 +764,7 @@
     }
 
     function showFieldErrors(form, errors) {
+        var firstInvalidField = null;
         Object.keys(errors || {}).forEach(function (name) {
             var field = Array.prototype.find.call(form.elements, function (control) {
                 return control.name === name || control.name.endsWith('[' + name + ']');
@@ -579,6 +774,7 @@
             var wrapper = field.closest('.profile-field') || field.parentElement;
             if (!wrapper) return;
 
+            if (!firstInvalidField) firstInvalidField = field;
             field.setAttribute('aria-invalid', 'true');
             var message = document.createElement('small');
             message.className = 'profile-field-error';
@@ -587,6 +783,15 @@
             message.textContent = errors[name];
             wrapper.append(message);
         });
+
+        if (firstInvalidField) {
+            var panel = firstInvalidField.closest('[data-profile-step-panel]');
+            var panels = Array.prototype.slice.call(form.querySelectorAll('[data-profile-step-panel]'));
+            if (panel && panels.indexOf(panel) !== -1) {
+                setProfileStep(form, panels.indexOf(panel));
+                firstInvalidField.focus();
+            }
+        }
     }
 
     function updateCsrf(data) {
@@ -613,7 +818,7 @@
         });
 
         if (summary && (summary.serviceMapUrl || summary.serviceMapAlt)) {
-            document.querySelectorAll('[data-profile-map-image], [data-profile-map-modal-image]').forEach(function (image) {
+            document.querySelectorAll('[data-profile-map-image], [data-profile-map-preview]').forEach(function (image) {
                 if (summary.serviceMapUrl) image.src = summary.serviceMapUrl;
                 if (summary.serviceMapAlt) image.alt = summary.serviceMapAlt;
             });
@@ -659,7 +864,110 @@
         });
 
         var output = form.querySelector('[data-profile-census-total]');
-        if (output) output.textContent = new Intl.NumberFormat('id-ID').format(total);
+        var formattedTotal = new Intl.NumberFormat('id-ID').format(total);
+        if (output) output.textContent = formattedTotal;
+
+        var householdCountField = form.querySelector('[name="census[household_count]"]');
+        var householdSuffixField = form.querySelector('[name="census[household_suffix]"]');
+        var populationSuffixField = form.querySelector('[name="census[population_suffix]"]');
+        var householdCount = Number.parseInt(householdCountField ? householdCountField.value : '0', 10);
+        var householdSuffix = householdSuffixField ? householdSuffixField.value : '';
+        var populationSuffix = populationSuffixField ? populationSuffixField.value : '';
+        var preview = form.querySelector('[data-census-public-preview]');
+        if (preview) {
+            preview.textContent = new Intl.NumberFormat('id-ID').format(Number.isFinite(householdCount) ? householdCount : 0)
+                + ' ' + householdSuffix.trim()
+                + ' ' + formattedTotal
+                + ' ' + populationSuffix.trim();
+        }
+    }
+
+    function updateTerritoryPreview(form) {
+        var directionIcons = {
+            Utara: 'bi-arrow-up-circle',
+            Timur: 'bi-arrow-right-circle',
+            Selatan: 'bi-arrow-down-circle',
+            Barat: 'bi-arrow-left-circle'
+        };
+        form.querySelectorAll('[data-boundary-icon]').forEach(function (iconField) {
+            var item = iconField.closest('[data-content-item]');
+            var direction = item && item.querySelector('select[name$="[direction]"]');
+            if (direction && directionIcons[direction.value]) iconField.value = directionIcons[direction.value];
+        });
+
+        var valueFor = function (name) {
+            var field = form.elements.namedItem(name);
+            return field && 'value' in field ? field.value.trim() : '';
+        };
+        var boundaryPreview = form.querySelector('[data-territory-preview="boundary"]');
+        if (boundaryPreview) {
+            var boundaryParts = [
+                valueFor('territory[boundary_prefix]'),
+                valueFor('territory[boundaries][0][direction]')
+            ].filter(Boolean);
+            var boundaryName = valueFor('territory[boundaries][0][name]');
+            boundaryPreview.textContent = boundaryParts.join(' ') + (boundaryName ? ' — ' + boundaryName : '');
+        }
+
+        var sectorPreview = form.querySelector('[data-territory-preview="sector"]');
+        if (sectorPreview) {
+            var sectors = Array.prototype.slice.call(form.querySelectorAll('input[name^="territory[sectors]"][name$="[area]"]'));
+            var areaTotal = sectors.reduce(function (total, field) {
+                var area = Number.parseFloat(field.value);
+                return total + (Number.isFinite(area) && area > 0 ? area : 0);
+            }, 0);
+            var firstArea = Number.parseFloat(valueFor('territory[sectors][0][area]'));
+            var areaShare = areaTotal > 0 && Number.isFinite(firstArea) ? Math.round(firstArea / areaTotal * 100) : 0;
+            var formattedArea = Number.isFinite(firstArea)
+                ? new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(firstArea)
+                : '0.00';
+            sectorPreview.textContent = [
+                [valueFor('territory[sector_prefix]'), valueFor('territory[sectors][0][name]')].filter(Boolean).join(' '),
+                [valueFor('territory[sectors][0][units]'), valueFor('territory[unit_suffix]')].filter(Boolean).join(' '),
+                [formattedArea, valueFor('territory[sectors][0][area_unit]')].filter(Boolean).join(' '),
+                areaShare + valueFor('territory[area_share_suffix]')
+            ].join(' · ');
+        }
+    }
+
+    function setProfileStep(form, requestedIndex) {
+        var panels = Array.prototype.slice.call(form.querySelectorAll('[data-profile-step-panel]'));
+        if (panels.length === 0) return;
+
+        var activeIndex = Math.max(0, Math.min(requestedIndex, panels.length - 1));
+        panels.forEach(function (panel, index) {
+            panel.hidden = index !== activeIndex;
+        });
+
+        var steps = Array.prototype.slice.call(form.querySelectorAll('[data-profile-step-target]'));
+        steps.forEach(function (step, index) {
+            var item = step.closest('li');
+            if (index === activeIndex) step.setAttribute('aria-current', 'step');
+            else step.removeAttribute('aria-current');
+            if (item) item.classList.toggle('is-complete', index < activeIndex);
+        });
+
+        var previous = form.querySelector('[data-profile-step-previous]');
+        var next = form.querySelector('[data-profile-step-next]');
+        var count = form.querySelector('[data-profile-step-count]');
+        var navigation = form.querySelector('[data-profile-step-nav]');
+        var controls = form.querySelector('[data-profile-step-controls]');
+        if (previous) previous.disabled = activeIndex === 0;
+        if (next) next.disabled = activeIndex === panels.length - 1;
+        if (count) count.textContent = 'Bagian ' + (activeIndex + 1) + ' dari ' + panels.length;
+        if (navigation) navigation.hidden = false;
+        if (controls) controls.hidden = false;
+        var activeStep = steps[activeIndex];
+        if (navigation && activeStep) {
+            var navigationBounds = navigation.getBoundingClientRect();
+            var activeStepBounds = activeStep.getBoundingClientRect();
+            if (activeStepBounds.right > navigationBounds.right) {
+                navigation.scrollLeft += activeStepBounds.right - navigationBounds.right + 4;
+            } else if (activeStepBounds.left < navigationBounds.left) {
+                navigation.scrollLeft -= navigationBounds.left - activeStepBounds.left + 4;
+            }
+        }
+        form.dataset.profileCurrentStep = String(activeIndex);
     }
 
     function setCensusStep(form, requestedIndex) {
@@ -692,6 +1000,16 @@
         if (count) count.textContent = 'Bagian ' + (activeIndex + 1) + ' dari ' + panels.length;
         if (navigation) navigation.hidden = false;
         if (controls) controls.hidden = false;
+        var activeStep = steps[activeIndex];
+        if (navigation && activeStep) {
+            var navigationBounds = navigation.getBoundingClientRect();
+            var activeStepBounds = activeStep.getBoundingClientRect();
+            if (activeStepBounds.right > navigationBounds.right) {
+                navigation.scrollLeft += activeStepBounds.right - navigationBounds.right + 4;
+            } else if (activeStepBounds.left < navigationBounds.left) {
+                navigation.scrollLeft -= navigationBounds.left - activeStepBounds.left + 4;
+            }
+        }
         form.classList.add('is-census-enhanced');
         form.dataset.censusCurrentStep = String(activeIndex);
     }
@@ -713,6 +1031,11 @@
 
     document.querySelectorAll('form[data-profile-census-form]').forEach(function (form) {
         setCensusStep(form, 0);
+        updateCensusCalculation(form);
+    });
+    document.querySelectorAll('form[data-profile-step-form]').forEach(function (form) {
+        setProfileStep(form, 0);
+        updateTerritoryPreview(form);
     });
 
     document.addEventListener('input', function (event) {
@@ -724,6 +1047,7 @@
         clearFieldErrors(form);
         setFormMessage(form, '');
         if (form.matches('[data-profile-census-form]')) updateCensusCalculation(form);
+        if (form.matches('[data-profile-step-form]')) updateTerritoryPreview(form);
     });
 
     document.addEventListener('change', function (event) {
@@ -747,19 +1071,43 @@
             if (validateServiceMap(form) && field.name === 'service_map' && field.files && field.files[0]) {
                 var reader = new FileReader();
                 reader.onload = function () {
-                    var image = form.querySelector('[data-profile-map-modal-image]');
+                    var image = form.querySelector('[data-profile-map-preview]');
                     if (image && typeof reader.result === 'string') image.src = reader.result;
                 };
                 reader.readAsDataURL(field.files[0]);
             }
         }
         if (form.matches('[data-profile-census-form]')) updateCensusCalculation(form);
+        if (form.matches('[data-profile-step-form]')) updateTerritoryPreview(form);
 
     });
 
     document.addEventListener('click', function (event) {
         var target = event.target instanceof Element ? event.target : null;
         if (!target) return;
+
+        var profileStepControl = target.closest('[data-profile-step-target], [data-profile-step-next], [data-profile-step-previous]');
+        if (profileStepControl) {
+            var profileForm = profileStepControl.closest('form[data-profile-step-form]');
+            if (profileForm) {
+                var panels = Array.prototype.slice.call(profileForm.querySelectorAll('[data-profile-step-panel]'));
+                var currentIndex = Number.parseInt(profileForm.dataset.profileCurrentStep, 10) || 0;
+                var targetIndex = currentIndex;
+
+                if (profileStepControl.hasAttribute('data-profile-step-target')) {
+                    targetIndex = panels.findIndex(function (panel) {
+                        return panel.id === profileStepControl.dataset.profileStepTarget;
+                    });
+                } else if (profileStepControl.hasAttribute('data-profile-step-next')) {
+                    targetIndex += 1;
+                } else {
+                    targetIndex -= 1;
+                }
+
+                if (targetIndex >= 0) setProfileStep(profileForm, targetIndex);
+            }
+            return;
+        }
 
         var censusStepControl = target.closest('[data-census-step-target], [data-census-step-next], [data-census-step-previous]');
         if (censusStepControl) {
@@ -882,25 +1230,6 @@
         }
     }, true);
 
-    function confirmDiscard(event) {
-        var modal = event.target;
-        if (!(modal instanceof HTMLElement) || !modal.matches('[id^="profile-"][id$="-modal"]')) return;
-
-        var dirtyForm = Array.prototype.find.call(
-            modal.querySelectorAll('form[data-profile-ajax-form]'),
-            function (form) { return form.dataset.profileDirty === 'true'; }
-        );
-        if (dirtyForm && !window.confirm('Perubahan belum disimpan. Buang perubahan dan tutup?')) {
-            event.preventDefault();
-        } else if (dirtyForm) {
-            dirtyForm.dataset.profileDirty = 'false';
-            window.setTimeout(function () { window.location.reload(); }, 180);
-        }
-    }
-
-    document.addEventListener('hide.bs.modal', confirmDiscard, true);
-    document.addEventListener('hide.bs.offcanvas', confirmDiscard, true);
-
     document.addEventListener('submit', async function (event) {
         var form = event.target;
         if (!(form instanceof HTMLFormElement) || !form.matches('form[data-profile-ajax-form]')) return;
@@ -947,6 +1276,7 @@
             if (form.matches('[data-profile-map-form]')) {
                 form.querySelector('[name="service_map"]').value = '';
             }
+            setFormMessage(form, data.message || 'Perubahan berhasil disimpan.', true);
             announce(data.message || 'Perubahan berhasil disimpan.');
             var modal = getModal(form);
             var reload = form.hasAttribute('data-profile-reload');
