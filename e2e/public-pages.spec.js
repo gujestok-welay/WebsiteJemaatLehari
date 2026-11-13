@@ -1,4 +1,5 @@
 const { test, expect } = require('@playwright/test');
+const { adminEmail, adminPassword } = require('./test-credentials');
 
 const publicPages = [
   { path: '', name: 'Beranda' },
@@ -161,6 +162,24 @@ test('pratinjau galeri beranda membuka koleksi kegiatan', async ({ page }) => {
 });
 
 test('galeri kosong tetap mudah dibaca pada ponsel dan layar lebar', async ({ page }) => {
+  await page.goto('/admin/login');
+  await page.getByLabel('Alamat Email').fill(adminEmail);
+  await page.locator('#password').fill(adminPassword);
+  await page.getByRole('button', { name: 'Masuk' }).click();
+  await expect(page).toHaveURL(/admin\/dashboard/);
+
+  await page.goto('/admin/galeri?status=Terbit');
+  const publishedRows = page.locator('.gallery-admin-table tbody tr');
+  while (await publishedRows.count()) {
+    const row = publishedRows.first();
+    page.once('dialog', (dialog) => dialog.accept());
+    await Promise.all([
+      page.waitForNavigation({ waitUntil: 'domcontentloaded' }),
+      row.getByRole('button', { name: 'Arsipkan' }).click(),
+    ]);
+    await page.goto('/admin/galeri?status=Terbit');
+  }
+
   await page.goto('galeri');
 
   await expect(page.getByRole('heading', { name: 'Belum ada dokumentasi kegiatan' })).toBeVisible();

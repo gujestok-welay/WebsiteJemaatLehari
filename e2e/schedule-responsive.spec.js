@@ -46,7 +46,9 @@ test('pencarian jadwal memfilter saat diketik tanpa memuat ulang halaman', async
     page.waitForNavigation({ waitUntil: 'domcontentloaded' }),
     modal.getByRole('button', { name: 'Simpan Jadwal' }).click(),
   ]);
-  await expect(page.locator('.schedule-service-name')).toHaveText(serviceName);
+  const matchingService = page.locator('.schedule-service-name').filter({ hasText: serviceName });
+  await expect(matchingService).toHaveCount(1);
+  await expect(matchingService).toHaveText(serviceName);
 
   let documentNavigations = 0;
   page.on('request', (request) => {
@@ -57,7 +59,8 @@ test('pencarian jadwal memfilter saat diketik tanpa memuat ulang halaman', async
   await search.pressSequentially('Pencarian', { delay: 20 });
 
   await expect.poll(() => new URL(page.url()).searchParams.get('q')).toBe('Pencarian');
-  await expect(page.locator('.schedule-service-name')).toHaveText(serviceName);
+  await expect(matchingService).toHaveCount(1);
+  await expect(matchingService).toHaveText(serviceName);
   expect(documentNavigations).toBe(0);
 
   await page.locator('#schedule-search-input').fill('jadwal-tidak-ditemukan');
