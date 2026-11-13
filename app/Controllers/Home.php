@@ -4,12 +4,13 @@ namespace App\Controllers;
 
 use App\Libraries\PublicSampleContent;
 use App\Models\BeritaModel;
+use App\Models\JadwalIbadahModel;
 
 class Home extends BaseController
 {
     public function index(): string
     {
-        $schedules = $this->normalizeSchedules(PublicSampleContent::schedules());
+        $schedules = $this->publicSchedules();
         $news = $this->publicNews();
 
         return view('publik/beranda', [
@@ -105,7 +106,6 @@ class Home extends BaseController
             'activePage' => 'berita',
             'news' => $this->publicNews(),
             'isSample' => $this->usesSampleNews(),
-            'schedules' => PublicSampleContent::schedules(),
         ]);
     }
 
@@ -120,7 +120,7 @@ class Home extends BaseController
             'title' => $title,
             'activePage' => $page,
             'news' => PublicSampleContent::news(),
-            'schedules' => PublicSampleContent::schedules(),
+            'schedules' => $this->publicSchedules(),
         ]);
     }
 
@@ -190,25 +190,37 @@ class Home extends BaseController
         ], $rows);
     }
 
-    /** Bentuk seragam untuk daftar jadwal di Beranda. */
-    private function normalizeSchedules(array $rows): array
+    private function publicSchedules(): array
     {
-        $dow = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
+        $days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+        $months = [
+            1 => 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+            'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember',
+        ];
+        $timezone = new \DateTimeZone('Asia/Jayapura');
+        $model = new JadwalIbadahModel();
 
-        return array_map(static function (array $row) use ($dow): array {
-            $date = new \DateTimeImmutable($row['date']);
-
+        return array_map(static function (array $row) use ($days, $months, $timezone): array {
+            $date = new \DateTimeImmutable((string) $row['tanggal'], $timezone);
+            $dateLabel = $days[(int) $date->format('w')] . ', '
+                . $date->format('j') . ' '
+                . $months[(int) $date->format('n')] . ' '
+                . $date->format('Y');
+            $minister = trim((string) ($row['pelayan'] ?? ''));
             return [
-                'name' => $row['name'],
-                'date' => $row['date'],
-                'day_label' => $row['day'],
-                'dow' => $dow[(int) $date->format('w')],
+                'name' => $row['jenis_ibadah'],
+                'date' => $date->format('Y-m-d'),
+                'date_label' => $dateLabel,
+                'day_label' => $dateLabel,
+                'dow' => mb_substr($days[(int) $date->format('w')], 0, 3),
                 'dom' => $date->format('j'),
-                'time' => $row['time'],
-                'location' => $row['location'],
-                'minister' => $row['minister'] ?? null,
+                'time' => str_replace(':', '.', substr((string) $row['waktu'], 0, 5)),
+                'location' => $row['lokasi'],
+                'minister' => $minister !== '' ? $minister : null,
+                'type' => 'umum',
+                'note' => '',
                 'cancelled' => false,
             ];
-        }, $rows);
+        }, $model->findPublicSchedules());
     }
 }

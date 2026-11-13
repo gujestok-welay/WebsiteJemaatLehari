@@ -30,6 +30,7 @@ class AdminBerita extends BaseController
             'term' => $term,
             'status' => $status,
             'statusOptions' => BeritaModel::statusOptions(),
+            'formStatusOptions' => BeritaModel::formStatusOptions(),
             'success' => session()->getFlashdata('success'),
             'error' => session()->getFlashdata('error'),
             'newsError' => $newsError,
@@ -57,9 +58,20 @@ class AdminBerita extends BaseController
         }
 
         $id = $rawId === '' ? 0 : (int) $rawId;
-        $current = $id > 0 ? $this->model->find($id) : null;
-        if ($id > 0 && ! $current) {
-            return redirect()->to(site_url($returnTo))->with('error', 'Berita tidak ditemukan.');
+        $current = null;
+        if ($id > 0) {
+            $lookup = $this->model->findForAdmin($id);
+            if ($lookup['status'] === 'error') {
+                return redirect()->to(site_url($returnTo))->with('error', 'Berita gagal dibaca. Silakan coba lagi.');
+            }
+            if ($lookup['status'] === 'not_found') {
+                return redirect()->to(site_url($returnTo))->with('error', 'Berita tidak ditemukan.');
+            }
+
+            $current = $lookup['record'];
+        }
+        if ($id > 0 && ($current['status'] ?? null) === 'Arsip') {
+            return redirect()->to(site_url($returnTo))->with('error', 'Pulihkan berita terlebih dahulu sebelum mengubahnya.');
         }
 
         $postedFields = [];
@@ -77,7 +89,7 @@ class AdminBerita extends BaseController
         $status = $postedFields['status'];
         $slug = trim($postedFields['slug']);
 
-        if ($title === '' || $summary === '' || $content === '' || ! in_array($status, BeritaModel::statusOptions(), true)) {
+        if ($title === '' || $summary === '' || $content === '' || ! in_array($status, BeritaModel::formStatusOptions(), true)) {
             return $this->redirectWithSaveError('Judul, ringkasan, isi, dan status berita wajib diisi.', $id, $returnTo);
         }
 
@@ -107,6 +119,7 @@ class AdminBerita extends BaseController
 
         try {
             if ($id > 0) {
+                $data['id'] = $id;
                 $saved = $this->model->update($id, $data);
             } else {
                 $data['created_by'] = (int) session()->get('admin_id');
@@ -114,7 +127,7 @@ class AdminBerita extends BaseController
             }
         } catch (DatabaseException $exception) {
             if ($newCover !== null) {
-                $this->removeStoredCover($newCover);
+                $this->removeStoredCoverSafely($newCover);
             }
             log_message('error', 'Gagal menyimpan berita: {message}', ['message' => $exception->getMessage()]);
 
@@ -123,7 +136,7 @@ class AdminBerita extends BaseController
 
         if ($saved === false) {
             if ($newCover !== null) {
-                $this->removeStoredCover($newCover);
+                $this->removeStoredCoverSafely($newCover);
             }
 
             $errors = array_filter($this->model->errors());
@@ -135,7 +148,7 @@ class AdminBerita extends BaseController
         }
 
         if ($id > 0 && $newCover !== null && ! empty($current['cover_image'])) {
-            $this->removeStoredCover((string) $current['cover_image']);
+            $this->removeStoredCoverSafely((string) $current['cover_image']);
         }
 
         $successMessage = $id > 0 ? 'Berita berhasil diperbarui.' : 'Berita baru berhasil disimpan.';
@@ -164,15 +177,89 @@ class AdminBerita extends BaseController
             : 'admin/berita';
     }
 
-    public function delete(int $id): \CodeIgniter\HTTP\RedirectResponse
+    public function archive(int $id): \CodeIgniter\HTTP\RedirectResponse
     {
-        $item = $this->model->find($id);
-        if (! $item) {
+        $lookup = $this->model->findForAdmin($id);
+        if ($lookup['status'] === 'error') {
+            return redirect()->to(site_url('admin/berita'))->with('error', 'Berita gagal diarsipkan. Silakan coba lagi.');
+        }
+        if ($lookup['status'] === 'not_found') {
             return redirect()->to(site_url('admin/berita'))->with('error', 'Berita tidak ditemukan.');
         }
+        $item = $lookup['record'];
+        if (($item['status'] ?? null) === 'Arsip') {
+            return redirect()->to(site_url('admin/berita'))->with('error', 'Berita sudah diarsipkan.');
+        }
 
-        $this->model->delete($id);
-        return redirect()->to(site_url('admin/berita'))->with('success', 'Berita diarsipkan atau dihapus dari daftar aktif.');
+        try {
+            $saved = $this->model->update($id, [
+                'status' => 'Arsip',
+                'archived_from_status' => in_array($item['status'] ?? null, BeritaModel::formStatusOptions(), true)
+                    ? $item['status']
+                    : 'Draft',
+                'updated_by' => (int) session()->get('admin_id'),
+            ]);
+        } catch (DatabaseException $exception) {
+            log_message('error', 'Gagal mengarsipkan berita ID {id}: {message}', [
+                'id' => $id,
+                'message' => $exception->getMessage(),
+            ]);
+
+            return redirect()->to(site_url('admin/berita'))->with('error', 'Berita gagal diarsipkan. Silakan coba lagi.');
+        }
+
+        if ($saved === false) {
+            return redirect()->to(site_url('admin/berita'))->with('error', 'Berita gagal diarsipkan. Silakan coba lagi.');
+        }
+
+        return redirect()->to(site_url('admin/berita'))->with('success', 'Berita berhasil diarsipkan.');
+    }
+
+    public function delete(int $id): \CodeIgniter\HTTP\RedirectResponse
+    {
+        return $this->archive($id);
+    }
+
+    public function restore(int $id): \CodeIgniter\HTTP\RedirectResponse
+    {
+        $lookup = $this->model->findForAdmin($id);
+        if ($lookup['status'] === 'error') {
+            return redirect()->to(site_url('admin/berita?status=Arsip'))->with('error', 'Berita gagal dibaca. Silakan coba lagi.');
+        }
+        if ($lookup['status'] === 'not_found') {
+            return redirect()->to(site_url('admin/berita?status=Arsip'))->with('error', 'Berita tidak ditemukan.');
+        }
+        $item = $lookup['record'];
+        if (($item['status'] ?? null) !== 'Arsip') {
+            return redirect()->to(site_url('admin/berita?status=Arsip'))->with('error', 'Berita ini tidak berstatus Arsip.');
+        }
+
+        $previousStatus = $item['archived_from_status'] ?? null;
+        if (! in_array($previousStatus, BeritaModel::formStatusOptions(), true)) {
+            $previousStatus = 'Draft';
+        }
+
+        try {
+            $saved = $this->model->update($id, [
+                'status' => $previousStatus,
+                'archived_from_status' => null,
+                'updated_by' => (int) session()->get('admin_id'),
+            ]);
+        } catch (DatabaseException $exception) {
+            log_message('error', 'Gagal memulihkan berita ID {id}: {message}', [
+                'id' => $id,
+                'message' => $exception->getMessage(),
+            ]);
+
+            return redirect()->to(site_url('admin/berita?status=Arsip'))->with('error', 'Berita gagal dipulihkan. Silakan coba lagi.');
+        }
+
+        if ($saved === false) {
+            return redirect()->to(site_url('admin/berita?status=Arsip'))->with('error', 'Berita gagal dipulihkan. Silakan coba lagi.');
+        }
+
+        return redirect()->to(site_url('admin/berita?status=Arsip'))
+            ->with('success', 'Berita berhasil dipulihkan ke status ' . $previousStatus . '.');
     }
 
     protected function handleCoverUpload(UploadedFile $file): array
@@ -230,6 +317,17 @@ class AdminBerita extends BaseController
         $filePath = WRITEPATH . 'uploads/berita/' . $matches[1];
         if (is_file($filePath) && ! unlink($filePath)) {
             log_message('warning', 'Gambar berita lama tidak dapat dihapus: {path}', ['path' => $filePath]);
+        }
+    }
+
+    protected function removeStoredCoverSafely(string $storedPath): void
+    {
+        try {
+            $this->removeStoredCover($storedPath);
+        } catch (\ErrorException $exception) {
+            log_message('warning', 'Gambar berita tidak dapat dibersihkan: {message}', [
+                'message' => $exception->getMessage(),
+            ]);
         }
     }
 }

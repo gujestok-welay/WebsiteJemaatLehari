@@ -52,7 +52,7 @@ $defaultOpen = ($defaultOpen ?? false) || $newsError !== '';
             <label for="news-create-status">Status publikasi</label>
             <select class="form-select" id="news-create-status" name="status" required>
                 <option value="">Pilih status</option>
-                <?php foreach ($statusOptions as $option): ?>
+                <?php foreach ($formStatusOptions as $option): ?>
                     <option value="<?= esc($option) ?>" <?= (old('status') ?? '') === $option ? 'selected' : '' ?>><?= esc($option) ?></option>
                 <?php endforeach; ?>
             </select>

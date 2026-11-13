@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Models\AdminUserModel;
 use App\Models\BeritaModel;
 
 class AdminAuth extends BaseController
@@ -24,8 +25,16 @@ class AdminAuth extends BaseController
 
     public function login()
     {
-        $email = strtolower(trim((string) $this->request->getPost('email')));
-        $password = (string) $this->request->getPost('password');
+        $emailValue = $this->request->getPost('email');
+        $passwordValue = $this->request->getPost('password');
+        if (! is_string($emailValue) || ! is_string($passwordValue)) {
+            return redirect()->to(site_url('admin/login'))
+                ->withInput()
+                ->with('error', 'Email atau kata sandi tidak sesuai.');
+        }
+
+        $email = strtolower(trim($emailValue));
+        $password = $passwordValue;
         $ip = (string) $this->request->getIPAddress();
         $identityHash = hash('sha256', $ip . '|' . $email);
         $db = db_connect();
@@ -37,7 +46,13 @@ class AdminAuth extends BaseController
             return redirect()->to(site_url('admin/login'))->withInput()->with('error', 'Terlalu banyak percobaan. Coba lagi dalam 15 menit.');
         }
 
-        $admin = $db->table('admin_users')->where('email', $email)->get()->getRowArray();
+        $admin = $db->table('admin_users')
+            ->where('email', $email)
+            ->where('is_active', 1)
+            ->where('deleted_at', null)
+            ->whereIn('role', AdminUserModel::getRoleOptions())
+            ->get()
+            ->getRowArray();
         if (! $admin || ! password_verify($password, $admin['password_hash'])) {
             $db->table('admin_login_attempts')->insert(['identity_hash' => $identityHash, 'attempted_at' => $now]);
             return redirect()->to(site_url('admin/login'))->withInput()->with('error', 'Email atau kata sandi tidak sesuai.');
@@ -67,11 +82,9 @@ class AdminAuth extends BaseController
         };
 
         $publishedNewsCount = $db->table('berita')
-            ->where('deleted_at', null)
             ->where('status', 'Terbit')
             ->countAllResults();
         $draftNewsCount = $db->table('berita')
-            ->where('deleted_at', null)
             ->where('status', 'Draft')
             ->countAllResults();
         $upcomingScheduleCount = $db->table('jadwal_ibadah')
@@ -81,7 +94,7 @@ class AdminAuth extends BaseController
             ->countAllResults();
         $latestNews = $db->table('berita')
             ->select('id, title, slug, summary, content, status, cover_image, created_at')
-            ->where('deleted_at', null)
+            ->whereIn('status', ['Draft', 'Terbit'])
             ->orderBy('created_at', 'DESC')
             ->limit(5)
             ->get()
@@ -122,7 +135,7 @@ class AdminAuth extends BaseController
             'error' => session()->getFlashdata('error'),
             'newsModalOpen' => $this->request->getGet('create') === '1'
                 || $newsError !== '',
-            'statusOptions' => BeritaModel::statusOptions(),
+            'formStatusOptions' => BeritaModel::formStatusOptions(),
         ], 'Ringkasan');
     }
 

@@ -2,10 +2,11 @@
 
 <?= $this->section('content') ?>
 <?php
-$adaFilter = $term !== '' || $hariDipilih !== 'semua' || $cancelled !== null;
+$adaFilter = $term !== '' || $hariDipilih !== 'semua' || $cancelled !== null || $archived;
 $parameterDasar = [
     'q' => $term,
     'cancelled' => $cancelled,
+    'archived' => $archived ? '1' : null,
 ];
 $urlFilter = static function (array $perubahan) use ($parameterDasar): string {
     $parameter = array_merge($parameterDasar, $perubahan);
@@ -14,11 +15,12 @@ $urlFilter = static function (array $perubahan) use ($parameterDasar): string {
     return site_url('admin/jadwal') . ($parameter ? '?' . http_build_query($parameter) : '');
 };
 $tabStatus = [
-    'semua' => ['label' => 'Semua', 'value' => null, 'count' => $hitung['semua']],
-    'aktif' => ['label' => 'Aktif', 'value' => 0, 'count' => $hitung['aktif']],
-    'dibatalkan' => ['label' => 'Dibatalkan', 'value' => 1, 'count' => $hitung['dibatalkan']],
+    'semua' => ['label' => 'Semua', 'filters' => ['cancelled' => null, 'archived' => null], 'count' => $hitung['semua']],
+    'aktif' => ['label' => 'Aktif', 'filters' => ['cancelled' => 0, 'archived' => null], 'count' => $hitung['aktif']],
+    'dibatalkan' => ['label' => 'Dibatalkan', 'filters' => ['cancelled' => 1, 'archived' => null], 'count' => $hitung['dibatalkan']],
+    'arsip' => ['label' => 'Arsip', 'filters' => ['cancelled' => null, 'archived' => '1'], 'count' => $hitung['arsip']],
 ];
-$statusTerpilih = $cancelled === null ? 'semua' : ($cancelled === 1 ? 'dibatalkan' : 'aktif');
+$statusTerpilih = $archived ? 'arsip' : ($cancelled === null ? 'semua' : ($cancelled === 1 ? 'dibatalkan' : 'aktif'));
 ?>
 
 <section class="schedule-page" aria-labelledby="schedule-page-title">
@@ -53,6 +55,11 @@ $statusTerpilih = $cancelled === null ? 'semua' : ($cancelled === 1 ? 'dibatalka
             <strong class="metric-value"><?= number_format($hitung['dibatalkan'], 0, ',', '.') ?></strong>
             <span class="schedule-metric-note">ditandai di daftar</span>
         </div>
+        <div class="metric">
+            <span class="metric-label">Diarsipkan</span>
+            <strong class="metric-value"><?= number_format($hitung['arsip'], 0, ',', '.') ?></strong>
+            <span class="schedule-metric-note">tersimpan di arsip</span>
+        </div>
     </section>
 
     <section class="schedule-day-section" aria-labelledby="schedule-day-title">
@@ -80,7 +87,7 @@ $statusTerpilih = $cancelled === null ? 'semua' : ($cancelled === 1 ? 'dibatalka
         <div class="schedule-toolbar">
             <nav class="schedule-status-tabs" aria-label="Filter status jadwal">
                 <?php foreach ($tabStatus as $kunci => $tab): ?>
-                    <a href="<?= esc($urlFilter(['cancelled' => $tab['value']]), 'attr') ?>"
+                    <a href="<?= esc($urlFilter($tab['filters']), 'attr') ?>"
                        class="<?= $statusTerpilih === $kunci ? 'is-active' : '' ?>"
                        <?= $statusTerpilih === $kunci ? 'aria-current="page"' : '' ?>>
                         <?= esc($tab['label']) ?><span><?= number_format($tab['count'], 0, ',', '.') ?></span>
@@ -90,6 +97,7 @@ $statusTerpilih = $cancelled === null ? 'semua' : ($cancelled === 1 ? 'dibatalka
 
             <form class="schedule-search" action="<?= site_url('admin/jadwal') ?>" method="get" role="search">
                 <?php if ($cancelled !== null): ?><input type="hidden" name="cancelled" value="<?= (int) $cancelled ?>"><?php endif; ?>
+                <?php if ($archived): ?><input type="hidden" name="archived" value="1"><?php endif; ?>
                 <?php if ($hariDipilih !== 'semua'): ?><input type="hidden" name="hari" value="<?= esc($hariDipilih, 'attr') ?>"><?php endif; ?>
                 <label class="visually-hidden" for="schedule-search-input">Cari jenis ibadah, lokasi, atau pelayan</label>
                 <input id="schedule-search-input" type="search" name="q" value="<?= esc($term, 'attr') ?>" placeholder="Cari jadwal...">
@@ -120,6 +128,7 @@ $statusTerpilih = $cancelled === null ? 'semua' : ($cancelled === 1 ? 'dibatalka
                     <tbody>
                     <?php foreach ($items as $item): ?>
                         <?php $dibatalkan = ! empty($item['is_cancelled']); ?>
+                        <?php $diarsip = ! empty($item['deleted_at']); ?>
                         <tr>
                             <td class="schedule-service-name"><?= esc($item['jenis_ibadah']) ?></td>
                             <td class="schedule-date">
@@ -128,14 +137,25 @@ $statusTerpilih = $cancelled === null ? 'semua' : ($cancelled === 1 ? 'dibatalka
                             </td>
                             <td><?= esc($item['lokasi']) ?></td>
                             <td><?= esc($item['pelayan'] ?: 'Belum ditentukan') ?></td>
-                            <td><span class="schedule-status <?= $dibatalkan ? 'is-cancelled' : 'is-active' ?>"><?= $dibatalkan ? 'Dibatalkan' : 'Aktif' ?></span></td>
+                            <td><span class="schedule-status <?= $diarsip ? 'is-archived' : ($dibatalkan ? 'is-cancelled' : 'is-active') ?>"><?= $diarsip ? 'Arsip' : ($dibatalkan ? 'Dibatalkan' : 'Aktif') ?></span></td>
                             <td>
                                 <div class="schedule-row-actions">
-                                    <a class="schedule-action-link" href="<?= site_url('admin/jadwal/edit/' . (int) $item['id']) ?>">Ubah</a>
-                                    <form method="post" action="<?= site_url('admin/jadwal/delete/' . (int) $item['id']) ?>" onsubmit="return confirm('Arsipkan jadwal ini dari daftar aktif?');">
-                                        <?= csrf_field() ?>
-                                        <button class="schedule-action-link is-archive" type="submit">Arsipkan</button>
-                                    </form>
+                                    <?php if ($diarsip): ?>
+                                        <form method="post" action="<?= site_url('admin/jadwal/restore/' . (int) $item['id']) ?>" onsubmit="return confirm('Pulihkan jadwal ini dari arsip?');">
+                                            <?= csrf_field() ?>
+                                            <button class="schedule-action-link" type="submit">Pulihkan</button>
+                                        </form>
+                                    <?php else: ?>
+                                        <a class="schedule-action-link" href="<?= site_url('admin/jadwal/edit/' . (int) $item['id']) ?>">Ubah</a>
+                                        <form method="post" action="<?= site_url('admin/jadwal/' . ($dibatalkan ? 'reactivate' : 'cancel') . '/' . (int) $item['id']) ?>" onsubmit="return confirm('<?= $dibatalkan ? 'Aktifkan kembali' : 'Batalkan' ?> jadwal ini?');">
+                                            <?= csrf_field() ?>
+                                            <button class="schedule-action-link" type="submit"><?= $dibatalkan ? 'Aktifkan' : 'Batalkan' ?></button>
+                                        </form>
+                                        <form method="post" action="<?= site_url('admin/jadwal/archive/' . (int) $item['id']) ?>" onsubmit="return confirm('Arsipkan jadwal ini?');">
+                                            <?= csrf_field() ?>
+                                            <button class="schedule-action-link is-archive" type="submit">Arsipkan</button>
+                                        </form>
+                                    <?php endif; ?>
                                 </div>
                             </td>
                         </tr>

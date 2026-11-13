@@ -7,29 +7,6 @@ final class PublicPagesTest extends CIUnitTestCase
 {
     use FeatureTestTrait;
 
-    private string $originalDatabaseGroup;
-    private array $originalDefaultConnection;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $database = config('Database');
-        $this->originalDatabaseGroup = $database->defaultGroup;
-        $this->originalDefaultConnection = $database->default;
-        $database->defaultGroup = 'default';
-        $database->default['database'] = '';
-    }
-
-    protected function tearDown(): void
-    {
-        $database = config('Database');
-        $database->defaultGroup = $this->originalDatabaseGroup;
-        $database->default = $this->originalDefaultConnection;
-
-        parent::tearDown();
-    }
-
     private function createNewsTable(): void
     {
         $db = db_connect('tests');
@@ -47,7 +24,6 @@ final class PublicPagesTest extends CIUnitTestCase
                 'updated_by' => ['type' => 'BIGINT', 'unsigned' => true, 'null' => true],
                 'created_at' => ['type' => 'DATETIME', 'null' => true],
                 'updated_at' => ['type' => 'DATETIME', 'null' => true],
-                'deleted_at' => ['type' => 'DATETIME', 'null' => true],
             ]);
             $forge->addKey('id', true);
             $forge->addUniqueKey('slug');
@@ -57,12 +33,18 @@ final class PublicPagesTest extends CIUnitTestCase
         }
     }
 
-    public function testPublicPagesRenderWithSampleNoticeAndActiveNavigation(): void
+    public function testPublicPagesRenderWithPreviewNoticeAndActiveNavigation(): void
     {
+        config('Database')->defaultGroup = 'tests';
+        $this->createNewsTable();
+        $this->createScheduleTable();
+
         foreach (['/' => 'Beranda', '/profil' => 'Profil', '/berita' => 'Berita', '/jadwal-ibadah' => 'Jadwal Ibadah'] as $path => $label) {
             $result = $this->get($path);
             $result->assertStatus(200);
-            $result->assertSee('Pratinjau dengan konten dummy.');
+            $result->assertSee('Pratinjau website informasi Jemaat Leahari.');
+            $result->assertSee('Sebagian informasi masih menunggu konfirmasi resmi.');
+            $result->assertDontSee('Seluruh konten masih berupa contoh.');
             $this->assertStringContainsString('aria-current="page"', $result->getBody());
             $result->assertSee($label . ' | Jemaat Leahari');
             $this->assertStringContainsString('id="konten"', $result->getBody());
@@ -78,6 +60,7 @@ final class PublicPagesTest extends CIUnitTestCase
         $database = config('Database');
         $database->defaultGroup = 'tests';
         $this->createNewsTable();
+        $this->createScheduleTable();
         $db = db_connect('tests');
 
         $db->table('berita')->insertBatch([
@@ -127,15 +110,44 @@ final class PublicPagesTest extends CIUnitTestCase
         $this->get('/berita')->assertSee('Judul berita diperbarui');
     }
 
-    public function testScheduleHasCompleteFallbackAndExplicitTimeZone(): void
+    public function testEmptySchedulePageShowsDatabaseEmptyStateWithoutSampleFallback(): void
     {
+        config('Database')->defaultGroup = 'tests';
+        $this->createScheduleTable();
+
         $result = $this->get('/jadwal-ibadah');
         $result->assertStatus(200);
-        $result->assertSee('Ibadah Minggu');
-        $result->assertSee('Ibadah Keluarga');
-        $result->assertSee('Waktu Indonesia Timur (WIT)');
-        $result->assertSee('Lokasi contoh B');
-        $result->assertSee('2026-11-01');
+        $result->assertSee('Belum ada jadwal ibadah yang tersedia saat ini.');
+        $result->assertDontSee('Ibadah Keluarga');
+        $result->assertDontSee('Lokasi contoh');
+    }
+
+    private function createScheduleTable(): void
+    {
+        $db = db_connect('tests');
+        $forge = \Config\Database::forge('tests');
+        $db->resetDataCache();
+        if ($db->tableExists('jadwal_ibadah')) {
+            $forge->dropTable('jadwal_ibadah');
+        }
+        $db->resetDataCache();
+        $forge->addField([
+            'id' => ['type' => 'INTEGER', 'auto_increment' => true],
+            'jenis_ibadah' => ['type' => 'VARCHAR', 'constraint' => 120],
+            'tanggal' => ['type' => 'DATE'],
+            'waktu' => ['type' => 'TIME'],
+            'lokasi' => ['type' => 'VARCHAR', 'constraint' => 255],
+            'pelayan' => ['type' => 'VARCHAR', 'constraint' => 255, 'null' => true],
+            'is_cancelled' => ['type' => 'TINYINT', 'constraint' => 1, 'default' => 0],
+            'created_by' => ['type' => 'BIGINT', 'unsigned' => true, 'null' => true],
+            'updated_by' => ['type' => 'BIGINT', 'unsigned' => true, 'null' => true],
+            'created_at' => ['type' => 'DATETIME', 'null' => true],
+            'updated_at' => ['type' => 'DATETIME', 'null' => true],
+            'deleted_at' => ['type' => 'DATETIME', 'null' => true],
+        ]);
+        $forge->addKey('id', true);
+        $forge->createTable('jadwal_ibadah');
+        $db->resetDataCache();
     }
 
     public function testProfileDoesNotInventOfficialPeopleOrContactDetails(): void
@@ -143,6 +155,7 @@ final class PublicPagesTest extends CIUnitTestCase
         $result = $this->get('/profil');
         $result->assertSee('Susunan Majelis aktif belum tersedia');
         $result->assertSee('Menunggu konfirmasi resmi.');
+        $result->assertSee('Belum tersedia. Tidak ada nomor pribadi yang ditampilkan.');
     }
 
     public function testProfileAgeChartShowsBothGenderCountsForEveryRange(): void

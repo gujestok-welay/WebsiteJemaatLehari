@@ -174,6 +174,6 @@ $todayLabelText = is_array($todayLabelValue)
     'newsError' => $newsError ?? '',
     'returnTo' => 'admin/dashboard',
     'defaultOpen' => $newsModalOpen ?? false,
-    'statusOptions' => $statusOptions,
+    'formStatusOptions' => $formStatusOptions,
 ]) ?>
 <?= $this->endSection() ?>

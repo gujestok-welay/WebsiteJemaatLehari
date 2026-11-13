@@ -19,12 +19,18 @@ $routes->group('admin', ['filter' => 'adminAuth'], static function ($routes): vo
     $routes->get('berita', 'AdminBerita::index');
     $routes->get('berita/create', 'AdminBerita::create');
     $routes->post('berita/save', 'AdminBerita::save', ['filter' => 'csrf']);
+    $routes->post('berita/archive/(:num)', 'AdminBerita::archive/$1', ['filter' => 'csrf']);
+    $routes->post('berita/restore/(:num)', 'AdminBerita::restore/$1', ['filter' => 'csrf']);
     $routes->post('berita/delete/(:num)', 'AdminBerita::delete/$1', ['filter' => 'csrf']);
 
     $routes->get('jadwal', 'AdminJadwal::index');
     $routes->get('jadwal/create', 'AdminJadwal::create');
     $routes->get('jadwal/edit/(:num)', 'AdminJadwal::edit/$1');
     $routes->post('jadwal/save', 'AdminJadwal::save', ['filter' => 'csrf']);
+    $routes->post('jadwal/cancel/(:num)', 'AdminJadwal::cancel/$1', ['filter' => 'csrf']);
+    $routes->post('jadwal/reactivate/(:num)', 'AdminJadwal::reactivate/$1', ['filter' => 'csrf']);
+    $routes->post('jadwal/archive/(:num)', 'AdminJadwal::archive/$1', ['filter' => 'csrf']);
+    $routes->post('jadwal/restore/(:num)', 'AdminJadwal::restore/$1', ['filter' => 'csrf']);
     $routes->post('jadwal/delete/(:num)', 'AdminJadwal::delete/$1', ['filter' => 'csrf']);
 
     $routes->get('profil', 'AdminProfil::index');

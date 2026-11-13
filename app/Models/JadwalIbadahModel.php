@@ -26,10 +26,14 @@ class JadwalIbadahModel extends Model
         'is_cancelled' => 'permit_empty|in_list[0,1]',
     ];
 
-    public function findByTerm(?string $term = null, ?int $cancelled = null)
+    public function findByTerm(?string $term = null, ?int $cancelled = null, bool $archived = false)
     {
         $builder = $this->builder();
-        $builder->where($this->deletedField, null);
+        if ($archived) {
+            $builder->where($this->deletedField . ' IS NOT NULL', null, false);
+        } else {
+            $builder->where($this->deletedField, null);
+        }
 
         if (! empty($term)) {
             $builder->groupStart()
@@ -44,5 +48,36 @@ class JadwalIbadahModel extends Model
         }
 
         return $builder->orderBy('tanggal', 'ASC')->orderBy('waktu', 'ASC')->get()->getResultArray();
+    }
+
+    public function findPublicSchedules(): array
+    {
+        return $this->builder()
+            ->where($this->deletedField, null)
+            ->where('is_cancelled', 0)
+            ->orderBy('tanggal', 'ASC')
+            ->orderBy('waktu', 'ASC')
+            ->get()
+            ->getResultArray();
+    }
+
+    public function findArchivedById(int $id): ?array
+    {
+        return $this->builder()
+            ->where($this->primaryKey, $id)
+            ->where($this->deletedField . ' IS NOT NULL', null, false)
+            ->get()
+            ->getRowArray();
+    }
+
+    public function restoreArchived(int $id): bool
+    {
+        return $this->builder()
+            ->where($this->primaryKey, $id)
+            ->where($this->deletedField . ' IS NOT NULL', null, false)
+            ->update([
+                $this->deletedField => null,
+                $this->updatedField => date('Y-m-d H:i:s'),
+            ]);
     }
 }

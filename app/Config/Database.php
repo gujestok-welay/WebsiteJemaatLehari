@@ -199,6 +199,31 @@ class Database extends Config
         // we don't overwrite live data on accident.
         if (ENVIRONMENT === 'testing') {
             $this->defaultGroup = 'tests';
+
+            $sqliteTestingSettings = [
+                'DSN'          => '',
+                'hostname'     => '',
+                'username'     => '',
+                'password'     => '',
+                'database'     => ':memory:',
+                'DBDriver'     => 'SQLite3',
+                'pConnect'     => false,
+                'charset'      => 'utf8',
+                'DBCollat'     => '',
+                'encrypt'      => false,
+                'compress'     => false,
+                'strictOn'     => true,
+                'failover'     => [],
+                'port'         => null,
+                'foreignKeys'  => true,
+                'busyTimeout'  => 1000,
+                'synchronous'  => null,
+                'numberNative' => false,
+                'foundRows'    => false,
+            ];
+
+            $this->default = array_merge($this->default, $sqliteTestingSettings);
+            $this->tests   = array_merge($this->tests, $sqliteTestingSettings);
         }
     }
 }

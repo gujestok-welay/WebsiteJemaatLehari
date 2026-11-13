@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?= esc($title) ?> | Jemaat Leahari</title>
     <meta name="description"
-        content="Pratinjau website informasi Jemaat Leahari: profil, berita, dan jadwal ibadah. Seluruh konten masih berupa contoh.">
+        content="Pratinjau website informasi Jemaat Leahari. Sebagian informasi masih menunggu konfirmasi resmi.">
     <meta name="robots" content="noindex, nofollow">
     <link rel="preload" href="<?= base_url('assets/fonts/cormorant-garamond/latin-600-normal.woff2') ?>" as="font"
         type="font/woff2" crossorigin>
@@ -21,6 +21,10 @@
 <body<?= $activePage === 'beranda' ? ' class="page-home"' : '' ?>>
     <a class="skip-link" href="#konten">Lewati ke konten</a>
     <?= $this->include('partials/navbar') ?>
+    <aside class="container alert alert-warning mt-3 mb-0" role="note">
+        <strong>Pratinjau website informasi Jemaat Leahari.</strong>
+        Sebagian informasi masih menunggu konfirmasi resmi.
+    </aside>
 
     <main id="konten" tabindex="-1">
         <?= $this->renderSection('content') ?>

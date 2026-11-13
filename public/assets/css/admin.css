@@ -401,7 +401,7 @@ button.news-title { border: 0; padding: 0; background: none; font-family: inheri
 .schedule-page-heading { display: flex; align-items: center; justify-content: space-between; gap: 18px; margin-bottom: 24px; }
 .schedule-page-heading h1 { margin: 0; font-family: var(--font-display); font-size: clamp(2rem, 3.5vw, 2.8rem); font-weight: 600; line-height: 1.1; }
 .schedule-page-actions { display: flex; flex-wrap: wrap; gap: 10px; }
-.schedule-metrics { margin-top: 0; }
+.schedule-metrics { margin-top: 0; grid-template-columns: repeat(4, minmax(0, 1fr)); }
 .schedule-metric-note { color: var(--admin-muted); font-size: .78rem; }
 .schedule-section-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 18px; margin: 0 0 12px; }
 .schedule-section-heading h2 { margin: 0; font-family: var(--font-display); font-size: 1.65rem; font-weight: 600; line-height: 1.15; }
@@ -455,6 +455,7 @@ button.news-title { border: 0; padding: 0; background: none; font-family: inheri
 .schedule-status { display: inline-flex; border-radius: 999px; padding: 5px 9px; font-size: .7rem; font-weight: 600; white-space: nowrap; }
 .schedule-status.is-active { background: #e8f3eb; color: #315d3d; }
 .schedule-status.is-cancelled { background: #f4eddf; color: #6d5424; }
+.schedule-status.is-archived { background: #ece9ef; color: #5e5666; }
 .schedule-row-actions { display: flex; gap: 11px; white-space: nowrap; }
 .schedule-row-actions form { margin: 0; }
 .schedule-action-link { border: 0; padding: 0; background: none; color: var(--admin-purple); font: 600 .78rem var(--font-body); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
@@ -615,6 +616,10 @@ button.news-title { border: 0; padding: 0; background: none; font-family: inheri
     .welcome-date { margin-top: 20px !important; font-size: .78rem; }
     .metrics { margin: 16px 0 22px; }
     .metric { padding: 15px 14px; }
+    .schedule-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .schedule-metrics .metric:nth-child(3),
+    .schedule-metrics .metric:nth-child(4) { border-top: 1px solid var(--admin-line); }
+    .schedule-metrics .metric:nth-child(3) { border-left: 0; }
     .metric-label { min-height: 2.6em; font-size: .73rem; line-height: 1.3; }
     .metric-value { font-size: 1.9rem; }
     .metric a { font-size: .72rem; }

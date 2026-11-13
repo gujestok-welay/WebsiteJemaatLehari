@@ -18,9 +18,9 @@ class CreateBeritaTable extends Migration
             'cover_image' => ['type' => 'VARCHAR', 'constraint' => 255, 'null' => true],
             'created_by' => ['type' => 'BIGINT', 'unsigned' => true, 'null' => true],
             'updated_by' => ['type' => 'BIGINT', 'unsigned' => true, 'null' => true],
+            'archived_from_status' => ['type' => 'VARCHAR', 'constraint' => 20, 'null' => true],
             'created_at' => ['type' => 'DATETIME', 'null' => true],
             'updated_at' => ['type' => 'DATETIME', 'null' => true],
-            'deleted_at' => ['type' => 'DATETIME', 'null' => true],
         ]);
 
         $this->forge->addKey('id', true);

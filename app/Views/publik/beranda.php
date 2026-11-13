@@ -159,7 +159,7 @@ $latestNews = array_slice($news, 0, 2);
                 <aside class="home-schedule card shadow-sm" aria-labelledby="jadwal-contoh">
                     <div class="schedule-intro">
                         <h2 id="jadwal-contoh">Jadwal ibadah</h2>
-                        <p>Contoh tampilan jadwal. Pastikan waktu dan tempat melalui informasi resmi jemaat.</p>
+                        <p>Jadwal ibadah aktif yang tersedia.</p>
                         <?= view('components/css-link', [
                             'url' => site_url('jadwal-ibadah'),
                             'label' => 'Lihat seluruh jadwal',
@@ -169,19 +169,26 @@ $latestNews = array_slice($news, 0, 2);
                     </div>
 
                     <div class="schedule-list">
-                        <?php foreach (array_slice($schedules, 0, 4) as $schedule): ?>
-                            <div class="schedule-item">
-                                <div class="schedule-day">
-                                    <strong><?= date('d', strtotime($schedule['date'])) ?></strong>
-                                    <span><?= date('M', strtotime($schedule['date'])) ?></span>
+                        <?php if ($schedules === []): ?>
+                            <p>Belum ada jadwal ibadah yang tersedia saat ini.</p>
+                        <?php else: ?>
+                            <?php foreach (array_slice($schedules, 0, 4) as $schedule): ?>
+                                <div class="schedule-item">
+                                    <div class="schedule-day">
+                                        <strong><?= esc($schedule['dom']) ?></strong>
+                                        <span><?= esc($schedule['dow']) ?></span>
+                                    </div>
+                                    <div class="schedule-copy">
+                                        <h3><?= esc($schedule['name']) ?></h3>
+                                        <p><?= esc($schedule['date_label']) ?></p>
+                                        <p><?= esc($schedule['time']) ?> WIT · <?= esc($schedule['location']) ?></p>
+                                        <?php if (! empty($schedule['minister'])): ?>
+                                            <p>Pelayan: <?= esc($schedule['minister']) ?></p>
+                                        <?php endif; ?>
+                                    </div>
                                 </div>
-                                <div class="schedule-copy">
-                                    <h3><?= esc($schedule['name']) ?></h3>
-                                    <p><?= esc($schedule['day_label']) ?></p>
-                                    <p><?= esc($schedule['time']) ?> WIT · <?= esc($schedule['location']) ?></p>
-                                </div>
-                            </div>
-                        <?php endforeach ?>
+                            <?php endforeach ?>
+                        <?php endif ?>
                     </div>
                 </aside>
             </div>

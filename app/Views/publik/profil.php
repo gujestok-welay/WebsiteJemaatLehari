@@ -231,6 +231,30 @@
     </div>
 </section>
 
+<section class="container py-5" aria-labelledby="informasi-belum-tersedia">
+    <div class="mb-4">
+        <h2 class="fw-bold" id="informasi-belum-tersedia">Susunan Majelis dan kontak</h2>
+    </div>
+    <div class="row g-4">
+        <div class="col-md-6">
+            <h3 class="h5 fw-bold">Majelis Jemaat</h3>
+            <p class="text-body-secondary">Susunan Majelis aktif belum tersedia untuk publikasi.</p>
+            <p class="text-body-secondary mb-0">
+                Nama, jabatan, dan periode pelayanan akan ditampilkan setelah data serta izin publikasinya dikonfirmasi.
+            </p>
+        </div>
+        <div class="col-md-6">
+            <h3 class="h5 fw-bold">Lokasi dan kontak</h3>
+            <dl class="contact-list">
+                <dt>Alamat lengkap</dt>
+                <dd>Menunggu konfirmasi resmi.</dd>
+                <dt>Kontak dan media sosial</dt>
+                <dd>Belum tersedia. Tidak ada nomor pribadi yang ditampilkan.</dd>
+            </dl>
+        </div>
+    </div>
+</section>
+
 <section id="ibadah" class="container py-5">
     <div class="mb-4">
         <span class="badge rounded-pill badge-soft">2.2.2</span>

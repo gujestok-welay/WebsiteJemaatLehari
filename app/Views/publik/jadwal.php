@@ -437,12 +437,19 @@
 
                             <span class="badge-today d-none">Hari ini</span>
                             <h2 class="h5 fw-bold mb-1"><?= esc($item['name']) ?></h2>
+                            <div class="small text-body-secondary mb-2"><?= esc($item['date_label']) ?></div>
                             <div class="small text-body-secondary mb-3"><?= esc(ucfirst($type)) ?></div>
 
                             <div class="d-flex align-items-start gap-2 small mb-2">
                                 <i class="bi bi-geo-alt text-primary mt-1"></i>
                                 <span><?= esc($item['location']) ?></span>
                             </div>
+                            <?php if (! empty($item['minister'])): ?>
+                                <div class="d-flex align-items-start gap-2 small mb-2">
+                                    <i class="bi bi-person text-primary mt-1"></i>
+                                    <span>Pelayan: <?= esc($item['minister']) ?></span>
+                                </div>
+                            <?php endif; ?>
 
                             <div class="d-flex align-items-start gap-2 small mb-3">
                                 <i class="bi bi-clock text-primary mt-1"></i>
@@ -465,11 +472,18 @@
             <?php endforeach; ?>
         </div>
 
-        <div id="kosong" class="text-center py-5 d-none">
-            <i class="bi bi-calendar-x display-4 text-body-tertiary"></i>
-            <p class="mt-3 mb-1 fw-semibold">Tidak ada ibadah yang cocok.</p>
-            <button type="button" class="btn btn-outline-primary rounded-pill btn-sm" id="reset">Reset filter</button>
-        </div>
+        <?php if ($schedules === []): ?>
+            <div class="text-center py-5" role="status">
+                <i class="bi bi-calendar-x display-4 text-body-tertiary"></i>
+                <p class="mt-3 mb-1 fw-semibold">Belum ada jadwal ibadah yang tersedia saat ini.</p>
+            </div>
+        <?php else: ?>
+            <div id="kosong" class="text-center py-5 d-none">
+                <i class="bi bi-calendar-x display-4 text-body-tertiary"></i>
+                <p class="mt-3 mb-1 fw-semibold">Tidak ada ibadah yang cocok.</p>
+                <button type="button" class="btn btn-outline-primary rounded-pill btn-sm" id="reset">Reset filter</button>
+            </div>
+        <?php endif; ?>
 
         <p class="small text-body-secondary mt-4 mb-0">
             <i class="bi bi-info-circle me-1"></i>Waktu pelaksanaan mengikuti jadwal yang ditetapkan oleh jemaat di tiap
