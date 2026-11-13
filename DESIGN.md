@@ -79,7 +79,7 @@ Konten, nama personel, tanggal, statistik, dan materi visual resmi harus berasal
 ## 6. Halaman Kelola admin Profil
 
 - Setiap tindakan Kelola dari halaman Profil membuka halaman editor tersendiri, dengan navigasi kembali yang terlihat.
-- Editor berbagian panjang (Wilayah, Sensus, dan Konten Profil) memakai langkah yang dapat dipilih langsung, satu kelompok isian pada satu waktu, serta tombol Sebelumnya/Berikutnya. Editor ringkas tetap tampil utuh.
+- Editor berbagian panjang (Wilayah, Sensus, Konten Profil, dan Pengelolaan Majelis) memakai langkah yang dapat dipilih langsung, satu kelompok isian pada satu waktu, serta tombol Sebelumnya/Berikutnya. Pengelolaan Majelis terdiri dari periode, formulir anggota, dan daftar anggota; editor ringkas tetap tampil utuh.
 - Editor mengisi seluruh lebar konten admin yang tersedia tanpa bingkai kartu; judul, langkah, isian, dan aksi simpan berada dalam satu bidang kerja.
 - Setelah simpan, editor tetap berada di halaman modul dan menampilkan status berhasil. Navigasi keluar memperingatkan bila ada perubahan yang belum disimpan.
 - Pada layar sempit, panel editor memakai padding yang lebih rapat dan tetap mengikuti alur gulir halaman.

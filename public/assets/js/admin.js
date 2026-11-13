@@ -405,6 +405,49 @@
         var target = event.target instanceof Element ? event.target : null;
         if (!target) return;
 
+        var territoryToggle = target.closest('[data-territory-item-toggle]');
+        if (territoryToggle) {
+            var territoryItem = territoryToggle.closest('[data-content-item]');
+            var territoryEditor = territoryItem && territoryItem.querySelector('[data-territory-item-editor]');
+            if (!territoryEditor) return;
+
+            var expanded = territoryEditor.hidden;
+            territoryEditor.hidden = !expanded;
+            territoryToggle.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+            territoryToggle.textContent = expanded ? 'Selesai mengubah' : 'Ubah';
+            if (expanded) {
+                var firstField = territoryEditor.querySelector('input:not([type="hidden"]), select, textarea');
+                if (firstField) firstField.focus();
+            } else {
+                territoryToggle.focus();
+            }
+            return;
+        }
+
+        var ageLabelToggle = target.closest('[data-age-label-toggle]');
+        if (ageLabelToggle) {
+            var ageItem = ageLabelToggle.closest('[data-content-item]');
+            var ageEditor = ageItem && ageItem.querySelector('[data-age-label-editor]');
+            var ageInput = ageEditor && ageEditor.querySelector('[data-age-label-input]');
+            if (!ageEditor || !ageInput) return;
+
+            if (ageEditor.hidden) {
+                ageInput.required = true;
+                ageEditor.hidden = false;
+                ageLabelToggle.setAttribute('aria-expanded', 'true');
+                ageLabelToggle.textContent = 'Selesai mengubah rentang usia';
+                ageInput.focus();
+            } else {
+                ageInput.setCustomValidity(ageInput.value.trim() ? '' : 'Isi rentang usia.');
+                if (!ageInput.reportValidity()) return;
+                ageInput.required = false;
+                ageEditor.hidden = true;
+                ageLabelToggle.setAttribute('aria-expanded', 'false');
+                ageLabelToggle.textContent = 'Ubah rentang usia';
+            }
+            return;
+        }
+
         var addButton = target.closest('[data-add-item]');
         if (addButton) {
             var list = addButton.closest('[data-content-list]');
@@ -430,8 +473,15 @@
                 field.selectedIndex = 0;
             });
 
+            var newAgeLabel = item.querySelector('[data-age-label-input]');
+            var newTerritoryEditor = item.querySelector('[data-territory-item-editor]');
             list.dataset.nextIndex = String(index + 1);
             list.querySelector('.profile-content-list-items').append(item);
+            if (newAgeLabel) newAgeLabel.focus();
+            else if (newTerritoryEditor) {
+                var firstTerritoryField = newTerritoryEditor.querySelector('input:not([type="hidden"]), select, textarea');
+                if (firstTerritoryField) firstTerritoryField.focus();
+            }
             return;
         }
 
@@ -440,6 +490,64 @@
             removeButton.closest('[data-content-item]').remove();
         }
     });
+
+    document.addEventListener('input', function (event) {
+        var input = event.target instanceof Element ? event.target.closest('[data-age-label-input]') : null;
+        if (input) {
+            input.setCustomValidity('');
+            var item = input.closest('[data-content-item]');
+            var display = item && item.querySelector('[data-age-label-display]');
+            if (display) display.textContent = input.value.trim() ? 'Usia ' + input.value.trim() : 'Rentang usia baru';
+        }
+
+        var territoryInput = event.target instanceof Element ? event.target.closest('[data-territory-item-editor] [name]') : null;
+        if (territoryInput) updateTerritoryItemSummary(territoryInput.closest('[data-content-item]'));
+    });
+
+    document.addEventListener('change', function (event) {
+        var territoryInput = event.target instanceof Element ? event.target.closest('[data-territory-item-editor] [name]') : null;
+        if (territoryInput) updateTerritoryItemSummary(territoryInput.closest('[data-content-item]'));
+    });
+
+    function updateTerritoryItemSummary(item) {
+        if (!item) return;
+        var list = item.closest('[data-territory-item-list]');
+        var summary = item.querySelector('[data-territory-item-summary]');
+        if (!list || !summary) return;
+
+        var valueFor = function (fieldName) {
+            var field = Array.prototype.find.call(
+                item.querySelectorAll('[data-territory-item-editor] [name]'),
+                function (input) { return input.name.endsWith('[' + fieldName + ']'); }
+            );
+            return field && 'value' in field ? field.value.trim() : '';
+        };
+        var parts;
+        var separator;
+        switch (list.dataset.territoryItemList) {
+            case 'boundaries':
+                parts = [valueFor('direction'), valueFor('name')];
+                separator = ' — ';
+                break;
+            case 'sectors':
+                parts = [valueFor('name')];
+                separator = '';
+                break;
+            case 'orbitations':
+                parts = [valueFor('label'), valueFor('value')];
+                separator = ' — ';
+                break;
+            case 'seasons':
+                parts = [valueFor('period'), valueFor('title')];
+                separator = ' · ';
+                break;
+            default:
+                return;
+        }
+
+        var text = parts.filter(Boolean).join(separator);
+        summary.textContent = text || 'Item baru';
+    }
 })();
 
 (function () {
@@ -925,6 +1033,16 @@
             if (panel && panels.indexOf(panel) !== -1) {
                 setProfileStep(form, panels.indexOf(panel));
                 firstInvalidField.focus();
+            } else {
+                var leadershipPanel = firstInvalidField.closest('[data-leadership-step-panel]');
+                var leadershipStepper = leadershipPanel && leadershipPanel.closest('[data-leadership-stepper]');
+                var leadershipPanels = leadershipStepper
+                    ? Array.prototype.slice.call(leadershipStepper.querySelectorAll('[data-leadership-step-panel]'))
+                    : [];
+                if (leadershipPanel && leadershipStepper && leadershipPanels.indexOf(leadershipPanel) !== -1) {
+                    setLeadershipStep(leadershipStepper, leadershipPanels.indexOf(leadershipPanel));
+                    firstInvalidField.focus();
+                }
             }
         }
     }
@@ -1075,11 +1193,21 @@
         });
 
         var steps = Array.prototype.slice.call(form.querySelectorAll('[data-profile-step-target]'));
+        var visitedSteps = (form.dataset.profileVisitedSteps || '')
+            .split(',')
+            .filter(Boolean)
+            .map(Number);
+        if (visitedSteps.indexOf(activeIndex) === -1) visitedSteps.push(activeIndex);
+        form.dataset.profileVisitedSteps = visitedSteps.join(',');
         steps.forEach(function (step, index) {
             var item = step.closest('li');
             if (index === activeIndex) step.setAttribute('aria-current', 'step');
             else step.removeAttribute('aria-current');
-            if (item) item.classList.toggle('is-complete', index < activeIndex);
+            if (item) {
+                item.classList.toggle('is-current', index === activeIndex);
+                item.classList.remove('is-complete');
+                item.classList.toggle('is-visited', visitedSteps.indexOf(index) !== -1);
+            }
         });
 
         var previous = form.querySelector('[data-profile-step-previous]');
@@ -1149,6 +1277,47 @@
         form.dataset.censusCurrentStep = String(activeIndex);
     }
 
+    function setLeadershipStep(stepper, requestedIndex) {
+        var panels = Array.prototype.slice.call(stepper.querySelectorAll('[data-leadership-step-panel]'));
+        if (panels.length === 0) return;
+
+        var activeIndex = Math.max(0, Math.min(requestedIndex, panels.length - 1));
+        panels.forEach(function (panel, index) {
+            panel.hidden = index !== activeIndex;
+        });
+
+        var steps = Array.prototype.slice.call(stepper.querySelectorAll('[data-leadership-step-target]'));
+        steps.forEach(function (step, index) {
+            var item = step.closest('li');
+            if (index === activeIndex) step.setAttribute('aria-current', 'step');
+            else step.removeAttribute('aria-current');
+            if (item) item.classList.toggle('is-complete', index < activeIndex);
+        });
+
+        var previous = stepper.querySelector('[data-leadership-step-previous]');
+        var next = stepper.querySelector('[data-leadership-step-next]');
+        var count = stepper.querySelector('[data-leadership-step-count]');
+        var navigation = stepper.querySelector('[data-leadership-step-nav]');
+        var controls = stepper.querySelector('[data-leadership-step-controls]');
+        if (previous) previous.disabled = activeIndex === 0;
+        if (next) next.disabled = activeIndex === panels.length - 1;
+        if (count) count.textContent = 'Bagian ' + (activeIndex + 1) + ' dari ' + panels.length;
+        if (navigation) navigation.hidden = false;
+        if (controls) controls.hidden = false;
+
+        var activeStep = steps[activeIndex];
+        if (navigation && activeStep) {
+            var navigationBounds = navigation.getBoundingClientRect();
+            var activeStepBounds = activeStep.getBoundingClientRect();
+            if (activeStepBounds.right > navigationBounds.right) {
+                navigation.scrollLeft += activeStepBounds.right - navigationBounds.right + 4;
+            } else if (activeStepBounds.left < navigationBounds.left) {
+                navigation.scrollLeft -= navigationBounds.left - activeStepBounds.left + 4;
+            }
+        }
+        stepper.dataset.leadershipCurrentStep = String(activeIndex);
+    }
+
     function setBusy(form, busy) {
         form.setAttribute('aria-busy', busy ? 'true' : 'false');
         var submit = form.querySelector('[data-profile-submit]');
@@ -1171,6 +1340,9 @@
     document.querySelectorAll('form[data-profile-step-form]').forEach(function (form) {
         setProfileStep(form, 0);
         updateTerritoryPreview(form);
+    });
+    document.querySelectorAll('[data-leadership-stepper]').forEach(function (stepper) {
+        setLeadershipStep(stepper, 0);
     });
 
     document.addEventListener('input', function (event) {
@@ -1220,6 +1392,29 @@
     document.addEventListener('click', function (event) {
         var target = event.target instanceof Element ? event.target : null;
         if (!target) return;
+
+        var leadershipStepControl = target.closest('[data-leadership-step-target], [data-leadership-step-next], [data-leadership-step-previous]');
+        if (leadershipStepControl) {
+            var leadershipStepper = leadershipStepControl.closest('[data-leadership-stepper]');
+            if (leadershipStepper) {
+                var leadershipPanels = Array.prototype.slice.call(leadershipStepper.querySelectorAll('[data-leadership-step-panel]'));
+                var leadershipCurrentIndex = Number.parseInt(leadershipStepper.dataset.leadershipCurrentStep, 10) || 0;
+                var leadershipTargetIndex = leadershipCurrentIndex;
+
+                if (leadershipStepControl.hasAttribute('data-leadership-step-target')) {
+                    leadershipTargetIndex = leadershipPanels.findIndex(function (panel) {
+                        return panel.id === leadershipStepControl.dataset.leadershipStepTarget;
+                    });
+                } else if (leadershipStepControl.hasAttribute('data-leadership-step-next')) {
+                    leadershipTargetIndex += 1;
+                } else {
+                    leadershipTargetIndex -= 1;
+                }
+
+                if (leadershipTargetIndex >= 0) setLeadershipStep(leadershipStepper, leadershipTargetIndex);
+            }
+            return;
+        }
 
         var profileStepControl = target.closest('[data-profile-step-target], [data-profile-step-next], [data-profile-step-previous]');
         if (profileStepControl) {
@@ -1311,9 +1506,9 @@
         if (editMember) {
             var memberForm = document.getElementById('member-form');
             try {
-                if (!memberForm) throw new Error('Form anggota tidak ditemukan.');
-                var memberDetails = editMember.closest('details');
-                if (memberDetails) memberDetails.open = true;
+                var memberStepper = memberForm && memberForm.closest('[data-leadership-stepper]');
+                if (!memberForm || !memberStepper) throw new Error('Form anggota tidak ditemukan.');
+                setLeadershipStep(memberStepper, 1);
                 var member = JSON.parse(editMember.dataset.member || '');
                 memberForm.querySelector('[name="id"]').value = String(member.id || 0);
                 memberForm.querySelector('[name="periode_id"]').value = String(member.periode_id || 0);

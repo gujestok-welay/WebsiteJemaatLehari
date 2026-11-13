@@ -79,10 +79,6 @@ class Home extends BaseController
         return view('publik/profil', [
             'title' => $content['hero']['page_title'],
             'metaDescription' => $content['hero']['meta_description'],
-            'profilePreviewNotice' => [
-                'lead' => $content['hero']['preview_notice_lead'],
-                'body' => $content['hero']['preview_notice_body'],
-            ],
             'activePage' => 'profil',
             'content' => $content,
             'profile' => $profile,

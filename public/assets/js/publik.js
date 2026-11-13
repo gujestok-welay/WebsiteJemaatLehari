@@ -56,12 +56,8 @@ if (profileDropdownItem && profileDropdownToggle) {
         pointerInsideProfileDropdown = true;
         profileDropdown.show();
     });
-    profileDropdownToggle.addEventListener('click', (event) => {
-        if (desktopHover.matches && event.detail > 0) {
-            event.preventDefault();
-            event.stopPropagation();
-            profileDropdown.show();
-        }
+    profileDropdownToggle.addEventListener('focusin', () => {
+        if (desktopHover.matches) profileDropdown.show();
     });
     profileDropdownItem.addEventListener('pointerleave', () => {
         if (!desktopHover.matches) return;

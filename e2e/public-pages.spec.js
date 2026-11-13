@@ -347,17 +347,13 @@ test('tombol Profil tidak menampilkan caret dropdown Bootstrap selain chevron SV
   expect(caretDisplay).toBe('none');
 });
 
-test('dropdown Profil menutup setelah pointer meninggalkan tombol yang diklik', async ({ page }) => {
-  await page.setViewportSize({ width: 1440, height: 900 });
+test('menu Profil dapat dinavigasikan dengan keyboard', async ({ page }) => {
   await page.goto('berita');
 
-  const profileToggle = page.locator('#profil-menu-toggle');
-  const profileMenu = page.locator('#profil-menu');
-  await profileToggle.click();
-  await expect(profileMenu).toBeVisible();
-
-  await page.mouse.move(0, 0);
-  await expect(profileMenu).toBeHidden();
+  const profileLink = page.locator('#profil-menu-toggle');
+  await profileLink.focus();
+  await profileLink.press('Enter');
+  await expect(page).toHaveURL(/\/profil$/);
 });
 
 test('tautan bagian Profil tetap tersedia tanpa JavaScript', async ({ browser }) => {
@@ -374,19 +370,16 @@ test('tautan bagian Profil tetap tersedia tanpa JavaScript', async ({ browser })
   await context.close();
 });
 
-test('menu Profil tetap dapat dibuka dari navigasi seluler', async ({ page }) => {
+test('tautan Profil dari navigasi seluler membuka halaman profil', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('berita');
   await page.getByRole('button', { name: 'Buka navigasi utama' }).click();
 
-  const profileToggle = page.getByRole('button', { name: 'Profil' });
-  await expect(profileToggle).toBeVisible();
-  await profileToggle.click();
+  const profileLink = page.locator('#profil-menu-toggle');
+  await expect(profileLink).toBeVisible();
+  await profileLink.click();
 
-  const profileMenu = page.locator('#profil-menu');
-  await expect(profileMenu.getByRole('link', { name: 'Gambaran Umum Wilayah Pelayanan' })).toBeVisible();
-  await profileMenu.getByRole('link', { name: 'Gambaran Umum Wilayah Pelayanan' }).click();
-  await expect(page).toHaveURL(/profil#wilayah$/);
+  await expect(page).toHaveURL(/\/profil$/);
 });
 
 test('kartu ibadah beranda tetap terlihat pada lebar layar yang didukung', async ({ page }) => {
